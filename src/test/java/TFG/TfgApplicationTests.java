@@ -1,10 +1,10 @@
-package com.example.project;
+package TFG;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ProjectApplicationTests {
+class TfgApplicationTests {
 
 	@Test
 	void contextLoads() {
