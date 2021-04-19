@@ -1,11 +1,10 @@
 package heuristics.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import heuristics.model.HeuristicRaw;
 import heuristics.service.HeuristicRawService;
 
 @Controller
@@ -18,9 +17,11 @@ public class HeuristicRawController {
         this.heuristicRawService = heuristicRawService;
     }
 
-    public List<HeuristicRaw> findAllHeuristicRaw(){
-        return heuristicRawService.findAllHeuristicRaw();
-    }
-
+    // Prueba: Lista de heurísticas
+    @GetMapping("/test1")
+    public String findAllHeuristicRaw(Model model){
+        model.addAttribute("listHeuristicRaws", heuristicRawService.findAllHeuristicRaw());
+        return "test1";
+    } 
     
 }

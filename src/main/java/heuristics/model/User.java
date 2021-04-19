@@ -9,37 +9,42 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "heuristicsraw")
+@Table(name = "users")
 @Data
+@EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class HeuristicRaw {
+public class User {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "num")
-	private Integer id; 
+	@Column(name = "id")
+	private Integer id;
 
-    @Column(name = "heuristicRAW")
+    @Column(name = "username")
 	@NotEmpty
-	private String heuristicRawString;
+	private String username;
 
-    @Column(name = "author")
+	@Column(name = "password")
 	@NotEmpty
-	private String author;
+	private String password;
 
-    @Column(name = "classificationByAuthor")
-	private String classificationByAuthor;
+	@Column(name = "name")
+	private String name;
 
-    @Column(name = "compiledFrom")
-	private String compiledFrom;
+	@Column(name = "surnames")
+	private String surnames;
 
-    @Column(name = "year")
+	@Column(name = "company")
+	private String company;
+
+	@Column(name = "email")
 	@NotEmpty
-	private String year;
+	private String email;
 
 }
