@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<head>
+<meta charset="ISO-8859-1">
+<title>MUSE: New Questionnaire</title>
+
+</head>
+
+<tbody>
+
+    <h1> Create Questionnaire</h1>
+        
+    <form action="#" th:action="@{/createQuestionnaire}" method="POST" th:object="${questionnaireAux}">
+        
+        <tr>
+
+        <td><label>Platforms: </label></td>
+        <td>
+            <th:block th:each="platform : ${allPlatforms}">
+                <input type="checkbox" name="choosenPlatforms" th:value="${platform}">
+                <label th:text="${platform.platformString}"></label>
+            </th:block>
+        </td>
+        </tr>
+            <td>
+                <button class="btn btn-default" type="submit">See platforms</button>
+            </td>
+        </tr>
+    </form> 
+</tbody>
+
+</html>

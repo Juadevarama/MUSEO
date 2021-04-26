@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Choosen things</title>
+
+</head>
+
+<body>
+
+    <div align="center">
+        <h1> Choosen Platform List</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th> Platform</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="platform : ${choosenPlatforms}">
+                    <td th:text="${platform.platformString}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>

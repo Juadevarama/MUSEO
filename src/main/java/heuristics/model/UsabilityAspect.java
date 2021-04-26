@@ -9,14 +9,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
 @Table(name = "usabilityaspects")
 @Data
-@EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsabilityAspect {
