@@ -33,6 +33,6 @@ public class HeuristicDevelopmentPhase {
 
 	@OneToOne
 	@JoinColumn(name = "developmentphases_num")
-	private Developmentphase developmentPhase;
+	private DevelopmentPhase developmentPhase;
 
 }

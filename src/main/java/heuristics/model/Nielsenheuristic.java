@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Nielsenheuristic {
+public class NielsenHeuristic {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class Nielsenheuristic {
 
 	@Column(name = "number")
 	@NotEmpty
-	private Integer numbeInteger; //¿Sobra? ¿Está repetida?
+	private Integer numbInteger; //¿Sobra? ¿Está repetida?
     
 	
 }

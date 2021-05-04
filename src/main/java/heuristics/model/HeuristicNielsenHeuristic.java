@@ -33,5 +33,5 @@ public class HeuristicNielsenHeuristic {
 
 	@OneToOne
 	@JoinColumn(name = "nielsenheuristics_num")
-	private Nielsenheuristic nielsenheuristic;
+	private NielsenHeuristic nielsenheuristic;
 }

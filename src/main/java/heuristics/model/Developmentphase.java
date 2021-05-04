@@ -19,7 +19,7 @@ import lombok.AllArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Developmentphase {
+public class DevelopmentPhase {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

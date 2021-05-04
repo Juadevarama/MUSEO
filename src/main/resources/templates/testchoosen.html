@@ -12,12 +12,84 @@
         <table>
             <thead>
                 <tr>
-                    <th> Platform</th>
+                    <th scope="Platform">Platforms</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="platform : ${choosenPlatforms}">
                     <td th:text="${platform.platformString}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="Purpose">Purposes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="purpose : ${choosenPurposes}">
+                    <td th:text="${purpose.purposeString}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>DevelopmentPhases</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="developmentPhase : ${choosenDevelopmentPhases}">
+                    <td th:text="${developmentPhase.developmentPhaseString}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>GameAspects</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="gameAspect : ${choosenGameAspects}">
+                    <td th:text="${gameAspect.gameAspectString}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Keywords</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="keyword : ${choosenKeywords}">
+                    <td th:text="${keyword.keywordString}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>NielsenHeuristics</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="nielsenHeuristic : ${choosenNielsenHeuristics}">
+                    <td th:text="${nielsenHeuristic.nielsenHeuristicString}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>UsabilityAspects</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usabilityAspect : ${choosenUsabilityAspects}">
+                    <td th:text="${usabilityAspect.usabilityAspectString}"></td>
                 </tr>
             </tbody>
         </table>

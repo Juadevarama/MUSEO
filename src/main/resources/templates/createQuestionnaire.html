@@ -9,21 +9,78 @@
 
     <h1> Create Questionnaire</h1>
         
-    <form action="#" th:action="@{/createQuestionnaire}" method="POST" th:object="${questionnaireAux}">
+    <form action="#" th:action="@{/createQuestionnaire}" method="POST">
         
         <tr>
-
         <td><label>Platforms: </label></td>
         <td>
             <th:block th:each="platform : ${allPlatforms}">
                 <input type="checkbox" name="choosenPlatforms" th:value="${platform}">
                 <label th:text="${platform.platformString}"></label>
             </th:block>
+        </td> 
+        </tr>
+        <tr>
+        <td><label>Purposes: </label></td>
+        <td>
+            <th:block th:each="purpose : ${allPurposes}">
+                <input type="checkbox" name="choosenPurposes" th:value="${purpose}">
+                <label th:text="${purpose.purposeString}"></label>
+            </th:block>
         </td>
         </tr>
+        <tr>
+        <td><label>Development Phases: </label></td>
+        <td>
+            <th:block th:each="developmentPhase : ${allDevelopmentPhases}">
+                <input type="checkbox" name="choosenDevelopmentPhases" th:value="${developmentPhase}">
+                <label th:text="${developmentPhase.developmentPhaseString}"></label>
+            </th:block>
+        </td>
+        </tr>
+        <tr>
+            <td><label>Game Aspects: </label></td>
             <td>
-                <button class="btn btn-default" type="submit">See platforms</button>
+                <th:block th:each="gameAspect : ${allGameAspects}">
+                    <input type="checkbox" name="choosenGameAspects" th:value="${gameAspect}">
+                    <label th:text="${gameAspect.gameAspectString}"></label>
+                </th:block>
             </td>
+            </tr>
+        <tr>
+        <tr>
+            <td><label>Keywords: </label></td>
+            <td>
+                <th:block th:each="keyword : ${allKeywords}">
+                    <input type="checkbox" name="choosenKeywords" th:value="${keyword}">
+                    <label th:text="${keyword.keywordString}"></label>
+                </th:block>
+            </td>
+            </tr>
+        <tr>
+        <tr>
+            <td><label>NielsenHeuristics: </label></td>
+            <td>
+                <th:block th:each="nielsenHeuristic : ${allNielsenHeuristics}">
+                    <input type="checkbox" name="choosenNielsenHeuristics" th:value="${nielsenHeuristic}">
+                    <label th:text="${nielsenHeuristic.nielsenHeuristicString}"></label>
+                </th:block>
+            </td>
+            </tr>
+        <tr>
+        <tr>
+            <td><label>UsabilityAspects: </label></td>
+            <td>
+                <th:block th:each="usabilityAspect : ${allUsabilityAspects}">
+                    <input type="checkbox" name="choosenUsabilityAspects" th:value="${usabilityAspect}">
+                    <label th:text="${usabilityAspect.usabilityAspectString}"></label>
+                </th:block>
+            </td>
+            </tr>
+        <tr>
+        <td>
+            <button class="btn btn-default" type="submit">See things</button>
+        </td>
         </tr>
     </form> 
 </tbody>
