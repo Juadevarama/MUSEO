@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -15,23 +16,29 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "heuristicspurposes")
+@Table(name = "heuristicsquestionnaires")
 @Data
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class HeuristicPurpose {
+public class HeuristicQuestionnaire {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "num")
-	private Integer heuristicRawId;
-	
-	@ManyToOne
+	@Column(name = "id")
+	private Integer id;
+
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "finalheuristics_id")
 	private FinalHeuristic finalHeuristic;
 
-	@ManyToOne
-	@JoinColumn(name = "purposes_num")
-	private Purpose purpose;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "questionnaires_id")
+	private Questionnaire questionnaire;
+
+	@NotNull
+	private Boolean selected;
+
+	@NotNull
+	private Boolean automatic;
 }
