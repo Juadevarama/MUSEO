@@ -25,13 +25,13 @@ public class HeuristicPlatform {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "num")
-	private Integer heuristicRawId;
+	private Integer id;
 
-	@ManyToOne
-	@JoinColumn(name = "finalheuristics_id")
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "heuristicID")
 	private FinalHeuristic finalHeuristic;
 
-	@ManyToOne
-	@JoinColumn(name = "platforms_num")
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "platformID")
 	private Platform platform;
 }

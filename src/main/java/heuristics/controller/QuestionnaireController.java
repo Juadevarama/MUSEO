@@ -19,8 +19,11 @@ import heuristics.model.Platform;
 import heuristics.model.Purpose;
 import heuristics.model.Questionnaire;
 import heuristics.model.UsabilityAspect;
+import heuristics.repository.HeuristicQuestionnaireRepository;
 import heuristics.service.DevelopmentPhaseService;
 import heuristics.service.GameAspectService;
+import heuristics.service.HeuristicPlatformService;
+import heuristics.service.HeuristicQuestionnaireService;
 import heuristics.service.KeywordService;
 import heuristics.service.NielsenHeuristicService;
 import heuristics.service.PlatformService;
@@ -40,10 +43,13 @@ public class QuestionnaireController {
     private final NielsenHeuristicService nielsenHeuristicService;
     private final UsabilityAspectService usabilityAspectService;
 
+    private final HeuristicQuestionnaireService heuristicQuestionnaireService;
+
     @Autowired
     public QuestionnaireController(QuestionnaireService questionnaireService, PlatformService platformService, 
     PurposeService purposeService, DevelopmentPhaseService developmentPhaseService, GameAspectService gameAspectService,
-    KeywordService keywordService, NielsenHeuristicService nielsenHeuristicService, UsabilityAspectService usabilityAspectService){
+    KeywordService keywordService, NielsenHeuristicService nielsenHeuristicService, UsabilityAspectService usabilityAspectService,
+    HeuristicQuestionnaireService heuristicQuestionnaireService){
         this.questionnaireService = questionnaireService;
         this.platformService = platformService;
         this.purposeService = purposeService;
@@ -52,7 +58,10 @@ public class QuestionnaireController {
         this.keywordService = keywordService;
         this.nielsenHeuristicService = nielsenHeuristicService;
         this.usabilityAspectService = usabilityAspectService;
+        this.heuristicQuestionnaireService = heuristicQuestionnaireService;
     }
+
+    // TODO: Cambiar estos dos metodos a generate, no create. El create será cuando se elijan las FinalHeuristic. 
 
     // Generate Questionnaire
     @GetMapping("/createQuestionnaire")
@@ -67,8 +76,6 @@ public class QuestionnaireController {
         model.addAttribute("allKeywords", keywordService.findAllKeyword());
         model.addAttribute("allNielsenHeuristics", nielsenHeuristicService.findAllNielsenHeuristic());
         model.addAttribute("allUsabilityAspects", usabilityAspectService.findAllUsabilityAspect());
-
-        System.out.println(new Questionnaire());
         
         return "createQuestionnaire";
     } 
@@ -84,7 +91,23 @@ public class QuestionnaireController {
     @RequestParam(value = "choosenUsabilityAspects" , required = false) List<UsabilityAspect> choosenUsabilityAspects, 
     BindingResult result, Model model){
 
+        // Creamos los Objetos HeuristicQuestionnaire
+
+        questionnaireService.generateHeuristics(questionnaire,choosenPlatforms, 
+        choosenPurposes, choosenDevelopmentPhases, choosenGameAspects, choosenKeywords, 
+        choosenNielsenHeuristics, choosenUsabilityAspects);
+
+        // Ponemos los Boolean 
+
         System.out.println(questionnaire);
+
+        // Sacamos las finalHeuristics
+
+        heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaire.getId());
+        // La ID todavía no se ha generado aquí, antes habrá que hacer el guardarlo en la BBDD.
+
+        
+
         
         model.addAttribute("choosenPlatforms", choosenPlatforms);
         model.addAttribute("choosenPurposes", choosenPurposes);

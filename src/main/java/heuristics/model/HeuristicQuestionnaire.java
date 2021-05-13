@@ -29,11 +29,11 @@ public class HeuristicQuestionnaire {
 	private Integer id;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "finalheuristics_id")
+	@JoinColumn(name = "finalheuristicID")
 	private FinalHeuristic finalHeuristic;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "questionnaires_id")
+	@JoinColumn(name = "questionnaireID")
 	private Questionnaire questionnaire;
 
 	@NotNull

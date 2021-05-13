@@ -29,14 +29,14 @@ public class FinalHeuristic {
 	private Integer id;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "heuristicsraw_num")
+	@JoinColumn(name = "num")
 	private HeuristicRaw heuristicRaw; // En la bbdd, esto no está puesto como una FK de la otra tabla 
 
     @Column(name = "heuristic")
 	@NotEmpty
 	private String heuristicString;
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "questionnaires_id")
-	private HeuristicRaw questionnaire;
+	/* @ManyToOne(optional = true)
+	@JoinColumn(name = "questionnairesID")
+	private Questionnaire questionnaire; */
 }
