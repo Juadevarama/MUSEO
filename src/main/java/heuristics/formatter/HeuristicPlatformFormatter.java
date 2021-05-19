@@ -23,16 +23,16 @@ public class HeuristicPlatformFormatter implements Formatter<HeuristicPlatform>{
     
     @Override
     public String print(HeuristicPlatform heuristicPlatform, Locale locale){
-        return "HeuristicPlatform(id=" + heuristicPlatform.getId() + ", finalHeuristic=" + 
-        heuristicPlatform.getFinalHeuristic() + ", platform=" + heuristicPlatform.getPlatform() + ")";
+        return "HeuristicPlatform(id=" + heuristicPlatform.getId() + ", finalHeuristicID=" + 
+        heuristicPlatform.getFinalHeuristicID() + ", platformID=" + heuristicPlatform.getPlatformID();
     }
 
     @Override
     public HeuristicPlatform parse(String text, Locale locale) throws ParseException {
         Collection<HeuristicPlatform> findHeuristicPlatforms = this.heuristicPlatforms.findAll();
         for (HeuristicPlatform plat : findHeuristicPlatforms) {
-            if (("HeuristicPlatform(id=" + plat.getId() + ", finalHeuristic=" + 
-            plat.getFinalHeuristic() + ", platform=" + plat.getPlatform() + ")").equals(text)) {
+            if (("HeuristicPlatform(id=" + plat.getId() + ", finalHeuristicID=" + 
+            plat.getFinalHeuristicID() + ", platformID=" + plat.getPlatformID() + ")").equals(text)) {
                 return plat;
             }
         }

@@ -2,6 +2,7 @@ package heuristics.service;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,11 @@ public class PlatformService {
     @Transactional(readOnly = true)
     public List<Platform> findAllPlatform(){
         return platformRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Platform findPlatformById(Integer id){
+        return platformRepository.findById(id).orElseThrow();
     }
     
 }

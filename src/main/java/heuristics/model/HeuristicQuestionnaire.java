@@ -5,8 +5,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -28,17 +26,19 @@ public class HeuristicQuestionnaire {
 	@Column(name = "id")
 	private Integer id;
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "finalheuristicID")
-	private FinalHeuristic finalHeuristic;
-
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "questionnaireID")
-	private Questionnaire questionnaire;
-
+	@Column(name = "finalheuristicID")
 	@NotNull
-	private Boolean selected;
+	private Integer finalHeuristicID;
 
+	@Column(name = "questionnaireID")
+	@NotNull
+	private Integer questionnaireID;
+
+	@Column(name = "selected")
+	@NotNull
+	private Boolean  selected;
+
+	@Column(name = "automatic")
 	@NotNull
 	private Boolean automatic;
 }

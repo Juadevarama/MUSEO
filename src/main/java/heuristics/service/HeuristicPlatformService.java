@@ -18,6 +18,12 @@ public class HeuristicPlatformService {
     @Autowired
     private HeuristicPlatformRepository heuristicPlatformRepository;
 
+    @Autowired
+    HeuristicQuestionnaireService heuristicQuestionnaireService;
+    
+    @Autowired
+    PlatformService platformService; 
+    
     @Transactional(readOnly = true)
     public List<HeuristicPlatform> findAllHeuristicPlatform(){
         return heuristicPlatformRepository.findAll();
@@ -27,11 +33,11 @@ public class HeuristicPlatformService {
     public void generateFHwithPlatforms(Questionnaire questionnaire, List<Platform> choosenPlatforms){
 
         for (HeuristicPlatform heuristicPlatform : heuristicPlatformRepository.findAll()) {
-            if(choosenPlatforms.contains(heuristicPlatform.getPlatform())){
+            if(choosenPlatforms.contains(platformService.findPlatformById(heuristicPlatform.getPlatformID()))){
     
-                HeuristicQuestionnaireService.generate(questionnaire, heuristicPlatform.getFinalHeuristic());
+                heuristicQuestionnaireService.generate(questionnaire, heuristicPlatform.getFinalHeuristicID());
             }
         }
-    }
+    } 
     
 }

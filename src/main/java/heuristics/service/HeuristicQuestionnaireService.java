@@ -1,13 +1,12 @@
 package heuristics.service;
 
-
 import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import heuristics.model.FinalHeuristic;
 import heuristics.model.HeuristicQuestionnaire;
 import heuristics.model.Questionnaire;
 import heuristics.repository.HeuristicQuestionnaireRepository;
@@ -16,7 +15,10 @@ import heuristics.repository.HeuristicQuestionnaireRepository;
 public class HeuristicQuestionnaireService {
 
     @Autowired
-    private static HeuristicQuestionnaireRepository heuristicQuestionnaireRepository;
+    private HeuristicQuestionnaireRepository heuristicQuestionnaireRepository;
+
+    @Autowired
+    private FinalHeuristicService finalHeuristicService;
 
     @Transactional(readOnly = true)
     public List<HeuristicQuestionnaire> findAllHeuristicQuestionnaire(){
@@ -24,20 +26,21 @@ public class HeuristicQuestionnaireService {
     }
 
     @Transactional
-    public static void generate(Questionnaire questionnaire, FinalHeuristic finalHeuristic){
+    public void generate(Questionnaire questionnaire, Integer finalHeuristicID){
         
         HeuristicQuestionnaire res = new HeuristicQuestionnaire();
 
-        res.setQuestionnaire(questionnaire);
-        res.setFinalHeuristic(finalHeuristic);
+        res.setQuestionnaireID(questionnaire.getId());
+        res.setFinalHeuristicID(finalHeuristicID);
         res.setAutomatic(true);
         res.setSelected(false);
 
-        heuristicQuestionnaireRepository.save(res);     
-    }
+        this.heuristicQuestionnaireRepository.save(res);
+    } 
 
-    public HeuristicQuestionnaire findHeuristicQuestionnaireByQuestionnaireId(Integer id) {
-        return heuristicQuestionnaireRepository.findHeuristicQuestionnaireByQuestionnaireId(id);
+    @Transactional(readOnly = true)
+    public List<HeuristicQuestionnaire> findHeuristicQuestionnaireByQuestionnaireId(int id) {
+        return heuristicQuestionnaireRepository.findHeuristicQuestionnaireByQuestionnaireId(id);     
     }
     
 }

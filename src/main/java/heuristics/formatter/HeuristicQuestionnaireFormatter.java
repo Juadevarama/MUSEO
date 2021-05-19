@@ -24,7 +24,7 @@ public class HeuristicQuestionnaireFormatter implements Formatter<HeuristicQuest
     @Override
     public String print(HeuristicQuestionnaire heuristicQuestionnaire, Locale locale){
         return "HeuristicQuestionnaire(id=" + heuristicQuestionnaire.getId() + ", finalHeuristic=" + 
-        heuristicQuestionnaire.getFinalHeuristic() + ", questionnaire=" + heuristicQuestionnaire.getQuestionnaire() + ")";
+        heuristicQuestionnaire.getFinalHeuristicID() + ", questionnaire=" + heuristicQuestionnaire.getQuestionnaireID() + ")";
     }
 
     @Override
@@ -32,7 +32,7 @@ public class HeuristicQuestionnaireFormatter implements Formatter<HeuristicQuest
         Collection<HeuristicQuestionnaire> findHeuristicQuestionnaires = this.heuristicQuestionnaires.findAll();
         for (HeuristicQuestionnaire plat : findHeuristicQuestionnaires) {
             if (("HeuristicQuestionnaire(id=" + plat.getId() + ", finalHeuristic=" + 
-            plat.getFinalHeuristic() + ", platform=" + plat.getQuestionnaire() + ")").equals(text)) {
+            plat.getFinalHeuristicID() + ", questionnaire=" + plat.getQuestionnaireID() + ")").equals(text)) {
                 return plat;
             }
         }

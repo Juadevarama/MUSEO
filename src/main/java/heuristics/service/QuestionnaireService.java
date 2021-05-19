@@ -46,6 +46,6 @@ public class QuestionnaireService {
     
     heuristicPlatformService.generateFHwithPlatforms(questionnaire, choosenPlatforms);
     
-    }
+    } 
     
 }
