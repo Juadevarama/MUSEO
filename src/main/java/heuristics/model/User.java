@@ -47,4 +47,9 @@ public class User {
 	@NotEmpty
 	private String email;
 
+	@Override
+	public String toString(){
+		return "User(username=" + getUsername() + ")";
+	}
+
 }

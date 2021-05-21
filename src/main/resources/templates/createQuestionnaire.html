@@ -15,8 +15,12 @@
         
     <form class="row p-2 m-2 g-3" action="#" th:action="@{/createQuestionnaire}" method="POST" th:object="${questionnaire}">
 
+        <!-- Hidden Atributes (No funciona)-->
 
-        <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Platforms:</label>
+        <input type="hidden" th:field="*{filled}" name="filled" th:value="${questionnaire.filled}"> 
+        <input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
+
+        <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Things:</label>
             <div class="mb-3">
                 <label class="form-label">Product name</label>
                 <input type="text" th:field="*{product}" placeholder="Insert the product name">

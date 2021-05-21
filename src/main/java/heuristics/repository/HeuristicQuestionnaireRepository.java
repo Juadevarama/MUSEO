@@ -11,6 +11,6 @@ import heuristics.model.HeuristicQuestionnaire;
 @Repository
 public interface HeuristicQuestionnaireRepository extends JpaRepository<HeuristicQuestionnaire, Integer>{
 
-    @Query("SELECT h FROM HeuristicQuestionnaire h WHERE h.id =:id")
+    @Query("SELECT h FROM HeuristicQuestionnaire h WHERE h.questionnaireID =:id")
     public List<HeuristicQuestionnaire> findHeuristicQuestionnaireByQuestionnaireId(@Param("id") int id);
 }

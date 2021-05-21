@@ -30,7 +30,7 @@ public class HeuristicPlatformService {
     }
 
     @Transactional(readOnly = true)
-    public void generateFHwithPlatforms(Questionnaire questionnaire, List<Platform> choosenPlatforms){
+    public void generateHQwithPlatforms(Questionnaire questionnaire, List<Platform> choosenPlatforms){
 
         for (HeuristicPlatform heuristicPlatform : heuristicPlatformRepository.findAll()) {
             if(choosenPlatforms.contains(platformService.findPlatformById(heuristicPlatform.getPlatformID()))){

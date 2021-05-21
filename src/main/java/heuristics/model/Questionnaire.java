@@ -28,9 +28,9 @@ public class Questionnaire {
 	@Column(name = "id")
 	private Integer id;
 
-	/* @ManyToOne(optional = true) // TODO: Cambiar a false cuando estén los usuarios
-	@JoinColumn(name = "administrators_id")
-	private Administrator administrator; */
+	@ManyToOne(optional = true) // TODO: Cambiar a false cuando estén los usuarios
+	@JoinColumn(name = "administratorID")
+	private Administrator administrator; 
 
 	@Column(name = "product")
 	private String product;
@@ -38,9 +38,11 @@ public class Questionnaire {
 	@Column(name = "description")
 	private String description;
 
+	@Column(name = "closed")
 	@NotNull
-	private Boolean closed = false;
+	private Boolean closed;
 
+	@Column(name = "filled")
 	@NotNull
-	private Boolean filled = false;
+	private Boolean filled;
 }
