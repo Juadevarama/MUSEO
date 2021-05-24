@@ -20,5 +20,9 @@ public class NielsenHeuristicService {
     public List<NielsenHeuristic> findAllNielsenHeuristic(){
         return nielsenHeuristicRepository.findAll();
     }
+
+    public Object findNielsenHeuristicById(Integer nielsenHeuristicID) {
+        return nielsenHeuristicRepository.findById(nielsenHeuristicID).orElseThrow();
+    }
     
 }

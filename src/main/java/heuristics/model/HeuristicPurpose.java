@@ -5,9 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,13 +24,13 @@ public class HeuristicPurpose {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "num")
-	private Integer heuristicRawId;
+	private Integer id;
 	
-	@ManyToOne
-	@JoinColumn(name = "finalheuristics_id")
-	private FinalHeuristic finalHeuristic;
+	@Column(name = "heuristicID")
+	@NotEmpty
+	private Integer finalHeuristicID;
 
-	@ManyToOne
-	@JoinColumn(name = "purposes_num")
-	private Purpose purpose;
+	@Column(name = "purposeID")
+	@NotEmpty
+	private Integer purposeID;
 }

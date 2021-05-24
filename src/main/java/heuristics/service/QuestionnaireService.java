@@ -32,6 +32,24 @@ public class QuestionnaireService {
     @Autowired
     private HeuristicPlatformService heuristicPlatformService;
 
+    @Autowired
+    private HeuristicPurposeService heuristicPurposeService;
+
+    @Autowired
+    private HeuristicDevelopmentPhaseService heuristicDevelopmentPhaseService;
+
+    @Autowired
+    private HeuristicGameAspectService heuristicGameAspectService;
+
+    @Autowired
+    private HeuristicKeywordService heuristicKeywordService;
+
+    @Autowired
+    private HeuristicNielsenHeuristicService heuristicNielsenHeuristicService;
+
+    @Autowired
+    private HeuristicUsabilityAspectService heuristicUsabilityAspectService;
+
     @Transactional(readOnly = true)
     public List<Questionnaire> findAllQuestionnaire(){
         return questionnaireRepository.findAll();
@@ -50,6 +68,30 @@ public class QuestionnaireService {
     // Antes tenemos que ir mirando si las listas no son nulas
     if(choosenPlatforms!=null){
         heuristicPlatformService.generateHQwithPlatforms(questionnaire, choosenPlatforms);
+    }
+
+    if(choosenPurposes!=null){
+        heuristicPurposeService.generateHQwithPurposes(questionnaire, choosenPurposes);
+    }
+
+    if(choosenDevelopmentPhases!=null){
+        heuristicDevelopmentPhaseService.generateHQwithDevelopmentPhases(questionnaire, choosenDevelopmentPhases);
+    }
+
+    if(choosenGameAspects!=null){
+        heuristicGameAspectService.generateHQwithGameAspects(questionnaire, choosenGameAspects);
+    }
+
+    if(choosenKeywords!=null){
+        heuristicKeywordService.generateHQwithKeywords(questionnaire, choosenKeywords);
+    }
+
+    if(choosenNielsenHeuristics!=null){
+        heuristicNielsenHeuristicService.generateHQwithNielsenHeuristics(questionnaire, choosenNielsenHeuristics);
+    }
+
+    if(choosenUsabilityAspects!=null){
+        heuristicUsabilityAspectService.generateHQwithUsabilityAspects(questionnaire, choosenUsabilityAspects);
     }
 
     } 

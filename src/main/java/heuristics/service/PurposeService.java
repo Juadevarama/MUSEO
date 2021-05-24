@@ -20,5 +20,9 @@ public class PurposeService {
     public List<Purpose> findAllPurpose(){
         return purposeRepository.findAll();
     }
+
+    public Object findPurposeById(Integer purposeID) {
+        return purposeRepository.findById(purposeID).orElseThrow();
+    }
     
 }

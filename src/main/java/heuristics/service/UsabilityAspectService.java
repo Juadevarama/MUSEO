@@ -20,5 +20,9 @@ public class UsabilityAspectService {
     public List<UsabilityAspect> findAllUsabilityAspect(){
         return usabilityAspectRepository.findAll();
     }
+
+    public Object findUsabilityAspectById(Integer usabilityAspectID) {
+        return usabilityAspectRepository.findById(usabilityAspectID).orElseThrow();
+    }
     
 }

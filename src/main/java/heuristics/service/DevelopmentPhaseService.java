@@ -20,5 +20,9 @@ public class DevelopmentPhaseService {
     public List<DevelopmentPhase> findAllDevelopmentphase(){
         return developmentphaseRepository.findAll();
     }
+
+    public Object findDevelopmentPhaseById(Integer developmentPhaseID) {
+        return developmentphaseRepository.findById(developmentPhaseID).orElseThrow();
+    }
     
 }

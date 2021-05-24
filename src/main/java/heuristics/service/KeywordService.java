@@ -20,5 +20,9 @@ public class KeywordService {
     public List<Keyword> findAllKeyword(){
         return keywordRepository.findAll();
     }
+
+    public Object findKeywordById(Integer keywordID) {
+        return keywordRepository.findById(keywordID).orElseThrow();
+    }
     
 }

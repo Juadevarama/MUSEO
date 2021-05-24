@@ -20,5 +20,9 @@ public class GameAspectService {
     public List<GameAspect> findAllGameAspect(){
         return gameAspectRepository.findAll();
     }
+
+    public Object findGameAspectById(Integer gameAspectID) {
+        return gameAspectRepository.findById(gameAspectID).orElseThrow();
+    }
     
 }

@@ -50,14 +50,12 @@ public class QuestionnaireController {
 
     private final FinalHeuristicService finalHeuristicService;
     private final HeuristicQuestionnaireService heuristicQuestionnaireService;
-    private final HeuristicPlatformService heuristicPlatformService;
 
     @Autowired
     public QuestionnaireController(QuestionnaireService questionnaireService, PlatformService platformService, 
     PurposeService purposeService, DevelopmentPhaseService developmentPhaseService, GameAspectService gameAspectService,
     KeywordService keywordService, NielsenHeuristicService nielsenHeuristicService, UsabilityAspectService usabilityAspectService,
-    HeuristicQuestionnaireService heuristicQuestionnaireService, HeuristicPlatformService heuristicPlatformService,
-    FinalHeuristicService finalHeuristicService){
+    HeuristicQuestionnaireService heuristicQuestionnaireService, FinalHeuristicService finalHeuristicService){
         this.questionnaireService = questionnaireService;
         this.platformService = platformService;
         this.purposeService = purposeService;
@@ -67,7 +65,6 @@ public class QuestionnaireController {
         this.nielsenHeuristicService = nielsenHeuristicService;
         this.usabilityAspectService = usabilityAspectService;
         this.heuristicQuestionnaireService = heuristicQuestionnaireService;
-        this.heuristicPlatformService = heuristicPlatformService;
         this.finalHeuristicService = finalHeuristicService;
     }
 

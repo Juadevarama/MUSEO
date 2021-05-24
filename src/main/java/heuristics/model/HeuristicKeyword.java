@@ -5,9 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,12 +25,12 @@ public class HeuristicKeyword {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "num")
 	private Integer id;
+	
+	@Column(name = "heuristicID")
+	@NotEmpty
+	private Integer finalHeuristicID;
 
-	@ManyToOne
-	@JoinColumn(name = "finalheuristics_id")
-	private FinalHeuristic finalHeuristic;
-
-	@ManyToOne
-	@JoinColumn(name = "keywords_num")
-	private Keyword keyword;
+	@Column(name = "keywordID")
+	@NotEmpty
+	private Integer keywordID;
 }

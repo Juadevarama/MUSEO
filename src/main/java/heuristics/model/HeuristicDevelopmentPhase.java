@@ -5,9 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,12 +26,12 @@ public class HeuristicDevelopmentPhase {
 	@Column(name = "num")
 	private Integer id;
 
-	@ManyToOne
-	@JoinColumn(name = "finalheuristics_id")
-	private FinalHeuristic finalHeuristic;
+	@Column(name = "heuristicID")
+	@NotEmpty
+	private Integer finalHeuristicID;
 
-	@ManyToOne
-	@JoinColumn(name = "developmentphases_num")
-	private DevelopmentPhase developmentPhase;
+	@Column(name = "developmentPhaseID")
+	@NotEmpty
+	private Integer developmentPhaseID;
 
 }
