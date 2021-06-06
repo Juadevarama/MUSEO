@@ -28,9 +28,9 @@ public class Questionnaire {
 	@Column(name = "id")
 	private Integer id;
 
-	@ManyToOne(optional = true) // TODO: Cambiar a false cuando estén los usuarios
+/* 	@ManyToOne(optional = true) // TODO: Cambiar a false cuando estén los usuarios
 	@JoinColumn(name = "administratorID")
-	private Administrator administrator; 
+	private U administrator;  */
 
 	@Column(name = "product")
 	private String product;

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MUSE: Register</title>
+<!-- Bootstrap --> 
+<link rel="stylesheet" 
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" 
+  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" 
+  crossorigin="anonymous">
+
+</head> 
+
+<body>
+
+  <!-- Create navigation bar (header) -->
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed"
+          data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+          aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#" th:href="@{/login}">
+        Registration and Login Module</a>
+      </div>
+    </div>
+  </nav>
+
+  <br>
+  <br>
+
+  <!-- Create new user -->
+  <div class= "container">
+    <div class= "row">
+      <div class="col-md-6" col-md-offset-3>
+
+        <!-- Success message -->
+        <div th:if="${param.success}">
+          <div class="alert alert-info">You've successfully registered to our awesome app!</div>
+        </div>
+
+        <h1>Registration Page</h1>
+        <form th:action="@{/register}" method="POST" th:object= "${user}">
+        
+
+          <div class = "form-group">
+              <label class="control-label" for= "name">Name: </label>
+              <input id="name" class = "form-control"  
+              th:field="*{name}" placeholder="Name" required autofocus="autofocus">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Surnames: </label>
+            <input id="surnames" class = "form-control"  
+            th:field="*{surnames}" placeholder="Surnames">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Company: </label>
+            <input id="company" class = "form-control"  
+            th:field="*{company}" placeholder="Company">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Email: </label>
+            <input id="email" class = "form-control"  
+            th:field="*{email}" placeholder="Email">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Username: </label>
+            <input id="username" class = "form-control"  
+            th:field="*{username}" placeholder="Username">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Password: </label>
+            <input id="password" class = "form-control" type="password"
+            th:field="*{password}" placeholder="Password">
+          </div>
+
+          <div class = "form-group">
+              <label class="control-label" for= "role">Role:</label>
+                <input type="radio" id="Administrator" name="role" value="Administrator">
+                <label for="Administrator">Administrator</label><br>
+                <input type="radio" id="Critic" name="role" value="Critic">
+                <label for="Critic">Critic</label><br>
+          </div>
+
+
+          <div class="form-group">
+            <button type="submit" class="btn btn-success">Register!</button> 
+            <span>Already registered? <a href="/" th:href="@{/login}">Login here</a></span>
+          </div>
+        </form>
+    </div>
+  </div>
+  
+</body>
+
+</html>
+

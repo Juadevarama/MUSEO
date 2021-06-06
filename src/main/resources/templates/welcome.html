@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="en" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +10,13 @@
 
 <body>
 
-    <h1>Buenos días</h1>
+    <h1>Good day</h1>
 
     <a class="btn btn-default" th:href="@{/createQuestionnaire}">Create new questionnaire</a>
+
+    <a class="btn btn-default" th:href="@{/register}">Register</a>
+
+    <a class="btn btn-default" th:href="@{/login}">Login</a>
 
 </body>
 
