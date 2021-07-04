@@ -83,20 +83,36 @@ public class UserController {
         return "redirect:/register?success";   
     }
 
-    // Show User: GET
+    // Show User
 
-    @GetMapping("/user/{userID}")
-    public String iniShowUserForm(@PathVariable("userID") int userID, Model model) {
+    @GetMapping("showProfile")
+    public String iniShowUserForm(Model model) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //if(userDetails.)
-        //model.addAttribute("userID", this.administratorService)
-
-        return null;
+        
+        model.addAttribute("user", userService.findUserByUsername(userDetails.getUsername()));
+        return "showProfile";
     }
-    
 
-    // Todavía no podemos porque no hemos puesto la seguridad. Vamos a ello. 
+    // Update User: Get
+
+    @GetMapping("updateProfile")
+    public String iniUpdateUserForm(Model model) {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addAttribute("user", userService.findUserByUsername(userDetails.getUsername()));
+
+        return "updateProfile";
+    }
+
+    @PostMapping("/updateProfile")
+    public String processUpdateUserForm(@Valid User user, Model model) throws DataAccessException{
+
+        userService.saveUser(user);
+        return "redirect:/showProfile?success";   
+    }
+
+   
 
     
     

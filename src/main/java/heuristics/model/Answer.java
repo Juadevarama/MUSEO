@@ -5,10 +5,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,28 +15,29 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "finalheuristics")
+@Table(name = "answers")
 @Data
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class FinalHeuristic {
+public class Answer {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "num")
-	private HeuristicRaw heuristicRaw; // En la bbdd, esto no está puesto como una FK de la otra tabla 
+	@Column(name = "heuristicQuestionnaireID")
+	@NotNull
+	private Integer heuristicQuestionnaireID;
 
-    @Column(name = "heuristic")
-	@NotEmpty
-	private String heuristicString;
+	@Column(name = "userID")
+	@NotNull
+	private Integer userID;
 
-	@Override
-	public String toString(){
-		return "FinalHeuristic(heuristicString=" + getHeuristicString() + ")";
-	}
+
+	@Column(name = "ansString")
+	@NotBlank
+	private String ansString;
+
 }

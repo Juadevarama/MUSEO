@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +30,9 @@ public class QuestionnaireService {
 
     @Autowired
     private QuestionnaireRepository questionnaireRepository;
+
+    @Autowired
+    private UserServiceImpl userService;
 
     @Autowired
     private HeuristicPlatformService heuristicPlatformService;
@@ -55,8 +60,25 @@ public class QuestionnaireService {
         return questionnaireRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public Questionnaire findQuestionnaireByID(Integer id) {
+        return questionnaireRepository.findById(id).orElseThrow();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Questionnaire> findQuestionnairesByUserID(Integer id){
+        return questionnaireRepository.findQuestionnairesByUserID(id);
+    }
+
     @Transactional
     public void saveQuestionnaire(Questionnaire questionnaire) throws DataAccessException{
+
+        questionnaire.setFilled(false);
+        questionnaire.setClosed(false);
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        questionnaire.setUserID(userService.findUserByUsername(userDetails.getUsername()).getId());
+
         questionnaireRepository.save(questionnaire);
     }
 

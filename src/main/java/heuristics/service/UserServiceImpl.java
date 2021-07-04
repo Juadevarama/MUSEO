@@ -37,10 +37,14 @@ public class UserServiceImpl implements UserService {
         return userRepository.findById(id).orElseThrow();
     }
 
+    @Transactional(readOnly = true)
+    public User findUserByUsername(String username){
+        return userRepository.findByUsername(username);
+    }
+
     @Transactional
     public void saveUser(User user) throws DataAccessException{
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        System.out.println(user.getPassword());
         userRepository.save(user);
     }
 

@@ -45,4 +45,49 @@ public class FinalHeuristicService {
 
         return res;
     }
+
+    // Estos tres métodos separan las fH de un cuestionario en: Las elegidas, las automáticas y el resto. 
+
+    @Transactional(readOnly = true)
+    public List<FinalHeuristic> findSelectedFH(List<HeuristicQuestionnaire> hQList){
+
+        List<FinalHeuristic> res = new ArrayList<>();
+
+        for (HeuristicQuestionnaire hQ : hQList) {
+            if(hQ.getSelected().equals(true)){
+                res.add(findFinalHeuristicById(hQ.getFinalHeuristicID()));
+            }
+        }
+        
+        return res;
+    }
+
+    @Transactional(readOnly = true)
+    public List<FinalHeuristic> findAutomaticFH(List<HeuristicQuestionnaire> hQList){
+
+        List<FinalHeuristic> res = new ArrayList<>();
+
+        for (HeuristicQuestionnaire hQ : hQList) {
+            if(hQ.getAutomatic().equals(true) && hQ.getSelected().equals(false)){
+                res.add(findFinalHeuristicById(hQ.getFinalHeuristicID()));
+            }
+        }
+        
+        return res;
+    }
+
+    @Transactional(readOnly = true)
+    public List<FinalHeuristic> findRemainderFH(List<HeuristicQuestionnaire> hQList,
+    List<FinalHeuristic> fHSelected, List<FinalHeuristic> fHAutomatic){
+
+        List<FinalHeuristic> res = new ArrayList<>();
+
+        for (FinalHeuristic fH : findAllFinalHeuristic()) {
+            if(!(fHSelected.contains(fH) || fHAutomatic.contains(fH))){
+                res.add(fH);
+            }
+        }
+    
+        return res;
+    }
 }
