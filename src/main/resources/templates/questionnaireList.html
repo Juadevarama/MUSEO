@@ -58,7 +58,7 @@
                         <a th:href="@{/exportToPDF(questionnaireId=${questionnaire.id})}">Export to PDF</a>
                       </td> 
                       <td>
-                        <a>Delivery Management</a>
+                        <a th:href="@{/deliveryManagement(questionnaireId=${questionnaire.id})}">Delivery Management</a>
                       </td>
                     </div>
                     <div th:case="${false}">

@@ -201,6 +201,8 @@ public class QuestionnaireController {
             
         return "redirect:/questionnaireList?update";
     }
+
+    // Export to PDF (GET)
     
     @GetMapping("/exportToPDF")
     public void initExportQuestionnaireForm(Model model, HttpServletResponse response, 
@@ -224,5 +226,25 @@ public class QuestionnaireController {
 
         ExportToPDF exporter = new ExportToPDF(fHList);
         exporter.export(response);
+    } 
+
+    // Delivery Management (GET)
+
+    @GetMapping("/deliveryManagement")
+    public String initDeliveryManagementForm(Model model, 
+    @RequestParam(value = "questionnaireId" , required = true) Integer questionnaireId){
+
+        // Sacamos el cuestionario con el que estamos trabajando.
+
+        Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
+
+        // Sacamos la lista de usuarios a los que se les ha enviado el cuestionario
+
+        List<User> recipientList = new ArrayList<User>();
+
+        model.addAttribute("questionnaire", questionnaire);
+        model.addAttribute("recipientList", recipientList);
+        
+        return "deliveryManagement";
     } 
 }

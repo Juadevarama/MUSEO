@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head>
+
+  <div th:replace="header :: myHeader"></div>
+
+  <title>MUSE: Recipient List</title>
+
+</head> 
+
+<body>
+
+  <br>
+  <br>
+
+  <div class= "container">
+    <div class= "row">
+      <div class="col-md-12" col-md-offset-3>
+
+        <h1>Recipient List</h1>
+        <form th:action="@{/recipientList}" method="POST">  
+
+          <div class="mb-3">
+            <label class="form-label">Product name</label>
+            <td th:text="*{questionnaire.product}"></td>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <td th:text="*{questionnaire.description}"></td>
+          </div>
+
+          <table class="table table-striped table-bordered table-hover">
+            <caption>List of recipients</caption>
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Coverage Ratio</th>
+                <th>Answered percentage</th>
+                <th>Show</th>
+                <th>Active</th>
+              </tr>
+            </thead>
+            <tbody>
+              <th:block th:each="user : ${recipientList}">
+                <tr>
+                  <td th:text="*{user.username}"></td>
+                  <td>Coverage Ratio: We will see</td>
+                  <td>Same that ratio</td>
+                  <td>
+                    <a >Show Questionnaire</a> <!-- Aquí falta un if para sólo poder verlo si está completamente contestado -->
+                  </td> 
+                  <td>Aquí ponemos un ratio para el formulario, por lo que hace falta un botón de guardar cambios (Aparte del de enviar)</td>              
+                </tr>
+                </th:block> 
+            </tbody>
+          </table> 
+          
+          <div align="center" class="col-12">
+
+            <a type="button" class="btn btn-default" th:href="@{/questionnaireList}">Back</a>
+            <button type="submit" class="btn btn-success" name="action" value="Save">Save changes</button>
+            
+            <label class="form-label">Add new recipient: </label> <!-- Más tarde se podría poner el email si es único -->
+            <input type="text" name="recipient" placeholder="Insert an username to add it to the recipient list">
+
+            <button type="submit" class="btn btn-success" name="action" value="Add">Add new Recipient</button>
+          </div> 
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
