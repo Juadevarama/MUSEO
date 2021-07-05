@@ -1,9 +1,14 @@
 package heuristics.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+
+import com.lowagie.text.DocumentException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import heuristics.model.DevelopmentPhase;
+import heuristics.model.ExportToPDF;
 import heuristics.model.FinalHeuristic;
 import heuristics.model.GameAspect;
 import heuristics.model.HeuristicQuestionnaire;
@@ -179,9 +185,13 @@ public class QuestionnaireController {
     @PostMapping("/updateQuestionnaire")
     public String processUpdateQuestionnaireForm(@Valid Questionnaire questionnaire,
     @RequestParam(value = "choosenFH" , required = false) List<FinalHeuristic> choosenFH, 
-    BindingResult result, Model model){
+    @RequestParam(value="action", required=true) String action, BindingResult result, Model model){
 
         // Actualizamos el nombre y la descripción
+
+        if(action.equals("Complete")){
+            questionnaire.setClosed(true);
+        }
 
         questionnaireService.saveQuestionnaire(questionnaire);
 
@@ -192,4 +202,27 @@ public class QuestionnaireController {
         return "redirect:/questionnaireList?update";
     }
     
+    @GetMapping("/exportToPDF")
+    public void initExportQuestionnaireForm(Model model, HttpServletResponse response, 
+    @RequestParam(value = "questionnaireId" , required = true) Integer questionnaireId) throws DocumentException, IOException{
+
+        // Decimos que es un documento PDF
+
+        response.setContentType("application/pdf");
+
+        // Establecemos el Header
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=questionnaire.pdf";
+        
+        response.setHeader(headerKey, headerValue);
+
+        // Cogemos la lista de Heurísticas seleccionadas del cuestionario
+
+        List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
+
+        List<FinalHeuristic> fHList = finalHeuristicService.findSelectedFH(hQList);
+
+        ExportToPDF exporter = new ExportToPDF(fHList);
+        exporter.export(response);
+    } 
 }

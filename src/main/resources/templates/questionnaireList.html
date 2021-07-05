@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<html lang="en" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
 <head>
 
   <div th:replace="header :: myHeader"></div>
-  
+
   <title>MUSE: Questionnaire List</title>
 
 </head> 
@@ -40,7 +39,9 @@
                 <th>Description</th>
                 <th>Completed</th>
                 <th>Filled</th>
-                <th>Editar</th>
+                <th>Edit</th>
+                <th>Export</th>
+                <th>Delivery Management</th>
               </tr>
             </thead>
             <tbody>
@@ -50,8 +51,24 @@
                   <td th:text="*{questionnaire.description}"></td>
                   <td th:text="*{questionnaire.closed}"></td>
                   <td th:text="*{questionnaire.filled}"></td>
-                  <td>
-                    <a th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}" th:text="edit"></a>
+                  <div th:switch="${questionnaire.closed}">
+                    <div th:case="${true}">
+                      <td>You cannot edit a closed questionnaire</td>
+                      <td>
+                        <a th:href="@{/exportToPDF(questionnaireId=${questionnaire.id})}">Export to PDF</a>
+                      </td> 
+                      <td>
+                        <a>Delivery Management</a>
+                      </td>
+                    </div>
+                    <div th:case="${false}">
+                      <td>
+                        <a th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}">Edit</a>
+                      </td>
+                      <td>Complete the quesstionaire first</td> 
+                      <td>Complete the quesstionaire first</td> 
+                    </div>
+                  </div>                         
                   </td>
                 </tr>
                 </th:block> 

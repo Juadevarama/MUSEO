@@ -73,9 +73,11 @@ public class QuestionnaireService {
     @Transactional
     public void saveQuestionnaire(Questionnaire questionnaire) throws DataAccessException{
 
-        questionnaire.setFilled(false);
-        questionnaire.setClosed(false);
-
+        if((questionnaire.getFilled() == null) && (questionnaire.getClosed() == null)){
+            questionnaire.setFilled(false);
+            questionnaire.setClosed(false);
+        }
+        
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         questionnaire.setUserID(userService.findUserByUsername(userDetails.getUsername()).getId());
 
