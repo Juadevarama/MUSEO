@@ -37,7 +37,6 @@ public class Answer {
 
 
 	@Column(name = "ansString")
-	@NotBlank
 	private String ansString;
 
 }

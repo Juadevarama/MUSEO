@@ -3,8 +3,9 @@ package heuristics.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -22,6 +23,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+import heuristics.model.Answer;
 import heuristics.model.DevelopmentPhase;
 import heuristics.model.ExportToPDF;
 import heuristics.model.FinalHeuristic;
@@ -34,10 +37,10 @@ import heuristics.model.Purpose;
 import heuristics.model.Questionnaire;
 import heuristics.model.UsabilityAspect;
 import heuristics.model.User;
+import heuristics.service.AnswerService;
 import heuristics.service.DevelopmentPhaseService;
 import heuristics.service.FinalHeuristicService;
 import heuristics.service.GameAspectService;
-import heuristics.service.HeuristicPlatformService;
 import heuristics.service.HeuristicQuestionnaireService;
 import heuristics.service.KeywordService;
 import heuristics.service.NielsenHeuristicService;
@@ -45,9 +48,7 @@ import heuristics.service.PlatformService;
 import heuristics.service.PurposeService;
 import heuristics.service.QuestionnaireService;
 import heuristics.service.UsabilityAspectService;
-import heuristics.service.UserService;
 import heuristics.service.UserServiceImpl;
-import javassist.expr.NewArray;
 
 @Controller
 @Transactional(readOnly = false)
@@ -65,12 +66,14 @@ public class QuestionnaireController {
     private final FinalHeuristicService finalHeuristicService;
     private final HeuristicQuestionnaireService heuristicQuestionnaireService;
     private final UserServiceImpl userService;
+    private final AnswerService answerService;
 
     @Autowired
     public QuestionnaireController(QuestionnaireService questionnaireService, PlatformService platformService, 
     PurposeService purposeService, DevelopmentPhaseService developmentPhaseService, GameAspectService gameAspectService,
     KeywordService keywordService, NielsenHeuristicService nielsenHeuristicService, UsabilityAspectService usabilityAspectService,
-    HeuristicQuestionnaireService heuristicQuestionnaireService, FinalHeuristicService finalHeuristicService, UserServiceImpl userService){
+    HeuristicQuestionnaireService heuristicQuestionnaireService, FinalHeuristicService finalHeuristicService, 
+    UserServiceImpl userService, AnswerService answerService){
         this.questionnaireService = questionnaireService;
         this.platformService = platformService;
         this.purposeService = purposeService;
@@ -82,6 +85,7 @@ public class QuestionnaireController {
         this.heuristicQuestionnaireService = heuristicQuestionnaireService;
         this.finalHeuristicService = finalHeuristicService;
         this.userService = userService;
+        this.answerService = answerService;
     }
 
     // Questionnaire List 
@@ -240,11 +244,75 @@ public class QuestionnaireController {
 
         // Sacamos la lista de usuarios a los que se les ha enviado el cuestionario
 
-        List<User> recipientList = new ArrayList<User>();
+        // Del cuestionario sacamos todas las HeuristicsQuestionnaires
+
+        List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
+        List<HeuristicQuestionnaire> selectedHQ = heuristicQuestionnaireService.filterSelectedHQ(hQList);        
+
+        // De cada heuristicQuestionnaires sacamos todas las Answers
+
+        // ¿Cojo todas las answer que tengan 1 de los hQ de la lista, y saco el user mientras no esté?
+        
+        List<User> recipientList = new ArrayList<>();
+
+        for (HeuristicQuestionnaire hQ : selectedHQ) {
+            
+            List<Answer> answerList = answerService.findAllAnswer().stream().
+            filter(a -> a.getHeuristicQuestionnaireID().equals(hQ.getId())).collect(Collectors.toList());
+
+            for (Answer ans : answerList) {
+                if(!(recipientList.contains(userService.findUserById(ans.getUserID())))){
+                    recipientList.add(userService.findUserById(ans.getUserID()));
+                }
+            }
+        }
 
         model.addAttribute("questionnaire", questionnaire);
         model.addAttribute("recipientList", recipientList);
         
         return "deliveryManagement";
     } 
+
+    // Delivery Management (POST)
+
+    @PostMapping("/deliveryManagement")
+    public String processDeliveryManagementForm(@RequestParam(value = "recipient" , required = true) String recipient, 
+    @RequestParam(value="action", required=true) String action, 
+    @RequestParam(value="questionnaireId", required=true) Integer questionnaireId, Model model){
+
+        // Actualizamos los usuarios activos para el ratio de cobertura
+
+        if(action.equals("Save")){
+            
+        }
+
+        // Añadimos un nuevo usuario a la lista
+
+        if(action.equals("Add")){
+
+            // Primero vamos a ver si el username introducido es válido
+            List<User> users = userService.findAllUser();
+            if(!(users.contains(userService.findUserByUsername(recipient)))){
+   
+                return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
+            }
+
+            User user = userService.findUserByUsername(recipient);
+
+            // Aquí tenemos que crear todos los objetos de Answer, uno por hQ para ese cuestionario
+            // Sacamos todos los objetos hQ a partir del cuestionario
+
+            List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
+            List<HeuristicQuestionnaire> selectedHQ = heuristicQuestionnaireService.filterSelectedHQ(hQList);
+
+            // Ahora, para cada objeto hQ creamos un objeto Answer
+
+            answerService.generate(selectedHQ, user);
+
+            model.addAttribute("questionnaireId", questionnaireId);
+            return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
+        }
+
+        return "redirect:/deliveryManagement?add";
+    }
 }

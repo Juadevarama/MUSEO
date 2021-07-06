@@ -19,7 +19,16 @@
       <div class="col-md-12" col-md-offset-3>
 
         <h1>Recipient List</h1>
-        <form th:action="@{/recipientList}" method="POST">  
+
+          <!-- Add success message -->
+          <div th:if="${param.add}">
+            <div class="alert alert-success">You've successfully added an User!</div>
+          </div>
+
+          <!-- Add success message -->
+          <div th:if="${param.userError}">
+            <div class="alert alert-success">That is not a valid username!</div>
+          </div>
 
           <div class="mb-3">
             <label class="form-label">Product name</label>
@@ -44,7 +53,9 @@
             <tbody>
               <th:block th:each="user : ${recipientList}">
                 <tr>
-                  <td th:text="*{user.username}"></td>
+                  <div>
+                    <td th:value="${user}" th:text="${user.username}"></td>
+                  </div>
                   <td>Coverage Ratio: We will see</td>
                   <td>Same that ratio</td>
                   <td>
@@ -52,21 +63,25 @@
                   </td> 
                   <td>Aquí ponemos un ratio para el formulario, por lo que hace falta un botón de guardar cambios (Aparte del de enviar)</td>              
                 </tr>
-                </th:block> 
+              </th:block> 
             </tbody>
           </table> 
-          
-          <div align="center" class="col-12">
+        
+          <form th:action="@{/deliveryManagement}" method="POST">
 
-            <a type="button" class="btn btn-default" th:href="@{/questionnaireList}">Back</a>
-            <button type="submit" class="btn btn-success" name="action" value="Save">Save changes</button>
-            
-            <label class="form-label">Add new recipient: </label> <!-- Más tarde se podría poner el email si es único -->
-            <input type="text" name="recipient" placeholder="Insert an username to add it to the recipient list">
+            <div align="center" class="col-12">
 
-            <button type="submit" class="btn btn-success" name="action" value="Add">Add new Recipient</button>
-          </div> 
-        </form>
+              <a type="button" class="btn btn-default" th:href="@{/questionnaireList}">Back</a>
+              <button type="submit" class="btn btn-success" name="action" value="Save">Save changes</button>
+              
+              <label class="form-label">Add new recipient: </label> <!-- Más tarde se podría poner el email si es único -->
+              <input type="text" name="recipient" placeholder="Insert an username to add it to the recipient list">
+              <input type="hidden" name="questionnaireId" th:value="${questionnaire.id}">
+
+              <button type="submit" class="btn btn-success" name="action" value="Add">Add new Recipient</button>
+            </div> 
+
+          </form>
       </div>
     </div>
   </div>

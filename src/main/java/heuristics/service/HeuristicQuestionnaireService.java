@@ -1,7 +1,7 @@
 package heuristics.service;
 
+import java.util.ArrayList;
 import java.util.List;
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -69,6 +69,20 @@ public class HeuristicQuestionnaireService {
                 hQList.stream().filter(hQ -> hQ.getFinalHeuristicID().equals(fH.getId())).findFirst().get().setSelected(true);
             }
         }
+    }
+
+    @Transactional
+    public List<HeuristicQuestionnaire> filterSelectedHQ(List<HeuristicQuestionnaire> hQList){
+
+        List<HeuristicQuestionnaire> selectedHQ = new ArrayList<>();
+
+        for (HeuristicQuestionnaire hQ : hQList) {
+           if(hQ.getSelected().equals(true)){
+               selectedHQ.add(hQ);
+           }
+        }
+
+        return selectedHQ;
     }
     
 }
