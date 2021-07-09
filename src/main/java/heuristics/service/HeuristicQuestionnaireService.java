@@ -24,6 +24,11 @@ public class HeuristicQuestionnaireService {
         return heuristicQuestionnaireRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public HeuristicQuestionnaire findHeuristicQuestionnaireById(Integer id){
+        return heuristicQuestionnaireRepository.findHeuristicQuestionnaireById(id);
+    }
+
     @Transactional
     public void saveHeuristicQuestionnaire(HeuristicQuestionnaire hQ) throws DataAccessException{
         heuristicQuestionnaireRepository.save(hQ);

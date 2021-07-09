@@ -13,4 +13,6 @@ public interface HeuristicQuestionnaireRepository extends JpaRepository<Heuristi
 
     @Query("SELECT h FROM HeuristicQuestionnaire h WHERE h.questionnaireID =:id")
     public List<HeuristicQuestionnaire> findHeuristicQuestionnaireByQuestionnaireId(@Param("id") int id);
+
+    public HeuristicQuestionnaire findHeuristicQuestionnaireById(Integer id);
 }

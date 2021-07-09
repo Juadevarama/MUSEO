@@ -30,6 +30,11 @@ public class AnswerService {
         return answerRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
+    public List<Answer> findAnswersByUserId(Integer id){
+        return answerRepository.findAnswersByUserID(id);
+    }
+
     @Transactional
     public void saveAnswer(Answer ans) throws DataAccessException{
         answerRepository.save(ans);

@@ -31,9 +31,7 @@
                     </ul>
 
                     <div sec:authorize="hasAuthority('Administrator')">
-                        <ul class="nav navbar-nav">
-                            <li><a href="#" th:href="@{/questionnaireList}">Questionnaires</a></li>
-                        </ul>
+                        <ul class="nav navbar-nav"></ul>
                     </div>
 
                     <div sec:authorize="!isAuthenticated()">
@@ -44,6 +42,9 @@
                     </div>
 
                     <div sec:authorize="isAuthenticated()">
+                        <ul class="nav navbar-nav">
+                            <li><a href="#" th:href="@{/questionnaireList}">Questionnaires</a></li>
+                        </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <li><a href="#" th:href="@{/showProfile}"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
                             <li><a href="#" th:href="@{/logout}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>

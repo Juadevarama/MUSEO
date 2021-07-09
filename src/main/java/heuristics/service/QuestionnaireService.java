@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import heuristics.model.Answer;
 import heuristics.model.DevelopmentPhase;
 import heuristics.model.FinalHeuristic;
 import heuristics.model.GameAspect;
@@ -22,6 +23,7 @@ import heuristics.model.Platform;
 import heuristics.model.Purpose;
 import heuristics.model.Questionnaire;
 import heuristics.model.UsabilityAspect;
+import heuristics.model.User;
 import heuristics.repository.QuestionnaireRepository;
 
 @Service
@@ -54,6 +56,12 @@ public class QuestionnaireService {
 
     @Autowired
     private HeuristicUsabilityAspectService heuristicUsabilityAspectService;
+
+    @Autowired
+    private AnswerService answerService;
+
+    @Autowired
+    private HeuristicQuestionnaireService heuristicQuestionnaireService;
 
     @Transactional(readOnly = true)
     public List<Questionnaire> findAllQuestionnaire(){
@@ -89,35 +97,60 @@ public class QuestionnaireService {
     List<Purpose> choosenPurposes, List<DevelopmentPhase> choosenDevelopmentPhases, List<GameAspect> choosenGameAspects, 
     List<Keyword> choosenKeywords, List<NielsenHeuristic> choosenNielsenHeuristics, List<UsabilityAspect> choosenUsabilityAspects){
     
-    // Antes tenemos que ir mirando si las listas no son nulas
-    if(choosenPlatforms!=null){
-        heuristicPlatformService.generateHQwithPlatforms(questionnaire, choosenPlatforms);
-    }
+        // Antes tenemos que ir mirando si las listas no son nulas
+        if(choosenPlatforms!=null){
+            heuristicPlatformService.generateHQwithPlatforms(questionnaire, choosenPlatforms);
+        }
 
-    if(choosenPurposes!=null){
-        heuristicPurposeService.generateHQwithPurposes(questionnaire, choosenPurposes);
-    }
+        if(choosenPurposes!=null){
+            heuristicPurposeService.generateHQwithPurposes(questionnaire, choosenPurposes);
+        }
 
-    if(choosenDevelopmentPhases!=null){
-        heuristicDevelopmentPhaseService.generateHQwithDevelopmentPhases(questionnaire, choosenDevelopmentPhases);
-    }
+        if(choosenDevelopmentPhases!=null){
+            heuristicDevelopmentPhaseService.generateHQwithDevelopmentPhases(questionnaire, choosenDevelopmentPhases);
+        }
 
-    if(choosenGameAspects!=null){
-        heuristicGameAspectService.generateHQwithGameAspects(questionnaire, choosenGameAspects);
-    }
+        if(choosenGameAspects!=null){
+            heuristicGameAspectService.generateHQwithGameAspects(questionnaire, choosenGameAspects);
+        }
 
-    if(choosenKeywords!=null){
-        heuristicKeywordService.generateHQwithKeywords(questionnaire, choosenKeywords);
-    }
+        if(choosenKeywords!=null){
+            heuristicKeywordService.generateHQwithKeywords(questionnaire, choosenKeywords);
+        }
 
-    if(choosenNielsenHeuristics!=null){
-        heuristicNielsenHeuristicService.generateHQwithNielsenHeuristics(questionnaire, choosenNielsenHeuristics);
-    }
+        if(choosenNielsenHeuristics!=null){
+            heuristicNielsenHeuristicService.generateHQwithNielsenHeuristics(questionnaire, choosenNielsenHeuristics);
+        }
 
-    if(choosenUsabilityAspects!=null){
-        heuristicUsabilityAspectService.generateHQwithUsabilityAspects(questionnaire, choosenUsabilityAspects);
-    }
+        if(choosenUsabilityAspects!=null){
+            heuristicUsabilityAspectService.generateHQwithUsabilityAspects(questionnaire, choosenUsabilityAspects);
+        }
 
+    } 
+
+    @Transactional(readOnly = true)
+    public List<Questionnaire> findQuestionnairesByCritic(User critic){
+
+        List<Questionnaire> res = new ArrayList<>();
+
+        // Sacamos todas las respuestas del critic
+
+        List<Answer> answers = answerService.findAnswersByUserId(critic.getId());
+
+        for (Answer ans : answers) {
+
+            /* Las vamos recorriendo, vamos sacando todos los objetos HQ, y miramos si el cuestionario de estos
+            se encuentra en la lista. Si no está, lo añadimos a la lista*/
+
+            Questionnaire ansQuestionnaire = findQuestionnaireByID(heuristicQuestionnaireService.
+            findHeuristicQuestionnaireById(ans.getHeuristicQuestionnaireID()).getQuestionnaireID());
+
+            if(!(res.contains(ansQuestionnaire))){
+                res.add(ansQuestionnaire);
+            }
+        }
+
+        return res;
     } 
     
 }

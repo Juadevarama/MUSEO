@@ -95,11 +95,50 @@ public class QuestionnaireController {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.findUserByUsername(userDetails.getUsername());
+        model.addAttribute("user", user);
 
-        model.addAttribute("questionnaireList", questionnaireService.findQuestionnairesByUserID(user.getId()));
+        if(user.getRole().equals("Administrator")){
+            model.addAttribute("questionnaireList", questionnaireService.findQuestionnairesByUserID(user.getId()));
+            return "questionnaireList";
+        }
+
+        if(user.getRole().equals("Critic")){
+            model.addAttribute("questionnaireList", questionnaireService.findQuestionnairesByCritic(user));
+        }
 
         return "questionnaireList";
     }
+
+        // Show Questionnaire
+
+        @GetMapping("/showQuestionnaire")
+        public String initShowQuestionnaireForm(Model model, 
+        @RequestParam(value = "questionnaireId" , required = true) Integer questionnaireId){
+    
+            // Sacamos el cuestionario con el que estamos trabajando.
+    
+            Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
+    
+            // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
+    
+            List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
+    
+            // Ahora sacamos las FH que el usuario ha dejado guardadas y las automáticas no guardadas
+    
+            List<FinalHeuristic> fHSelected = finalHeuristicService.findSelectedFH(hQList);
+            List<FinalHeuristic> fHAutomatic = finalHeuristicService.findAutomaticFH(hQList);
+    
+            // Por último, ponemos el resto de las FH.
+    
+            List<FinalHeuristic> fHRemainder = finalHeuristicService.findRemainderFH(hQList, fHSelected, fHAutomatic);
+    
+            model.addAttribute("questionnaire", questionnaire);
+            model.addAttribute("fHSelected", fHSelected);
+            model.addAttribute("fHAutomatic", fHAutomatic);
+            model.addAttribute("fHRemainder", fHRemainder);
+            
+            return "showQuestionnaire";
+        } 
 
     // Create Questionnaire (GET)
 
