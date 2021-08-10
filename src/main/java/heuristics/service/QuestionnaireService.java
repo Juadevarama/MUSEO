@@ -13,10 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import heuristics.model.Answer;
 import heuristics.model.DevelopmentPhase;
-import heuristics.model.FinalHeuristic;
 import heuristics.model.GameAspect;
-import heuristics.model.HeuristicPlatform;
-import heuristics.model.HeuristicQuestionnaire;
+import heuristics.model.HeuristicUser;
 import heuristics.model.Keyword;
 import heuristics.model.NielsenHeuristic;
 import heuristics.model.Platform;
@@ -63,6 +61,9 @@ public class QuestionnaireService {
     @Autowired
     private HeuristicQuestionnaireService heuristicQuestionnaireService;
 
+    @Autowired
+    private HeuristicUserService heuristicUserService;
+
     @Transactional(readOnly = true)
     public List<Questionnaire> findAllQuestionnaire(){
         return questionnaireRepository.findAll();
@@ -73,21 +74,50 @@ public class QuestionnaireService {
         return questionnaireRepository.findById(id).orElseThrow();
     }
 
+    // Este método saca todos los cuestionarios a partir de un usuario
+
     @Transactional(readOnly = true)
     public List<Questionnaire> findQuestionnairesByUserID(Integer id){
-        return questionnaireRepository.findQuestionnairesByUserID(id);
-    }
+
+        List<Questionnaire> ans = new ArrayList<>(); // Creamos la lista a devolver
+
+        for (HeuristicUser heuristicUser : heuristicUserService.findHeuristicUsersByUserId(id)) { // Recorremos todos los objetos heuristicUser del usuario de entrada
+            
+            Questionnaire questionnaire = findQuestionnaireByID(heuristicUser.getQuestionnaireID()); // Para cada uno, sacamos el cuestionario
+            if(!ans.contains(questionnaire)){ // Y vemos si está en la lista que vamos a devolver
+                ans.add(questionnaire); // Si no está, lo añadimos
+            }
+        }
+
+        return ans;
+    } 
 
     @Transactional
     public void saveQuestionnaire(Questionnaire questionnaire) throws DataAccessException{
 
-        if((questionnaire.getFilled() == null) && (questionnaire.getClosed() == null)){
-            questionnaire.setFilled(false);
-            questionnaire.setClosed(false);
+        if(questionnaire.getClosed() == null){  // Ponemos la propiedad closed a falsa
+            questionnaire.setClosed(Boolean.FALSE);
         }
+
+        // Sacamos el usuario actual
         
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        questionnaire.setUserID(userService.findUserByUsername(userDetails.getUsername()).getId());
+        User user = userService.findUserByUsername(userDetails.getUsername());
+
+
+        // Y vamos a mirar si ya está en la lista de HeuristicUser de este cuestionario.
+
+        List<HeuristicUser> qList = heuristicUserService.findHeuristicUserByquestionnaireID(questionnaire.getId());
+
+        // Primero vemos si la lista está vacía, porque hace falta guardar antes el cuestionario
+
+        if(qList.isEmpty()){
+            questionnaireRepository.save(questionnaire);
+        }
+        
+        if(qList.stream().noneMatch(hU -> hU.getUserID().equals(user.getId()))){
+            heuristicUserService.generate(user.getId(), questionnaire.getId());
+        }
 
         questionnaireRepository.save(questionnaire);
     }
@@ -129,13 +159,13 @@ public class QuestionnaireService {
     } 
 
     @Transactional(readOnly = true)
-    public List<Questionnaire> findQuestionnairesByCritic(User critic){
+    public List<Questionnaire> findQuestionnairesByEvaluator(User evaluator){
 
         List<Questionnaire> res = new ArrayList<>();
 
-        // Sacamos todas las respuestas del critic
+        // Sacamos todas las respuestas del evaluator
 
-        List<Answer> answers = answerService.findAnswersByUserId(critic.getId());
+        List<Answer> answers = answerService.findAnswersByUserId(evaluator.getId());
 
         for (Answer ans : answers) {
 

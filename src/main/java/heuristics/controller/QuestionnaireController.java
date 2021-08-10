@@ -2,7 +2,10 @@ package heuristics.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
@@ -23,7 +26,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import heuristics.model.Answer;
 import heuristics.model.DevelopmentPhase;
 import heuristics.model.ExportToPDF;
@@ -102,23 +104,36 @@ public class QuestionnaireController {
             return "questionnaireList";
         }
 
-        if(user.getRole().equals("Critic")){
-            model.addAttribute("questionnaireList", questionnaireService.findQuestionnairesByCritic(user));
+        if(user.getRole().equals("Evaluator")){
+            model.addAttribute("questionnaireList", questionnaireService.findQuestionnairesByEvaluator(user));
+            
         }
 
         return "questionnaireList";
     }
 
-        // Show Questionnaire
+    // Show Questionnaire
 
-        @GetMapping("/showQuestionnaire")
-        public String initShowQuestionnaireForm(Model model, 
-        @RequestParam(value = "questionnaireId" , required = true) Integer questionnaireId){
-    
-            // Sacamos el cuestionario con el que estamos trabajando.
-    
-            Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
-    
+    @GetMapping("/showQuestionnaire")
+    public String initShowQuestionnaireForm(Model model, 
+    @RequestParam(value = "questionnaireId" , required = true) Integer questionnaireId){
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findUserByUsername(userDetails.getUsername());
+        model.addAttribute("user", user);
+
+        // Creamos un Booleano para diferenciar las vistas de show del formulario y el formulario de respuestas.
+
+        Boolean ansForm = Boolean.FALSE;
+
+        // Sacamos el cuestionario con el que estamos trabajando.
+
+        Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
+
+        // Diferenciamos las vistas para los usuarios Administradores y los Evaluadores
+
+        if(user.getRole().equals("Administrator")){
+
             // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
     
             List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
@@ -131,14 +146,76 @@ public class QuestionnaireController {
             // Por último, ponemos el resto de las FH.
     
             List<FinalHeuristic> fHRemainder = finalHeuristicService.findRemainderFH(hQList, fHSelected, fHAutomatic);
-    
-            model.addAttribute("questionnaire", questionnaire);
+
             model.addAttribute("fHSelected", fHSelected);
             model.addAttribute("fHAutomatic", fHAutomatic);
             model.addAttribute("fHRemainder", fHRemainder);
+        }
+        
+        model.addAttribute("ansForm", ansForm);
+        model.addAttribute("questionnaire", questionnaire);
+        
+        return "showQuestionnaire";
+    } 
+
+    // Show Filled Questionnaire
+
+    @GetMapping("/showFilledQuestionnaire")
+    public String initShowFilledQuestionnaireForm(Model model, 
+    @RequestParam(value = "questionnaireId" , required = true) Integer questionnaireId,
+    @RequestParam(value = "ansForm" , required = true) Boolean ansForm){
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findUserByUsername(userDetails.getUsername());
+        model.addAttribute("user", user);
+
+        // Sacamos el cuestionario con el que estamos trabajando.
+
+        Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
+
+        // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
+
+        List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
+
+        // Sacamos la lista de respuestas
+
+        List<Answer> answerList = new ArrayList<>();
+
+        for (HeuristicQuestionnaire hQ : hQList){
+            List<Answer> answers = answerService.findAnswerByheuristicQuestionnaireID(hQ.getId());
+            for (Answer answer : answers) {
+                if(answer.getUserID().equals(user.getId())){
+                    answerList.add(answer);
+                }
+            }
+        }
+
+        // Mapeamos las respuestas con sus fH
+
+        Map<FinalHeuristic, Answer> auxMap = new HashMap<>();
+        for (Answer ans : answerList){
             
-            return "showQuestionnaire";
-        } 
+            FinalHeuristic fH = finalHeuristicService.findFinalHeuristicById(heuristicQuestionnaireService.
+            findHeuristicQuestionnaireById(ans.getHeuristicQuestionnaireID()).getFinalHeuristicID());
+
+            auxMap.put(fH, ans);
+        }
+
+        System.out.println("Aquí");
+        System.out.println("Aquí");
+        System.out.println("Aquí");
+        System.out.println("Aquí");
+        System.out.println("Aquí");
+        System.out.println("Aquí");
+        System.out.println("Aquí");
+        System.out.println("auxMap= " + auxMap);
+
+        model.addAttribute("auxMap", auxMap);
+        model.addAttribute("ansForm", ansForm);
+        model.addAttribute("questionnaire", questionnaire);
+        
+        return "showQuestionnaire";
+    } 
 
     // Create Questionnaire (GET)
 
@@ -198,27 +275,76 @@ public class QuestionnaireController {
     public String initUpdateQuestionnaireForm(Model model, 
     @RequestParam(value = "questionnaireId" , required = true) Integer questionnaireId){
 
-        // Sacamos el cuestionario con el que estamos trabajando.
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findUserByUsername(userDetails.getUsername());
+        model.addAttribute("user", user);
 
-        Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
+        if(user.getRole().equals("Administrator")){
 
-        // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
+            // Sacamos el cuestionario con el que estamos trabajando.
 
-        List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
+            Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
 
-        // Ahora sacamos las FH que el usuario ha dejado guardadas y las automáticas no guardadas
+            // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
 
-        List<FinalHeuristic> fHSelected = finalHeuristicService.findSelectedFH(hQList);
-        List<FinalHeuristic> fHAutomatic = finalHeuristicService.findAutomaticFH(hQList);
+            List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
 
-        // Por último, ponemos el resto de las FH.
+            // Ahora sacamos las FH que el usuario ha dejado guardadas y las automáticas no guardadas
 
-        List<FinalHeuristic> fHRemainder = finalHeuristicService.findRemainderFH(hQList, fHSelected, fHAutomatic);
+            List<FinalHeuristic> fHSelected = finalHeuristicService.findSelectedFH(hQList);
+            List<FinalHeuristic> fHAutomatic = finalHeuristicService.findAutomaticFH(hQList);
 
-        model.addAttribute("questionnaire", questionnaire);
-        model.addAttribute("fHSelected", fHSelected);
-        model.addAttribute("fHAutomatic", fHAutomatic);
-        model.addAttribute("fHRemainder", fHRemainder);
+            // Por último, ponemos el resto de las FH.
+
+            List<FinalHeuristic> fHRemainder = finalHeuristicService.findRemainderFH(hQList, fHSelected, fHAutomatic);
+
+            model.addAttribute("questionnaire", questionnaire);
+            model.addAttribute("fHSelected", fHSelected);
+            model.addAttribute("fHAutomatic", fHAutomatic);
+            model.addAttribute("fHRemainder", fHRemainder);
+
+            return "updateQuestionnaire";
+        }
+
+        if(user.getRole().equals("Evaluator")){
+
+            // Sacamos el cuestionario con el que estamos trabajando.
+
+            Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
+
+            // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
+
+            List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
+
+            // Sacamos la lista de respuestas
+
+            List<Answer> answerList = new ArrayList<>();
+
+            for (HeuristicQuestionnaire hQ : hQList){
+                List<Answer> answers = answerService.findAnswerByheuristicQuestionnaireID(hQ.getId());
+                for (Answer answer : answers) {
+                    if(answer.getUserID().equals(user.getId())){
+                        answerList.add(answer);
+                    }
+                }
+            }
+
+            // Mapeamos las respuestas con sus fH
+
+            Map<FinalHeuristic, Answer> auxMap = new HashMap<>();
+            for (Answer ans : answerList){
+                
+                FinalHeuristic fH = finalHeuristicService.findFinalHeuristicById(heuristicQuestionnaireService.
+                findHeuristicQuestionnaireById(ans.getHeuristicQuestionnaireID()).getFinalHeuristicID());
+
+                auxMap.put(fH, ans);
+            }
+
+            model.addAttribute("questionnaire", questionnaire);
+            model.addAttribute("auxMap", auxMap);
+
+            return "updateQuestionnaire";
+        }
         
         return "updateQuestionnaire";
     } 
@@ -227,20 +353,46 @@ public class QuestionnaireController {
 
     @PostMapping("/updateQuestionnaire")
     public String processUpdateQuestionnaireForm(@Valid Questionnaire questionnaire,
-    @RequestParam(value = "choosenFH" , required = false) List<FinalHeuristic> choosenFH, 
-    @RequestParam(value="action", required=true) String action, BindingResult result, Model model){
+    @RequestParam(value = "choosenFH" , required = false) List<FinalHeuristic> choosenFH, // Esto para los administradores
+    @RequestParam(value = "auxMap" , required = false) Map<FinalHeuristic, Answer> auxMap,
+    @RequestParam(value = "listaFea" , required = false) String[] listaFea,
+    @RequestParam(value="action", required= true) String action, BindingResult result, Model model){
 
-        // Actualizamos el nombre y la descripción
+        // Cogemos el usuario
 
-        if(action.equals("Complete")){
-            questionnaire.setClosed(true);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findUserByUsername(userDetails.getUsername());
+        model.addAttribute("user", user);
+
+        if(user.getRole().equals("Administrator")){
+            if(action.equals("Complete")){   
+                questionnaire.setClosed(true);
+            }
+
+            // Actualizamos los objetos HeuristicQuestionnaire
+
+            heuristicQuestionnaireService.updateHQ(choosenFH, questionnaire);
+        }
+
+        if(user.getRole().equals("Evaluator")){
+            if(action.equals("Complete")){
+                
+            }
+
+            List<String> listaAunMasFea = Arrays.asList(listaFea);
+            System.out.println("Buenos dias");
+            System.out.println("Aquí está el mapa" + auxMap);
+            System.out.println("Aquí está la lista fea" + listaAunMasFea);
+            System.out.println("Hasta aquí");
+            System.out.println("Hasta aquí");
+            System.out.println("Hasta aquí");
+            System.out.println("Hasta aquí");
+            System.out.println("Hasta aquí");
+
+            // Actualizamos los objetos Answer
         }
 
         questionnaireService.saveQuestionnaire(questionnaire);
-
-        // Actualizamos los objetos HeuristicQuestionnaire
-
-        heuristicQuestionnaireService.updateHQ(choosenFH, questionnaire);
             
         return "redirect:/questionnaireList?update";
     }
@@ -317,6 +469,7 @@ public class QuestionnaireController {
     @PostMapping("/deliveryManagement")
     public String processDeliveryManagementForm(@RequestParam(value = "recipient" , required = true) String recipient, 
     @RequestParam(value="action", required=true) String action, 
+    @RequestParam(value = "recipientList" , required = false) List<User> recipientList,
     @RequestParam(value="questionnaireId", required=true) Integer questionnaireId, Model model){
 
         // Actualizamos los usuarios activos para el ratio de cobertura
@@ -331,12 +484,21 @@ public class QuestionnaireController {
 
             // Primero vamos a ver si el username introducido es válido
             List<User> users = userService.findAllUser();
-            if(!(users.contains(userService.findUserByUsername(recipient)))){
-   
+            User user = userService.findUserByUsername(recipient);
+
+            // Vemos si existe, y si tiene el rol de crítico.
+
+            if(!(users.contains(user)) || !(user.getRole().equals("Evaluator"))){
+
                 return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
             }
 
-            User user = userService.findUserByUsername(recipient);
+            // También vemos si ya está en la lista. 
+
+            if(recipientList != null && recipientList.contains(user)){
+
+                    return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
+            }
 
             // Aquí tenemos que crear todos los objetos de Answer, uno por hQ para ese cuestionario
             // Sacamos todos los objetos hQ a partir del cuestionario
@@ -349,6 +511,7 @@ public class QuestionnaireController {
             answerService.generate(selectedHQ, user);
 
             model.addAttribute("questionnaireId", questionnaireId);
+
             return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
         }
 

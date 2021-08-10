@@ -19,45 +19,112 @@
             <div class="col-md-12" col-md-offset-3>
     
                 <h1> Show Questionnaire</h1>
-                <form th:action="@{/showQuestionnaire}" method="GET" th:object="${questionnaire}">  
 
-                    <!-- Hidden Atributes -->
-                
-                    <input type="hidden" th:field="*{id}" name="id" th:value="${id}">
-                    <input type="hidden" th:field="*{userID}" name="userID" th:value="${userID}">
-                    <input type="hidden" th:field="*{filled}" name="filled" th:value="${filled}"> 
-                    <input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
+                <div th:switch="${ansForm}">
+                    <div th:case="${true}">
+                        <form th:action="@{/showFilledQuestionnaire}" method="GET" th:object="${questionnaire}">  
 
-                    <div class="col-md-12">
-                        <div class="mb-6">
-                            <label class="form-label">Product name</label>
-                            <p type="text" th:text="*{product}">
-                        </div>
-                        <div class="mb-6">
-                            <label class="form-label">Description</label>
-                            <p type="text" th:text="*{description}"></p>                            
-                        </div>
-                    </div>
-
-                    <table class="table table-striped table-bordered table-hover">
-                        <caption>You cannot edit this questionnaire anymore as it is closed.</caption>
-                        <thead>
-                            <th>These are the Heuristic you have choosen:</th>
-                        </thead>
-                        <tbody>
-                            <!-- FH que ya estaban seleccionadas -->
-                            <th:block th:each="heuristic : ${fHSelected}">
-                                <tr>
-                                    <td type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="${heuristic.heuristicString}" checked></td>
-                                </tr>
-                            </th:block>
-                        <tbody>
-                    </table>
+                            <!-- Hidden Atributes -->
+                        
+                            <input type="hidden" th:field="*{id}" name="id" th:value="${id}">
+                            <input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
         
-                    <div align="center" class="col-12">
-                        <a type="button" class="btn btn-default" th:href="@{/questionnaireList}">Back</a>
+                            <div class="col-md-12">
+                                <div class="mb-6">
+                                    <label class="form-label">Product name</label>
+                                    <p type="text" th:text="*{product}">
+                                </div>
+                                <div class="mb-6">
+                                    <label class="form-label">Description</label>
+                                    <p type="text" th:text="*{description}"></p>                            
+                                </div>
+                            </div>
+        
+                            <table class="table table-striped table-bordered table-hover">
+                                <caption>The questionnaire has been filled.</caption>
+                                <thead>
+                                    <th>These are the results of each heuristic:</th>
+                                </thead>
+                                <tbody>
+                                    <th>
+                                        <tr th:each="element : ${auxMap}">
+                                            <td>
+                                                <div th:switch="${element.value.ansString}">
+                                                    <div th:case="'Yes'">
+                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes' disabled checked> 
+                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled> 
+                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled>
+                                                        <label th:text="'   ' + ${element.key.heuristicString}"></label>
+                                                    </div>
+                                                    <div th:case="'No'">
+                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes' disabled> 
+                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled checked> 
+                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled>
+                                                        <label th:text="'   ' + ${element.key.heuristicString}"></label>
+                                                    </div>
+                                                    <div th:case="'N.A'">
+                                                        <input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text='Yes' disabled> 
+                                                        <input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text='No' disabled> 
+                                                        <input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text="N.A" disabled checked>
+                                                        <label th:text="'   ' + #{element.key.heuristicString}"></label> <!-- Así sale feo -->
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </th>
+                                <tbody>
+                            </table>
+                
+                            <div align="center" class="col-12">
+                                <a type="button" class="btn btn-default" th:href="@{/questionnaireList}">Back</a>
+                            </div>
+                        </form>
                     </div>
-                </form>
+                    <div th:case="${false}">
+                        <div th:switch="${user.role}">
+                            <div th:case="'Administrator'">
+
+                                <form th:action="@{/showQuestionnaire}" method="GET" th:object="${questionnaire}">  
+
+                                    <!-- Hidden Atributes -->
+                                
+                                    <input type="hidden" th:field="*{id}" name="id" th:value="${id}">
+                                    <input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
+                
+                                    <div class="col-md-12">
+                                        <div class="mb-6">
+                                            <label class="form-label">Product name</label>
+                                            <p type="text" th:text="*{product}">
+                                        </div>
+                                        <div class="mb-6">
+                                            <label class="form-label">Description</label>
+                                            <p type="text" th:text="*{description}"></p>                            
+                                        </div>
+                                    </div>
+                
+                                    <table class="table table-striped table-bordered table-hover">
+                                        <caption>You cannot edit this questionnaire anymore as it is closed.</caption>
+                                        <thead>
+                                            <th>These are the Heuristic you have choosen:</th>
+                                        </thead>
+                                        <tbody>
+                                            <!-- FH que ya estaban seleccionadas -->
+                                            <th:block th:each="heuristic : ${fHSelected}">
+                                                <tr>
+                                                    <td type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="' ' + ${heuristic.heuristicString}" checked></td>
+                                                </tr>
+                                            </th:block>
+                                        <tbody>
+                                    </table>
+                        
+                                    <div align="center" class="col-12">
+                                        <a type="button" class="btn btn-default" th:href="@{/questionnaireList}">Back</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -11,4 +11,6 @@ public interface AnswerRepository extends JpaRepository<Answer, Integer>{
 
     List<Answer> findAnswersByUserID(Integer id);
 
+    List<Answer> findAnswersByheuristicQuestionnaireID(Integer id);
+
 }

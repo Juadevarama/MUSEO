@@ -11,6 +11,4 @@ import heuristics.model.Questionnaire;
 @Repository
 public interface QuestionnaireRepository extends JpaRepository<Questionnaire, Integer>{
 
-    List<Questionnaire> findQuestionnairesByUserID(Integer id);
-
 }

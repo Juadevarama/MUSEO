@@ -45,7 +45,6 @@
               <tr>
                 <th>Username</th>
                 <th>Coverage Ratio</th>
-                <th>Answered percentage</th>
                 <th>Show</th>
                 <th>Active</th>
               </tr>
@@ -56,11 +55,18 @@
                   <div>
                     <td th:value="${user}" th:text="${user.username}"></td>
                   </div>
-                  <td>Coverage Ratio: We will see</td>
-                  <td>Same that ratio</td>
-                  <td>
-                    <a >Show Questionnaire</a> <!-- Aquí falta un if para sólo poder verlo si está completamente contestado -->
-                  </td> 
+                  <!-- <div th:switch="${questionnaire.filled}">
+                    <div th:case="${true}">
+                      <td>Coverage Ratio: We will see</td>
+                      <td>
+                        <a th:href="@{/showFilledQuestionnaire(questionnaireId=${questionnaire.id},ansForm=${true})}">Show</a>
+                      </td>
+                    </div>
+                    <div th:case="${false}">
+                      <td>The questionnaire have not been completed yet. </td>
+                      <td>The questionnaire have not been completed yet. </td>
+                    </div>
+                  </div> -->
                   <td>Aquí ponemos un ratio para el formulario, por lo que hace falta un botón de guardar cambios (Aparte del de enviar)</td>              
                 </tr>
               </th:block> 
@@ -76,7 +82,13 @@
               
               <label class="form-label">Add new recipient: </label> <!-- Más tarde se podría poner el email si es único -->
               <input type="text" name="recipient" placeholder="Insert an username to add it to the recipient list">
+
+              <!-- Hidden Attributes -->
               <input type="hidden" name="questionnaireId" th:value="${questionnaire.id}">
+
+              <th:block th:each="user : ${recipientList}">
+                <input type="hidden" name="recipientList" th:value="${user}">
+              </th:block>
 
               <button type="submit" class="btn btn-success" name="action" value="Add">Add new Recipient</button>
             </div> 

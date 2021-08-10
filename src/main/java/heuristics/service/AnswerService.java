@@ -35,6 +35,11 @@ public class AnswerService {
         return answerRepository.findAnswersByUserID(id);
     }
 
+    @Transactional(readOnly = true)
+    public List<Answer> findAnswerByheuristicQuestionnaireID(Integer id) {
+        return answerRepository.findAnswersByheuristicQuestionnaireID(id);
+    } 
+
     @Transactional
     public void saveAnswer(Answer ans) throws DataAccessException{
         answerRepository.save(ans);
@@ -53,7 +58,9 @@ public class AnswerService {
 
             saveAnswer(answer);
         }  
-    } 
+    }
+
+
 
 
   

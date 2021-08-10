@@ -18,7 +18,6 @@
     <div class= "row">
       <div class="col-md-12" col-md-offset-3>
 
-
         <!-- Create success message -->
         <div th:if="${param.create}">
           <div class="alert alert-success">You've successfully created your questionnaire!</div>
@@ -40,8 +39,7 @@
                     <th>Product name</th>
                     <th>Description</th>
                     <th>Completed</th>
-                    <th>Filled</th>
-                    <th>Edit</th>
+                    <th>Edit/Show</th>
                     <th>Export</th>
                     <th>Delivery Management</th>
                   </tr>
@@ -52,7 +50,6 @@
                       <td th:text="*{questionnaire.product}"></td>
                       <td th:text="*{questionnaire.description}"></td>
                       <td th:text="*{questionnaire.closed}"></td>
-                      <td th:text="*{questionnaire.filled}"></td>
                       <div th:switch="${questionnaire.closed}">
                         <div th:case="${true}">
                           <td>
@@ -80,14 +77,13 @@
               </table>     
               <a type="button" class="btn btn-default" th:href="@{/createQuestionnaire}">Create new questionnaire</a> 
             </div>
-            <div th:case="'Critic'">
+            <div th:case="'Evaluator'">
               <table class="table table-striped table-bordered table-hover">
                 <caption>List of questionnaires</caption>
                 <thead>
                   <tr>
                     <th>Product name</th>
                     <th>Description</th>
-                    <th>Filled</th>
                     <th>Fill out</th>
                     <th>Export</th>
                   </tr>
@@ -97,10 +93,18 @@
                     <tr>
                       <td th:text="*{questionnaire.product}"></td>
                       <td th:text="*{questionnaire.description}"></td>
-                      <td th:text="*{questionnaire.filled}"></td>
-                      <td>
-                        <a th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}">Fill Out</a>
-                      </td>
+                      <!-- <td th:text="*{questionnaire.filled}"></td>
+                      <div th:switch="${questionnaire.filled}">
+                        <div th:case="${false}">
+                          <td>
+                            <a th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}">Fill Out</a>
+                          </td>
+                        </div>
+                        <div th:case="${true}">
+                          <td>
+                            <a th:href="@{/showFilledQuestionnaire(questionnaireId=${questionnaire.id},ansForm=${true})}">Show</a>
+                          </td>
+                        </div> -->
                       <td>
                         <a th:href="@{/exportToPDF(questionnaireId=${questionnaire.id})}">Export to PDF</a>
                       </td>                     

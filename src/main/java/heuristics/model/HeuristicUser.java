@@ -5,9 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
@@ -16,25 +15,30 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "questionnaires")
+@Table(name = "heuristicsusers")
 @Data
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Questionnaire {
+public class HeuristicUser {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Integer id;
 
-	@Column(name = "product")
-	private String product;
-
-	@Column(name = "description")
-	private String description;
-
-	@Column(name = "closed")
+	@Column(name = "questionnaireID")
 	@NotNull
-	private Boolean closed;
+	private Integer questionnaireID;
+
+	@Column(name = "userID")
+	@NotNull
+	private Integer userID;
+
+	@Column(name = "owner")
+	private Boolean owner;
+
+	@Column(name = "filled")
+	private Boolean filled;
+
 }
