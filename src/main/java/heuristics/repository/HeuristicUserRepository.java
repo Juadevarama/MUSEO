@@ -13,4 +13,6 @@ public interface HeuristicUserRepository extends JpaRepository<HeuristicUser, In
 
     List<HeuristicUser> findHeuristicUsersByquestionnaireID(Integer id);
 
+    HeuristicUser findHeuristicUsersByUserIDAndQuestionnaireID(Integer userID, Integer questionnaireID);
+
 }

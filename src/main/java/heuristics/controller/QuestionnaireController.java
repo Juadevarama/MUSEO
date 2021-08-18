@@ -32,6 +32,7 @@ import heuristics.model.ExportToPDF;
 import heuristics.model.FinalHeuristic;
 import heuristics.model.GameAspect;
 import heuristics.model.HeuristicQuestionnaire;
+import heuristics.model.HeuristicUser;
 import heuristics.model.Keyword;
 import heuristics.model.NielsenHeuristic;
 import heuristics.model.Platform;
@@ -44,6 +45,7 @@ import heuristics.service.DevelopmentPhaseService;
 import heuristics.service.FinalHeuristicService;
 import heuristics.service.GameAspectService;
 import heuristics.service.HeuristicQuestionnaireService;
+import heuristics.service.HeuristicUserService;
 import heuristics.service.KeywordService;
 import heuristics.service.NielsenHeuristicService;
 import heuristics.service.PlatformService;
@@ -69,13 +71,14 @@ public class QuestionnaireController {
     private final HeuristicQuestionnaireService heuristicQuestionnaireService;
     private final UserServiceImpl userService;
     private final AnswerService answerService;
+    private final HeuristicUserService heuristicUserService;
 
     @Autowired
     public QuestionnaireController(QuestionnaireService questionnaireService, PlatformService platformService, 
     PurposeService purposeService, DevelopmentPhaseService developmentPhaseService, GameAspectService gameAspectService,
     KeywordService keywordService, NielsenHeuristicService nielsenHeuristicService, UsabilityAspectService usabilityAspectService,
     HeuristicQuestionnaireService heuristicQuestionnaireService, FinalHeuristicService finalHeuristicService, 
-    UserServiceImpl userService, AnswerService answerService){
+    UserServiceImpl userService, AnswerService answerService, HeuristicUserService heuristicUserService){
         this.questionnaireService = questionnaireService;
         this.platformService = platformService;
         this.purposeService = purposeService;
@@ -88,6 +91,7 @@ public class QuestionnaireController {
         this.finalHeuristicService = finalHeuristicService;
         this.userService = userService;
         this.answerService = answerService;
+        this.heuristicUserService = heuristicUserService;
     }
 
     // Questionnaire List 
@@ -105,8 +109,17 @@ public class QuestionnaireController {
         }
 
         if(user.getRole().equals("Evaluator")){
-            model.addAttribute("questionnaireList", questionnaireService.findQuestionnairesByEvaluator(user));
-            
+
+            List<Questionnaire> questionnaireList = questionnaireService.findQuestionnairesByEvaluator(user);
+            List<HeuristicUser> hUList = new ArrayList<>();
+
+            for (Questionnaire q : questionnaireList){
+                
+                hUList.add(heuristicUserService.findHeuristicUserByIDs(user.getId(), q.getId()));
+            }
+
+            model.addAttribute("hUList", hUList);
+            model.addAttribute("questionnaireList", questionnaireList);
         }
 
         return "questionnaireList";
@@ -251,6 +264,12 @@ public class QuestionnaireController {
         // Guardamos el cuestionario
 
         questionnaireService.saveQuestionnaire(questionnaire);
+
+        // Creamos el objeto HeuristicUser que vincula el usuario con el cuestionario
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findUserByUsername(userDetails.getUsername());
+        heuristicUserService.generate(user.getId(), questionnaire.getId());
 
         // Creamos los Objetos HeuristicQuestionnaire a partir de las listas escogidas
 
@@ -483,10 +502,11 @@ public class QuestionnaireController {
         if(action.equals("Add")){
 
             // Primero vamos a ver si el username introducido es válido
+
             List<User> users = userService.findAllUser();
             User user = userService.findUserByUsername(recipient);
 
-            // Vemos si existe, y si tiene el rol de crítico.
+            // Vemos si existe, y si tiene el rol de evaluador.
 
             if(!(users.contains(user)) || !(user.getRole().equals("Evaluator"))){
 
@@ -500,8 +520,15 @@ public class QuestionnaireController {
                     return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
             }
 
-            // Aquí tenemos que crear todos los objetos de Answer, uno por hQ para ese cuestionario
-            // Sacamos todos los objetos hQ a partir del cuestionario
+            // Una vez checkeadas estas dos cosas, lo añadimos.
+
+            /*  Lo primero que hacemos es generar un objeto heuristicUser que vincule
+                el usuario con el cuestionario. */
+
+            heuristicUserService.generate(user.getId(), questionnaireId);
+
+            /*  Creamos todos los objetos de Answer, uno por hQ para ese cuestionario.
+                Sacamos todos los objetos hQ a partir del cuestionario  */
 
             List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
             List<HeuristicQuestionnaire> selectedHQ = heuristicQuestionnaireService.filterSelectedHQ(hQList);

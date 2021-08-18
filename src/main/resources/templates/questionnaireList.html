@@ -89,27 +89,28 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <th:block th:each="questionnaire : ${questionnaireList}">
                     <tr>
-                      <td th:text="*{questionnaire.product}"></td>
-                      <td th:text="*{questionnaire.description}"></td>
-                      <!-- <td th:text="*{questionnaire.filled}"></td>
-                      <div th:switch="${questionnaire.filled}">
-                        <div th:case="${false}">
-                          <td>
-                            <a th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}">Fill Out</a>
-                          </td>
-                        </div>
-                        <div th:case="${true}">
-                          <td>
-                            <a th:href="@{/showFilledQuestionnaire(questionnaireId=${questionnaire.id},ansForm=${true})}">Show</a>
-                          </td>
-                        </div> -->
-                      <td>
-                        <a th:href="@{/exportToPDF(questionnaireId=${questionnaire.id})}">Export to PDF</a>
-                      </td>                     
+                      <th:block th:each="questionnaire : ${questionnaireList}">
+                        <td th:text="*{questionnaire.product}"></td>
+                        <td th:text="*{questionnaire.description}"></td>
+                      </th:block> 
+                      <th:block th:each="hU : ${hUList}">
+                        <div th:switch="${hU.filled}">
+                          <div th:case="${false}">
+                            <td>
+                              <a th:href="@{/updateQuestionnaire(questionnaireId=${hU.questionnaireID})}">Fill Out</a>
+                            </td>
+                          </div>
+                          <div th:case="${true}">
+                            <td>
+                              <a th:href="@{/showFilledQuestionnaire(questionnaireId=${hU.questionnaireID},ansForm=${true})}">Show</a>
+                            </td>
+                          </div> 
+                        <td>
+                          <a th:href="@{/exportToPDF(questionnaireId=${hU.questionnaireID})}">Export to PDF</a>
+                        </td>
+                      </th:block>                     
                     </tr>
-                  </th:block> 
                 </tbody>
               </table> 
             </div>

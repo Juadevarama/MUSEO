@@ -99,26 +99,6 @@ public class QuestionnaireService {
             questionnaire.setClosed(Boolean.FALSE);
         }
 
-        // Sacamos el usuario actual
-        
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.findUserByUsername(userDetails.getUsername());
-
-
-        // Y vamos a mirar si ya está en la lista de HeuristicUser de este cuestionario.
-
-        List<HeuristicUser> qList = heuristicUserService.findHeuristicUserByquestionnaireID(questionnaire.getId());
-
-        // Primero vemos si la lista está vacía, porque hace falta guardar antes el cuestionario
-
-        if(qList.isEmpty()){
-            questionnaireRepository.save(questionnaire);
-        }
-        
-        if(qList.stream().noneMatch(hU -> hU.getUserID().equals(user.getId()))){
-            heuristicUserService.generate(user.getId(), questionnaire.getId());
-        }
-
         questionnaireRepository.save(questionnaire);
     }
 
