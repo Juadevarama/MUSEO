@@ -41,4 +41,6 @@ public class HeuristicUser {
 	@Column(name = "filled")
 	private Boolean filled;
 
+	Integer coverageRatio;
+
 }

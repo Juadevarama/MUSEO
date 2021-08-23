@@ -44,20 +44,20 @@
             <thead>
               <tr>
                 <th>Username</th>
-                <th>Coverage Ratio</th>
+                <th>Coverage Ratio Percentage</th>
                 <th>Show</th>
                 <th>Active</th>
               </tr>
             </thead>
             <tbody>
-              <th:block th:each="user : ${recipientList}">
+              <th:block th:each="element : ${auxMap}">
                 <tr>
                   <div>
-                    <td th:value="${user}" th:text="${user.username}"></td>
+                    <td th:text="*{element.value.username}"></td>
                   </div>
-                  <!-- <div th:switch="${questionnaire.filled}">
+                  <div th:switch="${element.key.filled}">
                     <div th:case="${true}">
-                      <td>Coverage Ratio: We will see</td>
+                      <td th:text="*{element.key.coverageRatio}"></td>
                       <td>
                         <a th:href="@{/showFilledQuestionnaire(questionnaireId=${questionnaire.id},ansForm=${true})}">Show</a>
                       </td>
@@ -66,7 +66,7 @@
                       <td>The questionnaire have not been completed yet. </td>
                       <td>The questionnaire have not been completed yet. </td>
                     </div>
-                  </div> -->
+                  </div> 
                   <td>Aquí ponemos un ratio para el formulario, por lo que hace falta un botón de guardar cambios (Aparte del de enviar)</td>              
                 </tr>
               </th:block> 

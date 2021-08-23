@@ -118,8 +118,13 @@ public class QuestionnaireController {
                 hUList.add(heuristicUserService.findHeuristicUserByIDs(user.getId(), q.getId()));
             }
 
-            model.addAttribute("hUList", hUList);
-            model.addAttribute("questionnaireList", questionnaireList);
+            Map<HeuristicUser, Questionnaire> auxMap = new HashMap<>();
+            for (HeuristicUser hU : hUList){
+    
+                auxMap.put(hU, questionnaireService.findQuestionnaireByID(hU.getQuestionnaireID()));
+            }
+
+            model.addAttribute("auxMap", auxMap);
         }
 
         return "questionnaireList";
@@ -395,7 +400,32 @@ public class QuestionnaireController {
 
         if(user.getRole().equals("Evaluator")){
             if(action.equals("Complete")){
+
+                /*  Primero hay que revisar que todas las respuestas estén respondidas.
+                    Sacamos la lista de respuestas. */
+
+                if(auxMap == null){ // Ahora mismo siempre entra aquí porque el mapa siempre es nulo
+
+                    model.addAttribute("questionnaire", questionnaire);
+                    model.addAttribute("auxMap", auxMap);
+                    
+                    return "redirect:/updateQuestionnaire?answer" + "&questionnaireId=" + questionnaire.getId();
+                }
+
+                List<Answer> answers = auxMap.values().stream().collect(Collectors.toList());
                 
+                //  Ahora recorremos la lista y vemos que están todas respondidas.
+
+                if(answers.stream().anyMatch(a -> a.getAnsString() == null)){
+
+                    model.addAttribute("questionnaire", questionnaire);
+                    model.addAttribute("auxMap", auxMap);
+
+                    return "redirect:/updateQuestionnaire?answer";
+                }
+
+                HeuristicUser hU = heuristicUserService.findHeuristicUserByIDs(user.getId(), questionnaire.getId());
+                hU.setFilled(Boolean.TRUE);
             }
 
             List<String> listaAunMasFea = Arrays.asList(listaFea);
@@ -450,35 +480,61 @@ public class QuestionnaireController {
 
         // Sacamos el cuestionario con el que estamos trabajando.
 
-        Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
+        Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);     
 
-        // Sacamos la lista de usuarios a los que se les ha enviado el cuestionario
-
-        // Del cuestionario sacamos todas las HeuristicsQuestionnaires
-
-        List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
-        List<HeuristicQuestionnaire> selectedHQ = heuristicQuestionnaireService.filterSelectedHQ(hQList);        
-
-        // De cada heuristicQuestionnaires sacamos todas las Answers
-
-        // ¿Cojo todas las answer que tengan 1 de los hQ de la lista, y saco el user mientras no esté?
+        /*  Sacamos la lista de usuarios a los que se les ha enviado el cuestionario.
+            Para sacar a los usuarios evaluadores, cogemos la lista de usuarios
+            que tienen un heuristicUser con el cuestionario, sin el owner */
         
-        List<User> recipientList = new ArrayList<>();
+        List<HeuristicUser> hUList = heuristicUserService.findHeuristicUserByquestionnaireID(questionnaireId);
 
-        for (HeuristicQuestionnaire hQ : selectedHQ) {
-            
-            List<Answer> answerList = answerService.findAllAnswer().stream().
-            filter(a -> a.getHeuristicQuestionnaireID().equals(hQ.getId())).collect(Collectors.toList());
+        // Filtramos la lista para quitar el administrador.
 
-            for (Answer ans : answerList) {
-                if(!(recipientList.contains(userService.findUserById(ans.getUserID())))){
-                    recipientList.add(userService.findUserById(ans.getUserID()));
+        List<HeuristicUser> filteredList = hUList.stream()
+            .filter(hU -> hU.getOwner().equals(Boolean.FALSE))
+            .collect(Collectors.toList());
+
+        // Cada hU lo tenemos que mapear con su ratio de cobertura.
+
+        Map<HeuristicUser, User> auxMap = new HashMap<>();
+
+        for (HeuristicUser hU : filteredList) {
+
+            // Sacamos el usuario
+
+            User user = userService.findUserById(hU.getUserID());
+
+            // Vemos si el formulario está respondido, para sacar el Ratio
+
+            if(hU.getFilled().equals(Boolean.TRUE)){
+
+                // Sacamos todas las respuestas de cada usuario
+
+                List<Answer> answerList = answerService.findAnswersByUserId(user.getId());
+
+                // Y vamos a sacar el porcentaje de las respuestas que es "Yes"
+
+                Integer yes = 0;
+                for (Answer a : answerList) {
+
+                    System.out.println(a.getAnsString());
+                    if(a.getAnsString().equals("Yes")){
+                        yes++;
+                    }
                 }
+
+                // Calculamos el ratio de cobertura.
+
+                hU.setCoverageRatio((yes*100/answerList.size())); 
             }
+
+            // Y añadimos la pareja usuario/ratio al mapa. 
+
+            auxMap.put(hU, user);
         }
 
         model.addAttribute("questionnaire", questionnaire);
-        model.addAttribute("recipientList", recipientList);
+        model.addAttribute("auxMap", auxMap);
         
         return "deliveryManagement";
     } 

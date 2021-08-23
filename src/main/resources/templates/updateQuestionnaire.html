@@ -91,6 +91,11 @@
                         
                         <div th:case="'Evaluator'">
 
+                            <!-- Not all answered message -->
+                            <div th:if="${param.answer}">
+                                <div class="alert alert-danger">You need to answer all the questions!</div>
+                            </div>
+
                              <!-- Hidden Atributes -->
                         
                              <input type="hidden" th:field="*{id}" name="id" th:value="${id}">

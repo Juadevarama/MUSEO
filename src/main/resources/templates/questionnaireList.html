@@ -18,6 +18,8 @@
     <div class= "row">
       <div class="col-md-12" col-md-offset-3>
 
+        <h1> Questionnaire List</h1>
+
         <!-- Create success message -->
         <div th:if="${param.create}">
           <div class="alert alert-success">You've successfully created your questionnaire!</div>
@@ -28,7 +30,6 @@
           <div class="alert alert-info">You've successfully changed your questionnaire!</div>
         </div>
 
-        <h1> Questionnaire List</h1>
         <form th:action="@{/questionnaireList}" method="GET">  
           <div th:switch="${user.role}"> 
             <div th:case="'Administrator'">
@@ -89,28 +90,26 @@
                   </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                      <th:block th:each="questionnaire : ${questionnaireList}">
-                        <td th:text="*{questionnaire.product}"></td>
-                        <td th:text="*{questionnaire.description}"></td>
-                      </th:block> 
-                      <th:block th:each="hU : ${hUList}">
-                        <div th:switch="${hU.filled}">
+                      <th:block th:each="element : ${auxMap}">
+                        <tr>
+                        <td th:text="*{element.value.product}"></td>
+                        <td th:text="*{element.value.description}"></td>
+                        <div th:switch="${element.key.filled}">
                           <div th:case="${false}">
                             <td>
-                              <a th:href="@{/updateQuestionnaire(questionnaireId=${hU.questionnaireID})}">Fill Out</a>
+                              <a th:href="@{/updateQuestionnaire(questionnaireId=${element.key.questionnaireID})}">Fill Out</a>
                             </td>
                           </div>
                           <div th:case="${true}">
                             <td>
-                              <a th:href="@{/showFilledQuestionnaire(questionnaireId=${hU.questionnaireID},ansForm=${true})}">Show</a>
+                              <a th:href="@{/showFilledQuestionnaire(questionnaireId=${element.key.questionnaireID},ansForm=${true})}">Show</a>
                             </td>
                           </div> 
                         <td>
-                          <a th:href="@{/exportToPDF(questionnaireId=${hU.questionnaireID})}">Export to PDF</a>
+                          <a th:href="@{/exportToPDF(questionnaireId=${element.key.questionnaireID})}">Export to PDF</a>
                         </td>
+                        </tr>
                       </th:block>                     
-                    </tr>
                 </tbody>
               </table> 
             </div>
