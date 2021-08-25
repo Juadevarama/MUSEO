@@ -1,13 +1,13 @@
-package TFG;
+package heuristics;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TfgApplication {
+public class HeuristicsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TfgApplication.class, args);
+		SpringApplication.run(HeuristicsApplication.class, args);
 	}
 
 }

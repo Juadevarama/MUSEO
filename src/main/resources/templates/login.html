@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+<head>
+
+  <div th:replace="header :: myHeader"></div>
+  
+  <title>MUSE: Login</title>
+
+</head> 
+
+<body>
+
+  <br>
+  <br>
+
+  <div class= "container">
+    <div class= "row">
+      <div class="col-md-6" col-md-offset-3>
+
+        <h1> User Login Page</h1>
+        <form th:action="@{/login}" method="POST">
+        
+          <!-- Error Message-->
+          <div th:if="${param.error}">
+            <div class="alert alert-danger">Invalid username or password.</div>
+          </div>
+
+          <!-- Logout Message-->
+          <div th:if="${param.logout}">
+            <div class="alert alert-danger">You have been logged out.</div>
+          </div>
+
+          <div class = "form-group">
+              <label for = "username">Username: </label>
+              <input type="text" class = "form-control" id="username" 
+              name="username" placeholder="Enter Username" autofocus="autofocus">
+          </div>
+
+          <div class = "form-group">
+            <label for = "password">Password: </label>
+            <input type="password" class = "form-control" id="password" 
+            name="password" placeholder="Enter your password">
+        </div>
+
+        <div class="form-group">
+          <div class="row">
+            <div class="col-sm-6 col-sm-offset-3">
+              <input type="submit" name="login-submit" id="login-submit"
+              class="form-control btn btn-primary" value="Log In" />
+            </div>
+          </div>
+        </div>
+        </form>
+        <div class="form-group">
+          <span>New user? <a href="/" th:href="@{/register}">Register here</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</body>
+
+</html>

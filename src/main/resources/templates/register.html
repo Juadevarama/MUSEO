@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head>
+
+  <div th:replace="header :: myHeader"></div>
+  
+  <title>MUSE: Register</title>
+
+</head> 
+
+<body>
+
+  <br>
+  <br>
+
+  <!-- Create new user -->
+  <div class= "container">
+    <div class= "row">
+      <div class="col-md-6" col-md-offset-3>
+
+        <!-- Success message -->
+        <div th:if="${param.success}">
+          <div class="alert alert-info">You've successfully registered to our awesome app!</div>
+        </div>
+
+        <h1>Registration Page</h1>
+        <form th:action="@{/register}" method="POST" th:object= "${user}">
+        
+
+          <div class = "form-group">
+              <label class="control-label" for= "name">Name: </label>
+              <input id="name" class = "form-control"  
+              th:field="*{name}" placeholder="Name" required autofocus="autofocus">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Surnames: </label>
+            <input id="surnames" class = "form-control"  
+            th:field="*{surnames}" placeholder="Surnames">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Company: </label>
+            <input id="company" class = "form-control"  
+            th:field="*{company}" placeholder="Company">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Email: </label>
+            <input id="email" class = "form-control"  
+            th:field="*{email}" placeholder="Email">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Username: </label>
+            <input id="username" class = "form-control"  
+            th:field="*{username}" placeholder="Username">
+          </div>
+
+          <div class = "form-group">
+            <label class="control-label" for= "name">Password: </label>
+            <input id="password" class = "form-control" type="password"
+            th:field="*{password}" placeholder="Password">
+          </div>
+
+          <div class = "form-group">
+              <label class="control-label" for= "role">Role:</label>
+                <br>
+                <input type="radio" id="Administrator" name="role" value="Administrator">
+                <label for="Administrator">Administrator</label>
+                <br>
+                <input type="radio" id="Evaluator" name="role" value="Evaluator">
+                <label for="Evaluator">Evaluator</label>
+          </div>
+
+
+          <div class="form-group">
+            <button type="submit" class="btn btn-success">Register!</button> 
+            <span>Already registered? <a href="/" th:href="@{/login}">Login here</a></span>
+          </div>
+        </form>
+    </div>
+  </div>
+  
+</body>
+
+</html>
+
