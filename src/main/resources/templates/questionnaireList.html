@@ -102,7 +102,7 @@
                           </div>
                           <div th:case="${true}">
                             <td>
-                              <a th:href="@{/showFilledQuestionnaire(questionnaireId=${element.key.questionnaireID},ansForm=${true})}">Show</a>
+                              <a th:href="@{/showFilledQuestionnaire(userId=${user.id},questionnaireId=${element.key.questionnaireID},ansForm=${true})}">Show</a>
                             </td>
                           </div> 
                         <td>

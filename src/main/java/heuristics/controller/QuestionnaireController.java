@@ -181,10 +181,10 @@ public class QuestionnaireController {
     @GetMapping("/showFilledQuestionnaire")
     public String initShowFilledQuestionnaireForm(Model model, 
     @RequestParam(value = "questionnaireId" , required = true) Integer questionnaireId,
+    @RequestParam(value = "userId" , required = true) Integer userId,
     @RequestParam(value = "ansForm" , required = true) Boolean ansForm){
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userService.findUserByUsername(userDetails.getUsername());
+        User user = userService.findUserById(userId);
         model.addAttribute("user", user);
 
         // Sacamos el cuestionario con el que estamos trabajando.
