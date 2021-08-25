@@ -1,6 +1,4 @@
+jdk: 
+  - oraclejdk15
 language: java
-jdk:
- - oraclejdk15
-
- install:
- ./mvnw clean install 
+script: "./mvnw clean install"
