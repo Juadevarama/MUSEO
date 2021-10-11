@@ -44,6 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public void saveUser(User user) throws DataAccessException{
+        mapRoleToAuthorities(user.getRole());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
@@ -58,8 +59,7 @@ public class UserServiceImpl implements UserService {
       
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), mapRoleToAuthorities(user.getRole()));
     }
-    
-    // El rol es la columna discriminator de user que determina si es administrator o evaluator.
+
     private Collection<? extends GrantedAuthority> mapRoleToAuthorities(String role){
         List<GrantedAuthority> res = new ArrayList<>();
         res.add(new SimpleGrantedAuthority(role));

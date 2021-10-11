@@ -76,19 +76,20 @@ public class UserController {
 
     // Show User
 
-    @GetMapping("showProfile")
-    public String iniShowUserForm(Model model) {
+    @GetMapping("/showProfile")
+    public String initShowUserForm(Model model) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         
-        model.addAttribute("user", userService.findUserByUsername(userDetails.getUsername()));
+        User user = userService.findUserByUsername(userDetails.getUsername());
+        model.addAttribute("user", user);
         return "showProfile";
     }
 
     // Update User: Get
 
-    @GetMapping("updateProfile")
-    public String iniUpdateUserForm(Model model) {
+    @GetMapping("/updateProfile")
+    public String initUpdateUserForm(Model model) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("user", userService.findUserByUsername(userDetails.getUsername()));

@@ -219,15 +219,6 @@ public class QuestionnaireController {
             auxMap.put(fH, ans);
         }
 
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("auxMap= " + auxMap);
-
         model.addAttribute("auxMap", auxMap);
         model.addAttribute("ansForm", ansForm);
         model.addAttribute("questionnaire", questionnaire);
@@ -249,7 +240,7 @@ public class QuestionnaireController {
         model.addAttribute("allKeywords", keywordService.findAllKeyword());
         model.addAttribute("allNielsenHeuristics", nielsenHeuristicService.findAllNielsenHeuristic());
         model.addAttribute("allUsabilityAspects", usabilityAspectService.findAllUsabilityAspect());
-
+        
         return "createQuestionnaire";
     } 
 
@@ -264,7 +255,7 @@ public class QuestionnaireController {
     @RequestParam(value = "choosenKeywords" , required = false) List<Keyword> choosenKeywords,
     @RequestParam(value = "choosenNielsenHeuristics" , required = false) List<NielsenHeuristic> choosenNielsenHeuristics,
     @RequestParam(value = "choosenUsabilityAspects" , required = false) List<UsabilityAspect> choosenUsabilityAspects, 
-    BindingResult result, Model model){
+    Model model){
 
         // Guardamos el cuestionario
 
@@ -364,6 +355,7 @@ public class QuestionnaireController {
                 auxMap.put(fH, ans);
             }
 
+            model.addAttribute("answerList", answerList);
             model.addAttribute("questionnaire", questionnaire);
             model.addAttribute("auxMap", auxMap);
 
@@ -377,9 +369,9 @@ public class QuestionnaireController {
 
     @PostMapping("/updateQuestionnaire")
     public String processUpdateQuestionnaireForm(@Valid Questionnaire questionnaire,
-    @RequestParam(value = "choosenFH" , required = false) List<FinalHeuristic> choosenFH, // Esto para los administradores
-    @RequestParam(value = "auxMap" , required = false) Map<FinalHeuristic, Answer> auxMap,
-    @RequestParam(value = "listaFea" , required = false) String[] listaFea,
+    @RequestParam(value = "choosenFH" , required = false) List<FinalHeuristic> choosenFH, // Esto para los administradore
+    @RequestParam(value = "answerList" , required = false) List<Answer> answerList, // Esto para los evaluadores
+    @RequestParam(value = "answerAux" , required = false) List<String> answerAux, // Esto para los evaluadores
     @RequestParam(value="action", required= true) String action, BindingResult result, Model model){
 
         // Cogemos el usuario
@@ -399,46 +391,37 @@ public class QuestionnaireController {
         }
 
         if(user.getRole().equals("Evaluator")){
+
+            // Actualizamos la lista de respuestas
+
+            Integer i = 0;
+
+            for (Answer answer: answerList) {
+                
+                answer.setAnsString(answerAux.get(i));
+                i++;
+            }
+
+            
             if(action.equals("Complete")){
 
                 /*  Primero hay que revisar que todas las respuestas estén respondidas.
-                    Sacamos la lista de respuestas. */
+                    Sacamos la lista de respuestas. Recorremos la lista y 
+                    vemos que están todas respondidas.  */
 
-                if(auxMap == null){ // Ahora mismo siempre entra aquí porque el mapa siempre es nulo
-
-                    model.addAttribute("questionnaire", questionnaire);
-                    model.addAttribute("auxMap", auxMap);
-                    
-                    return "redirect:/updateQuestionnaire?answer" + "&questionnaireId=" + questionnaire.getId();
-                }
-
-                List<Answer> answers = auxMap.values().stream().collect(Collectors.toList());
-                
-                //  Ahora recorremos la lista y vemos que están todas respondidas.
-
-                if(answers.stream().anyMatch(a -> a.getAnsString() == null)){
+                if(answerList.stream().anyMatch(a -> a.getAnsString() == null || a.getAnsString().equals(""))){
 
                     model.addAttribute("questionnaire", questionnaire);
-                    model.addAttribute("auxMap", auxMap);
 
-                    return "redirect:/updateQuestionnaire?answer";
+                    return "redirect:/updateQuestionnaire?questionnaireId=" + questionnaire.getId() + "&answer";
                 }
+
+                /*  Si esto no se cumple, cogemos el objeto HeuristicUser que vincula
+                    al cuestionario y al evaluador y ponemos el campo filled a true.    */
 
                 HeuristicUser hU = heuristicUserService.findHeuristicUserByIDs(user.getId(), questionnaire.getId());
                 hU.setFilled(Boolean.TRUE);
-            }
-
-            List<String> listaAunMasFea = Arrays.asList(listaFea);
-            System.out.println("Buenos dias");
-            System.out.println("Aquí está el mapa" + auxMap);
-            System.out.println("Aquí está la lista fea" + listaAunMasFea);
-            System.out.println("Hasta aquí");
-            System.out.println("Hasta aquí");
-            System.out.println("Hasta aquí");
-            System.out.println("Hasta aquí");
-            System.out.println("Hasta aquí");
-
-            // Actualizamos los objetos Answer
+            } 
         }
 
         questionnaireService.saveQuestionnaire(questionnaire);

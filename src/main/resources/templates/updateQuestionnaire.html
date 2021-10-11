@@ -118,45 +118,55 @@
                                     <th>These are the Heuristic you have to answer:</th>
                                 </thead>
 
-                                <!-- Pasamos el mapa como hidden primero -->
-                                <th:block th:each="element : ${auxMap}">
-                                    <input type="hidden" name="listaFea" th:value="${element.value}">
-                                    <input type="hidden" name="listaFea" th:value="${element.key}">
-                                </th:block>
-
                                 <tbody>
                                     <th>
-                                        <tr th:each="element : ${auxMap}">
+                                        <tr th:each="element : ${auxMap}">                               
                                             <td>
+
+                                                <input type="hidden" name="answerList" th:value="${element.value}">
+
                                                 <div th:switch="${element.value.ansString}">
                                                     <div th:case="'Yes'">
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes' checked> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No'> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A">
+                                                        <select name="answerAux" id="answerAux">
+                                                            <option value="">Choose an answer</option>
+                                                            <option value="Yes" selected>Yes</option>
+                                                            <option value="No">No</option>
+                                                            <option value="N.A">N/A</option>
+                                                        </select>
                                                         <label th:text="'   ' + ${element.key.heuristicString}"></label>
                                                     </div>
                                                     <div th:case="'No'">
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes'> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' checked> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A">
+                                                        <select name="answerAux" id="answerAux">
+                                                            <option value="">Choose an answer</option>
+                                                            <option value="Yes">Yes</option>
+                                                            <option value="No" selected>No</option>
+                                                            <option value="N.A">N/A</option>
+                                                        </select>
                                                         <label th:text="'   ' + ${element.key.heuristicString}"></label>
                                                     </div>
                                                     <div th:case="'N.A'">
-                                                        <input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text='Yes'> 
-                                                        <input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text='No'> 
-                                                        <input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text="N.A" checked>
-                                                        <label th:text="'   ' + #{element.key.heuristicString}"></label> <!-- Así sale feo -->
-                                                    </div>
-                                                    <div th:case="*">
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes'> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No'> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A">
+                                                        <select name="answerAux" id="answerAux">
+                                                            <option value="">Choose an answer</option>
+                                                            <option value="Yes">Yes</option>
+                                                            <option value="No">No</option>
+                                                            <option value="N.A" selected>N/A</option>
+                                                        </select>
                                                         <label th:text="'   ' + ${element.key.heuristicString}"></label>
                                                     </div>
+                                                    <div th:case="*">
+                                                        <select name="answerAux" id="answerAux">
+                                                            <option value="" selected>Choose an answer</option>
+                                                            <option value="Yes">Yes</option>
+                                                            <option value="No">No</option>
+                                                            <option value="N.A">N/A</option>
+                                                        </select>
+                                                        <label th:text="'   ' + ${element.key.heuristicString}"></label>
+                                                    </div> 
                                                 </div>
                                             </td>
                                         </tr>
                                     </th>
+
                                 <tbody>
                             </table>
                         </div>
