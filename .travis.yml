@@ -10,8 +10,6 @@ before_install:
   - "sudo cp chromedriver /usr/local/bin/."
   - "sudo chmod +x /usr/local/bin/chromedriver"
 dist: trusty
-install: 
-  - "./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -B -V"
 jdk: 
   - oraclejdk15
 language: java
