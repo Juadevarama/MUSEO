@@ -160,7 +160,7 @@ public class QuestionnaireControllerTests {
 
     // Test de creación de formulario (POST)
 
-    @WithMockUser(value = "spring")
+/*     @WithMockUser(value = "spring")
 	@Test	
 	void TestProcessCreateQuestionnaireForm() throws Exception {
 
@@ -175,7 +175,7 @@ public class QuestionnaireControllerTests {
 
         logger.info("response: " + response);
 	} 
-
+ */
     // Test de actualización de cuestionario (GET)
 
 /*     @WithMockUser(value = "spring")
