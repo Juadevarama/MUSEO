@@ -178,18 +178,22 @@ public class QuestionnaireControllerTests {
  */
     // Test de actualización de cuestionario (GET)
 
-/*     @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
 	@Test	
 	void TestInitUpdateQuestionnaireForm() throws Exception {
-		mockMvc.perform(get("/updateQuestionnaire", TEST_QUESTIONNAIRE_ID))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("user"))
-                .andExpect(model().attributeExists("questionnaire"))
-				.andExpect(model().attributeExists("fHSelected"))
-                .andExpect(model().attributeExists("fHAutomatic"))
-                .andExpect(model().attributeExists("fHRemainder")) 
-                .andExpect(view().name("updateQuestionnaire"));
-	} */
+		
+        String response = mockMvc.perform(get("/updateQuestionnaire")
+            .param("questionnaireId", "10"))    // Esto es lo único que parece funcionar con los RequestParam
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("questionnaire"))
+			.andExpect(model().attributeExists("fHSelected"))
+            .andExpect(model().attributeExists("fHAutomatic"))
+            .andExpect(model().attributeExists("fHRemainder")) 
+            .andExpect(view().name("updateQuestionnaire"))
+            .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+	} 
 
     // Test de actualización de cuestionario (POST)
 
