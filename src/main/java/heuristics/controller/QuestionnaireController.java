@@ -247,7 +247,7 @@ public class QuestionnaireController {
     // Create Questionnaire (POST)
 
     @PostMapping("/createQuestionnaire")
-    public String processCreateQuestionnaireForm(@ModelAttribute("questionnaire") Questionnaire questionnaire,
+    public String processCreateQuestionnaireForm(@Valid Questionnaire questionnaire,
     @RequestParam(value = "choosenPlatforms" , required = false) List<Platform> choosenPlatforms, 
     @RequestParam(value = "choosenPurposes" , required = false) List<Purpose> choosenPurposes,
     @RequestParam(value = "choosenDevelopmentPhases" , required = false) List<DevelopmentPhase> choosenDevelopmentPhases,
@@ -276,7 +276,7 @@ public class QuestionnaireController {
         /* Primero cogemos todos los objetos HeuristicQuestionnaire generados, y luego vamos filtrando 
         las FinalHeuristic de estos, para que no haya repetidas, y las metemos en la lista que usaremos */
 
-        List<FinalHeuristic> finalHeuristicList = finalHeuristicService.findFHByCuestionnaire(
+        List<FinalHeuristic> finalHeuristicList = finalHeuristicService.findFHByQuestionnaire(
             heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaire.getId()));
 
         model.addAttribute("questionnaire", questionnaire);

@@ -1,12 +1,17 @@
 package heuristics.questionnaire;
 
 import static org.mockito.BDDMockito.given;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +30,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import heuristics.configuration.WebSecurityConfig;
 import heuristics.controller.QuestionnaireController;
+import heuristics.model.DevelopmentPhase;
+import heuristics.model.FinalHeuristic;
+import heuristics.model.GameAspect;
+import heuristics.model.HeuristicQuestionnaire;
+import heuristics.model.Keyword;
+import heuristics.model.NielsenHeuristic;
+import heuristics.model.Platform;
+import heuristics.model.Purpose;
 import heuristics.model.Questionnaire;
+import heuristics.model.UsabilityAspect;
 import heuristics.model.User;
 import heuristics.service.AnswerService;
 import heuristics.service.DevelopmentPhaseService;
@@ -51,6 +65,7 @@ public class QuestionnaireControllerTests {
     
     private static final int TEST_QUESTIONNAIRE_ID = 10;
     private static final int TEST_ADMIN_ID = 10;
+    private static final int TEST_FINAL_HEURISTIC_ID = 5000;
 
     @MockBean
     private QuestionnaireService questionnaireService;
@@ -96,6 +111,7 @@ public class QuestionnaireControllerTests {
 
     private User john;
     private Questionnaire questionnaireTest;
+    private FinalHeuristic finalHeuristicTest;
     
     @BeforeEach
     void setup(){
@@ -118,6 +134,12 @@ public class QuestionnaireControllerTests {
         questionnaireTest.setProduct("Hades");
         questionnaireTest.setClosed(false);
         given(this.questionnaireService.findQuestionnaireByID(TEST_QUESTIONNAIRE_ID)).willReturn(questionnaireTest);
+
+        finalHeuristicTest = new FinalHeuristic();
+        finalHeuristicTest.setId(TEST_FINAL_HEURISTIC_ID);
+        finalHeuristicTest.setHeuristicString("Esta es una heurística de prueba");
+        
+        given(finalHeuristicService.findFinalHeuristicById(TEST_FINAL_HEURISTIC_ID)).willReturn(finalHeuristicTest);
 
     }
 
@@ -152,7 +174,7 @@ public class QuestionnaireControllerTests {
             .andExpect(model().attributeExists("allKeywords"))
             .andExpect(model().attributeExists("allNielsenHeuristics"))
             .andExpect(model().attributeExists("allUsabilityAspects"))
-            .andExpect(view().name("createQuestionnaire"))
+            .andExpect(view().name("createQuestionnaire")) 
             .andReturn().getResponse().getContentAsString();
 
         logger.info("response: " + response);
@@ -160,22 +182,58 @@ public class QuestionnaireControllerTests {
 
     // Test de creación de formulario (POST)
 
-/*     @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
 	@Test	
 	void TestProcessCreateQuestionnaireForm() throws Exception {
 
+        HeuristicQuestionnaire hQ = new HeuristicQuestionnaire();
+        hQ.setId(3000);
+        hQ.setQuestionnaireID(questionnaireTest.getId());
+        hQ.setFinalHeuristicID(TEST_FINAL_HEURISTIC_ID);
+        hQ.setAutomatic(Boolean.TRUE);
+        hQ.setSelected(Boolean.FALSE);
+
+        List<HeuristicQuestionnaire> HQList = new ArrayList<HeuristicQuestionnaire>();
+        HQList.add(hQ);
+
+        List<FinalHeuristic> FHList = new ArrayList<FinalHeuristic>();
+        FHList.add(finalHeuristicService.findFinalHeuristicById(TEST_FINAL_HEURISTIC_ID));
+
+        List<Platform> choosenPlatforms = new ArrayList<Platform>();
+        List<Purpose> choosenPurposes = new ArrayList<Purpose>();
+        List<DevelopmentPhase> choosenDevelopmentPhases = new ArrayList<DevelopmentPhase>();
+        List<GameAspect> choosenGameAspects = new ArrayList<GameAspect>();
+        List<Keyword> choosenKeywords = new ArrayList<Keyword>();
+        List<NielsenHeuristic> choosenNielsenHeuristics = new ArrayList<NielsenHeuristic>();
+        List<UsabilityAspect> choosenUsabilityAspects = new ArrayList<UsabilityAspect>();
+
+
+
+        given(finalHeuristicService.findFHByQuestionnaire(
+            heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireTest.getId())))
+            .willReturn(FHList);
+
         String response = mockMvc.perform(post("/createQuestionnaire")
             .with(csrf())
-            .param("product", questionnaireTest.getProduct())
-            .param("closed", questionnaireTest.getClosed().toString()))
-            //.andExpect(model().attributeHasNoErrors("questionnaire"))
-            .andExpect(status().is3xxRedirection())
+            .param("product", "Hades")
+            .param("closed", "FALSE")
+            .param("finalHeuristic", finalHeuristicTest.toString()))
+            /*.param("choosenPlatforms", choosenPlatforms.toString()) 
+            .param("choosenPurposes", choosenPurposes.toString()) 
+            .param("choosenDevelopmentPhases", choosenDevelopmentPhases.toString()) 
+            .param("choosenGameAspects", choosenGameAspects.toString()) 
+            .param("choosenKeywords", choosenKeywords.toString()) 
+            .param("choosenNielsenHeuristics", choosenNielsenHeuristics.toString()) 
+            .param("choosenUsabilityAspects", choosenUsabilityAspects.toString()) 
+            .requestAttr("questionnaire", questionnaireTest)) */
+            //.requestAttr("allFinalHeuristic", FHList.toString()))
+            //.andExpect(status().is3xxRedirection())
             .andExpect(view().name("redirect:/questionnaireList?create"))
             .andReturn().getResponse().getContentAsString();
 
         logger.info("response: " + response);
-	} 
- */
+	}  
+
     // Test de actualización de cuestionario (GET)
 
     @WithMockUser(value = "spring")
@@ -183,7 +241,7 @@ public class QuestionnaireControllerTests {
 	void TestInitUpdateQuestionnaireForm() throws Exception {
 		
         String response = mockMvc.perform(get("/updateQuestionnaire")
-            .param("questionnaireId", "10"))    // Esto es lo único que parece funcionar con los RequestParam
+            .param("questionnaireId", questionnaireTest.getId().toString()))    // Esto es lo único que parece funcionar con los RequestParam
             .andExpect(status().isOk())
             .andExpect(model().attributeExists("questionnaire"))
 			.andExpect(model().attributeExists("fHSelected"))
