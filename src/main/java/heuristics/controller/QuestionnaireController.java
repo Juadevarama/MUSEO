@@ -530,11 +530,11 @@ public class QuestionnaireController {
     @RequestParam(value = "recipientList" , required = false) List<User> recipientList,
     @RequestParam(value="questionnaireId", required=true) Integer questionnaireId, Model model){
 
-        // Actualizamos los usuarios activos para el ratio de cobertura
+    /*         // Actualizamos los usuarios activos para el ratio de cobertura
 
-        if(action.equals("Save")){
+        if(action.equals("Save")){  // Esto se implementará en el futuro
             
-        }
+        } */
 
         // Añadimos un nuevo usuario a la lista
 

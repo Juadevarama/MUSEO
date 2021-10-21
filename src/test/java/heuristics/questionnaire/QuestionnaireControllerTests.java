@@ -34,6 +34,7 @@ import heuristics.model.DevelopmentPhase;
 import heuristics.model.FinalHeuristic;
 import heuristics.model.GameAspect;
 import heuristics.model.HeuristicQuestionnaire;
+import heuristics.model.HeuristicUser;
 import heuristics.model.Keyword;
 import heuristics.model.NielsenHeuristic;
 import heuristics.model.Platform;
@@ -65,6 +66,7 @@ public class QuestionnaireControllerTests {
     
     private static final int TEST_QUESTIONNAIRE_ID = 10;
     private static final int TEST_ADMIN_ID = 10;
+    private static final int TEST_HEURISTIC__USER_ID = 1000;
     private static final int TEST_FINAL_HEURISTIC_ID = 5000;
 
     @MockBean
@@ -135,6 +137,13 @@ public class QuestionnaireControllerTests {
         questionnaireTest.setClosed(false);
         given(this.questionnaireService.findQuestionnaireByID(TEST_QUESTIONNAIRE_ID)).willReturn(questionnaireTest);
 
+        HeuristicUser hU = new HeuristicUser();
+        hU.setId(TEST_HEURISTIC__USER_ID);
+        hU.setUserID(TEST_ADMIN_ID);
+        hU.setQuestionnaireID(TEST_QUESTIONNAIRE_ID);
+        hU.setOwner(Boolean.TRUE);
+        given(this.heuristicUserService.findHeuristicUserByIDs(TEST_ADMIN_ID, TEST_QUESTIONNAIRE_ID)).willReturn(hU);
+
         finalHeuristicTest = new FinalHeuristic();
         finalHeuristicTest.setId(TEST_FINAL_HEURISTIC_ID);
         finalHeuristicTest.setHeuristicString("Esta es una heurística de prueba");
@@ -182,11 +191,11 @@ public class QuestionnaireControllerTests {
 
     // Test de creación de formulario (POST)
 
-    @WithMockUser(value = "spring")
+    /* @WithMockUser(value = "spring")
 	@Test	
 	void TestProcessCreateQuestionnaireForm() throws Exception {
 
-        HeuristicQuestionnaire hQ = new HeuristicQuestionnaire();
+/*         HeuristicQuestionnaire hQ = new HeuristicQuestionnaire();
         hQ.setId(3000);
         hQ.setQuestionnaireID(questionnaireTest.getId());
         hQ.setFinalHeuristicID(TEST_FINAL_HEURISTIC_ID);
@@ -205,7 +214,7 @@ public class QuestionnaireControllerTests {
         List<GameAspect> choosenGameAspects = new ArrayList<GameAspect>();
         List<Keyword> choosenKeywords = new ArrayList<Keyword>();
         List<NielsenHeuristic> choosenNielsenHeuristics = new ArrayList<NielsenHeuristic>();
-        List<UsabilityAspect> choosenUsabilityAspects = new ArrayList<UsabilityAspect>();
+        List<UsabilityAspect> choosenUsabilityAspects = new ArrayList<UsabilityAspect>(); 
 
 
 
@@ -216,23 +225,17 @@ public class QuestionnaireControllerTests {
         String response = mockMvc.perform(post("/createQuestionnaire")
             .with(csrf())
             .param("product", "Hades")
+            .param("description", "Good game")
             .param("closed", "FALSE")
-            .param("finalHeuristic", finalHeuristicTest.toString()))
-            /*.param("choosenPlatforms", choosenPlatforms.toString()) 
-            .param("choosenPurposes", choosenPurposes.toString()) 
-            .param("choosenDevelopmentPhases", choosenDevelopmentPhases.toString()) 
-            .param("choosenGameAspects", choosenGameAspects.toString()) 
-            .param("choosenKeywords", choosenKeywords.toString()) 
-            .param("choosenNielsenHeuristics", choosenNielsenHeuristics.toString()) 
-            .param("choosenUsabilityAspects", choosenUsabilityAspects.toString()) 
-            .requestAttr("questionnaire", questionnaireTest)) */
-            //.requestAttr("allFinalHeuristic", FHList.toString()))
-            //.andExpect(status().is3xxRedirection())
+            .param("finalHeuristic", finalHeuristicTest.toString())
+            .flashAttr("allFinalHeuristic", new ArrayList<FinalHeuristic>())
+            .flashAttr("questionnaire", new Questionnaire()))
+            .andExpect(status().is3xxRedirection())
             .andExpect(view().name("redirect:/questionnaireList?create"))
             .andReturn().getResponse().getContentAsString();
 
         logger.info("response: " + response);
-	}  
+	}   */
 
     // Test de actualización de cuestionario (GET)
 
@@ -261,26 +264,102 @@ public class QuestionnaireControllerTests {
 
         // Parámetros requeridos
 
-        String action = "Save";
+        String action = "Save"; // Con esta acción no cerramos el formulario
 
-        HeuristicUser hU = new HeuristicUser();
-        hU.setId(1000);
-        hU.setUserID(john.getId());
-        hU.setQuestionnaireID(questionnaireTest.getId());
-        hU.setOwner(Boolean.TRUE);
-
-        mockMvc.perform(post("/updateQuestionnaire", action))
+        String response = mockMvc.perform(post("/updateQuestionnaire", action)
+                .param("questionnaire", questionnaireTest.toString()))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("user"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/questionnaireList?update"));
-    } */
+                .andExpect(view().name("redirect:/questionnaireList?update"))
+                .andReturn().getResponse().getContentAsString();
 
+        logger.info("response: " + response);
+    }  */
 
+    // Test de Mostrar Cuestionario sin rellenar
 
+    @WithMockUser(value = "spring")
+    @Test 
+    void TestInitShowQuestionnaireForm() throws Exception {
+        
+        String response = mockMvc.perform(get("/showQuestionnaire")
+            .param("questionnaireId", questionnaireTest.getId().toString()))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("fHSelected"))
+            .andExpect(model().attributeExists("fHAutomatic"))
+            .andExpect(model().attributeExists("fHRemainder"))
+            .andExpect(model().attributeExists("ansForm")) 
+            .andExpect(model().attributeExists("questionnaire"))
+            .andExpect(view().name("showQuestionnaire"))
+            .andReturn().getResponse().getContentAsString();
 
+        logger.info("response: " + response);
+    }
 
+   // Test de Exportación a PDF
 
+   @WithMockUser(value = "spring")
+   @Test
+   void TestInitExportQuestionnaireForm() throws Exception {
+       
+       String response = mockMvc.perform(get("/exportToPDF")
+           .param("questionnaireId", questionnaireTest.getId().toString()))
+           .andExpect(status().isOk())
+           .andReturn().getResponse().getContentAsString();
+
+       logger.info("response: " + response);
+   }
+
+    // Test de gestión de envíos (GET)
+
+    @WithMockUser(value = "spring")
+    @Test 
+    void TestInitDeliveryManagementForm() throws Exception {
+        
+        String response = mockMvc.perform(get("/deliveryManagement")
+            .param("questionnaireId", questionnaireTest.getId().toString()))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("questionnaire"))
+            .andExpect(model().attributeExists("auxMap"))
+            .andExpect(view().name("deliveryManagement"))
+            .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+    }
+
+    // Test de gestión de envíos (POST)  
+
+    @WithMockUser(value = "string") // Da 403
+    @Test 
+    void TestProcessDeliveryManagementForm() throws Exception {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("A ver:" + userDetails);
+
+        User recipient = new User();
+        recipient.setId(20);
+        recipient.setUsername("Recipient");
+        recipient.setPassword("p4sw00rd");
+        recipient.setRole("Evaluator");
+        recipient.setName("name");
+        recipient.setSurnames("surnames");
+        recipient.setEmail("email@gmail.com");
+
+        List<User> recipientList = new ArrayList<User>();
+        
+        String response = mockMvc.perform(post("/deliveryManagement")
+            .param("recipient", recipient.toString())
+            .param("action", "Add")
+            .param("recipientList", recipientList.toString())
+            .param("questionnaireId", questionnaireTest.getId().toString()))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("questionnaire"))
+            .andExpect(view().name("redirect:/deliveryManagement?questionnaireId=" + TEST_QUESTIONNAIRE_ID))
+            .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+    }
 }
 
 

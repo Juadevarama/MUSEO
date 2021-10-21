@@ -80,8 +80,8 @@ public class UserController {
     public String initShowUserForm(Model model) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
         User user = userService.findUserByUsername(userDetails.getUsername());
+        
         model.addAttribute("user", user);
         return "showProfile";
     }
