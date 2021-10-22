@@ -157,6 +157,31 @@ public class UserControllerTests {
         logger.info("response: " + response);
     } 
 
+    // Test de Login de Usuario 
+
+    @WithMockUser(value = "spring")
+    @Test   
+    void testInitLoginUserForm() throws Exception {
+        
+        String response = mockMvc.perform(get("/login"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+    }
+
+    // Test de Logout de Usuario 
+
+    @WithMockUser(value = "spring")
+    @Test   
+    void testInitLogoutUserForm() throws Exception {
+        
+        String response = mockMvc.perform(get("/login?logout=true"))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+    }
 }
 
 

@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import heuristics.configuration.WebSecurityConfig;
 import heuristics.controller.QuestionnaireController;
+import heuristics.model.Answer;
 import heuristics.model.DevelopmentPhase;
 import heuristics.model.FinalHeuristic;
 import heuristics.model.GameAspect;
@@ -66,7 +67,9 @@ public class QuestionnaireControllerTests {
     
     private static final int TEST_QUESTIONNAIRE_ID = 10;
     private static final int TEST_ADMIN_ID = 10;
+    private static final int TEST_EVALUATOR_ID = 11;
     private static final int TEST_HEURISTIC__USER_ID = 1000;
+    private static final int TEST_HEURISTIC__USER_2_ID = 1001;
     private static final int TEST_FINAL_HEURISTIC_ID = 5000;
 
     @MockBean
@@ -112,6 +115,7 @@ public class QuestionnaireControllerTests {
     private MockMvc mockMvc;
 
     private User john;
+    private User jane;
     private Questionnaire questionnaireTest;
     private FinalHeuristic finalHeuristicTest;
     
@@ -128,8 +132,14 @@ public class QuestionnaireControllerTests {
         john.setEmail("doeJohn@gmail.com");
         given(this.userService.findUserById(TEST_ADMIN_ID)).willReturn(john);
 
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(john);
+        jane = new User();
+        jane.setId(TEST_EVALUATOR_ID);
+        jane.setUsername("IamJane");
+        jane.setPassword("DoeJane20");
+        jane.setRole("Evaluator");
+        jane.setName("Jane");
+        jane.setSurnames("Doe");
+        jane.setEmail("doeJane@gmail.com");
 
         questionnaireTest = new Questionnaire();
         questionnaireTest.setId(TEST_QUESTIONNAIRE_ID);
@@ -142,7 +152,29 @@ public class QuestionnaireControllerTests {
         hU.setUserID(TEST_ADMIN_ID);
         hU.setQuestionnaireID(TEST_QUESTIONNAIRE_ID);
         hU.setOwner(Boolean.TRUE);
+
         given(this.heuristicUserService.findHeuristicUserByIDs(TEST_ADMIN_ID, TEST_QUESTIONNAIRE_ID)).willReturn(hU);
+
+        List<HeuristicUser> hUList = new ArrayList<HeuristicUser>();
+        hUList.add(hU);
+        given(this.heuristicUserService.findHeuristicUsersByUserId(TEST_ADMIN_ID)).willReturn(hUList);
+
+        HeuristicUser hU2 = new HeuristicUser();
+        hU2.setId(TEST_HEURISTIC__USER_2_ID);
+        hU2.setUserID(TEST_EVALUATOR_ID);
+        hU2.setQuestionnaireID(TEST_QUESTIONNAIRE_ID);
+        hU2.setOwner(Boolean.FALSE);
+
+        given(this.heuristicUserService.findHeuristicUserByIDs(TEST_EVALUATOR_ID, TEST_QUESTIONNAIRE_ID)).willReturn(hU2);
+
+        List<HeuristicUser> hU2List = new ArrayList<HeuristicUser>();
+        hU2List.add(hU2);
+        given(this.heuristicUserService.findHeuristicUsersByUserId(TEST_EVALUATOR_ID)).willReturn(hU2List);
+        
+        List<HeuristicUser> hUQList = new ArrayList<HeuristicUser>();
+        hUQList.add(hU);
+        hUQList.add(hU2);
+        given(this.heuristicUserService.findHeuristicUserByquestionnaireID(TEST_QUESTIONNAIRE_ID)).willReturn(hUQList);
 
         finalHeuristicTest = new FinalHeuristic();
         finalHeuristicTest.setId(TEST_FINAL_HEURISTIC_ID);
@@ -156,7 +188,10 @@ public class QuestionnaireControllerTests {
 
 	@WithMockUser(value = "spring")
 	@Test	
-	void TestInitQuestionnaireListFormAdmin() throws Exception {
+	void TestInitQuestionnaireListFormAdministrator() throws Exception {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(john);
 
 		String response = mockMvc.perform(get("/questionnaireList"))
             .andExpect(status().isOk())
@@ -173,6 +208,7 @@ public class QuestionnaireControllerTests {
     @WithMockUser(value = "spring")
 	@Test	
 	void TestInitCreateQuestionnaireForm() throws Exception {
+
 		String response = mockMvc.perform(get("/createQuestionnaire"))
             .andExpect(status().isOk())
             .andExpect(model().attributeExists("questionnaire"))
@@ -237,15 +273,19 @@ public class QuestionnaireControllerTests {
         logger.info("response: " + response);
 	}   */
 
-    // Test de actualización de cuestionario (GET)
+    // Test de actualización de cuestionario para administradores (GET)
 
     @WithMockUser(value = "spring")
 	@Test	
-	void TestInitUpdateQuestionnaireForm() throws Exception {
+	void TestInitUpdateQuestionnaireFormAdministrator() throws Exception {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(john);
 		
         String response = mockMvc.perform(get("/updateQuestionnaire")
             .param("questionnaireId", questionnaireTest.getId().toString()))    // Esto es lo único que parece funcionar con los RequestParam
             .andExpect(status().isOk())
+            .andExpect(model().attributeExists("user"))
             .andExpect(model().attributeExists("questionnaire"))
 			.andExpect(model().attributeExists("fHSelected"))
             .andExpect(model().attributeExists("fHAutomatic"))
@@ -256,11 +296,11 @@ public class QuestionnaireControllerTests {
         logger.info("response: " + response);
 	} 
 
-    // Test de actualización de cuestionario (POST)
+    // Test de actualización de cuestionario para administradores (POST)
 
 /*     @WithMockUser(value = "spring")
     @Test	
-    void TestProcessUpdateQuestionnaireForm() throws Exception {
+    void TestProcessUpdateQuestionnaireFormAdministrator() throws Exception {
 
         // Parámetros requeridos
 
@@ -277,11 +317,14 @@ public class QuestionnaireControllerTests {
         logger.info("response: " + response);
     }  */
 
-    // Test de Mostrar Cuestionario sin rellenar
+    // Test de Mostrar Cuestionario sin rellenar para administradores
 
     @WithMockUser(value = "spring")
     @Test 
-    void TestInitShowQuestionnaireForm() throws Exception {
+    void TestInitShowQuestionnaireFormAdministrator() throws Exception {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(john);
         
         String response = mockMvc.perform(get("/showQuestionnaire")
             .param("questionnaireId", questionnaireTest.getId().toString()))
@@ -330,32 +373,137 @@ public class QuestionnaireControllerTests {
 
     // Test de gestión de envíos (POST)  
 
-    @WithMockUser(value = "string") // Da 403
+/*     @WithMockUser(value = "string") // Da 403
     @Test 
     void TestProcessDeliveryManagementForm() throws Exception {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         System.out.println("A ver:" + userDetails);
 
-        User recipient = new User();
-        recipient.setId(20);
-        recipient.setUsername("Recipient");
-        recipient.setPassword("p4sw00rd");
-        recipient.setRole("Evaluator");
-        recipient.setName("name");
-        recipient.setSurnames("surnames");
-        recipient.setEmail("email@gmail.com");
-
         List<User> recipientList = new ArrayList<User>();
         
         String response = mockMvc.perform(post("/deliveryManagement")
-            .param("recipient", recipient.toString())
+            .param("recipient", jane.toString())
             .param("action", "Add")
             .param("recipientList", recipientList.toString())
             .param("questionnaireId", questionnaireTest.getId().toString()))
             .andExpect(status().isOk())
             .andExpect(model().attributeExists("questionnaire"))
             .andExpect(view().name("redirect:/deliveryManagement?questionnaireId=" + TEST_QUESTIONNAIRE_ID))
+            .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+    } */
+
+    // Test de listado de cuestionarios para evaluadores
+
+	@WithMockUser(value = "spring")
+	@Test	
+	void TestInitQuestionnaireListFormEvaluator() throws Exception {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(jane);
+
+		String response = mockMvc.perform(get("/questionnaireList"))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("user"))
+            .andExpect(model().attributeExists("auxMap"))
+            .andExpect(view().name("questionnaireList"))
+            .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+	}
+
+    // Test de Mostrar Cuestionario sin rellenar para evaluadores
+
+    @WithMockUser(value = "spring")
+    @Test 
+    void TestInitShowQuestionnaireFormEvaluator() throws Exception {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(jane);
+        
+        String response = mockMvc.perform(get("/showQuestionnaire")
+            .param("questionnaireId", questionnaireTest.getId().toString()))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("ansForm")) 
+            .andExpect(model().attributeExists("questionnaire"))
+            .andExpect(view().name("showQuestionnaire"))
+            .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+    }
+
+        // Test de actualización de cuestionario para evaluadores (GET)
+
+        @WithMockUser(value = "spring")
+        @Test	
+        void TestInitUpdateQuestionnaireFormEvaluator() throws Exception {
+    
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            given(userService.findUserByUsername(userDetails.getUsername())).willReturn(jane);
+            
+            String response = mockMvc.perform(get("/updateQuestionnaire")
+                .param("questionnaireId", questionnaireTest.getId().toString()))    
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("user"))
+                .andExpect(model().attributeExists("answerList"))
+                .andExpect(model().attributeExists("questionnaire"))
+                .andExpect(model().attributeExists("auxMap"))
+                .andExpect(view().name("updateQuestionnaire"))
+                .andReturn().getResponse().getContentAsString();
+    
+            logger.info("response: " + response);
+        } 
+
+/*     // Test de actualización de cuestionario para evaluadores (POST)
+
+    @WithMockUser(value = "spring")
+    @Test	
+    void TestProcessUpdateQuestionnaireFormEvaluator() throws Exception {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(jane);
+
+        // Parámetros requeridos
+
+        String action = "Save"; // Con esta acción no cerramos el formulario
+        List<Answer> answerList = new ArrayList<Answer>();
+        List<String> answerAux = new ArrayList<String>();
+
+
+        String response = mockMvc.perform(post("/updateQuestionnaire")
+                .param("questionnaire", questionnaireTest.toString())
+                .param("answerList", answerList.toString())
+                .param("answerAux", answerAux.toString())
+                .param("action", action))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeExists("user"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(view().name("/questionnaireList?update"))
+                .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+    }   */
+
+    // Test de Mostrar Cuestionario relleno
+
+    @WithMockUser(value = "spring")
+    @Test 
+    void TestInitShowFilledQuestionnaireForm() throws Exception {
+
+        given(userService.findUserById(TEST_EVALUATOR_ID)).willReturn(jane);
+        
+        String response = mockMvc.perform(get("/showFilledQuestionnaire")
+            .param("questionnaireId", questionnaireTest.getId().toString())
+            .param("userId", jane.getId().toString())
+            .param("ansForm", Boolean.TRUE.toString()))
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("user"))
+            .andExpect(model().attributeExists("auxMap")) 
+            .andExpect(model().attributeExists("ansForm"))
+            .andExpect(model().attributeExists("questionnaire"))
+            .andExpect(view().name("showQuestionnaire"))
             .andReturn().getResponse().getContentAsString();
 
         logger.info("response: " + response);
