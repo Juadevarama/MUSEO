@@ -10,7 +10,7 @@ public class MainController {
 
     @GetMapping("/")
     public String welcome(){
-      return "main";
+      return "redirect:/main";
     }
 
     // Main Page

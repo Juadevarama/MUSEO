@@ -1,28 +1,55 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
-<head>
-  
-  <div th:replace="header :: myHeader"></div>
+  <head>
+    
+    <meta charset="ISO-8859-1">
+    <title>MUSEO: Main Page</title>
+    <link rel="stylesheet" th:href=@{/css/styleMain.css}>
 
-  <title>MUSE: Main Page</title>
+  </head> 
 
-</head> 
+  <body>
+    <div>
+        <div class="intro">
+            <header class="header">
+                Welcome to Muse Online, <span sec:authentication="name">Username!</span>
+            </header>
+            <p>
+                Muse Online is a platform that uses the heuristic engine Muse to 
+                help people achieve heuristic evaluations on their products. Check down 
+                below the diferent options.
+                <br>
+                <br>
+                Questionnaires: Here you can see your questionnaires, create new ones, edit them, and send
+                them to expert people you know.   
+                <br>
+                <br>
+                Profile: Here you can see and edit your personal information.
+                <br>
+                <br>
+                Log Out: Leave the platform.
+            </p>
+        </div>
 
-<body>
+        <a class="button" href="#" th:href="@{/questionnaireList}">
+            <header class="header">
+                Questionnaires
+            </header>
+        </a>
 
-  <br>
-  <br>
-  <br>
+        <a class="button" href="#" th:href="@{/showProfile}">
+            <header class="header">
+                Profile
+            </header>
+        </a>
 
-  <div class="form-group">
-    <div class="row">
-      <div class="col-sm-6 col-sm-offset-3">
-        Welcome <span sec:authentication="name">Username</span>
-      </div>
-    </div>
-  </div>
-
-</body>
+        <a class="button" href="#" th:href="@{/logout}">
+            <header class="header">
+                Log Out
+            </header>
+        </a>
+    </div>  
+  </body>
 </html>
