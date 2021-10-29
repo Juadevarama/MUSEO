@@ -14,42 +14,46 @@
 
   <body class="bg-secondary">
 
-    <div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 400px;">
-    <form th:action="@{/login}" method="POST">
-    
-      <!-- Error Message-->
-      <div th:if="${param.error}">
-        <div class="alert alert-danger">Invalid username or password.</div>
-      </div>
+    <div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 700px;">
 
-      <!-- Logout Message-->
-      <div th:if="${param.logout}">
-        <div class="alert alert-danger">You have been logged out.</div>
-      </div>
+      <h1 class="text-center">Login in Muse Online App</h1>
 
-      <div class = "form-group text-center">
+      <form th:action="@{/login}" method="POST">
+      
+        <!-- Error Message-->
+        <div th:if="${param.error}">
+          <div class="alert alert-danger">Invalid username or password.</div>
+        </div>
+
+        <!-- Logout Message-->
+        <div th:if="${param.logout}">
+          <div class="alert alert-danger">You have been logged out.</div>
+        </div>
+
+        <div class = "form-group">
           <label for = "username">Username: </label>
-          <input type="text" class = "form-control" style="width: 300px; margin: 5px;" id="username" 
-          name="username" placeholder="Enter Username" autofocus="autofocus">
-      </div>
+          <input type="text" class = "form-control" style="margin: 5px; display: inline-block;" id="username" 
+            name="username" placeholder="Enter Username" autofocus="autofocus">
+        </div>
 
-      <div class = "form-group text-center">
-        <label for = "password">Password: </label>
-        <input type="password" class = "form-control" style="width: 300px; margin: 5px;" id="password" 
-        name="password" placeholder="Enter your password">
-      </div>
+        <div class = "form-group">
+          <label for = "password">Password: </label>
+          <input type="password" class = "form-control" style="margin: 5px; display: inline-block;" id="password" 
+            name="password" placeholder="Enter your password">
+        </div>
 
-      <div class="form-group text-center" style="margin: 10px;">
-        <input type="submit" name="login-submit" id="login-submit"
-        class="btn btn-primary" value="Log In" />
+        <div class="form-group text-center" style="margin: 10px;">
+          <input type="submit" name="login-submit" id="login-submit"
+          class="btn btn-primary btn-lg" value="Log In" />
+        </div>
+      </form>
+      
+      <div class="form-group text-center">
+        <span>New user? <a href="/" th:href="@{/register}">Register here</a></span>
       </div>
-    </form>
+      
 
-    <div class="form-group text-center">
-      <span>New user? <a href="/" th:href="@{/register}">Register here</a></span>
     </div>
-
-  </div>
   
 </body>
 
