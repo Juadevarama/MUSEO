@@ -145,27 +145,22 @@ public class QuestionnaireController {
 
         Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
 
-        // Diferenciamos las vistas para los usuarios Administradores y los Evaluadores
+        // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
 
-        if(user.getRole().equals("Administrator")){
+        List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
 
-            // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
-    
-            List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
-    
-            // Ahora sacamos las FH que el usuario ha dejado guardadas y las automáticas no guardadas
-    
-            List<FinalHeuristic> fHSelected = finalHeuristicService.findSelectedFH(hQList);
-            List<FinalHeuristic> fHAutomatic = finalHeuristicService.findAutomaticFH(hQList);
-    
-            // Por último, ponemos el resto de las FH.
-    
-            List<FinalHeuristic> fHRemainder = finalHeuristicService.findRemainderFH(hQList, fHSelected, fHAutomatic);
+        // Ahora sacamos las FH que el usuario ha dejado guardadas y las automáticas no guardadas
 
-            model.addAttribute("fHSelected", fHSelected);
-            model.addAttribute("fHAutomatic", fHAutomatic);
-            model.addAttribute("fHRemainder", fHRemainder);
-        }
+        List<FinalHeuristic> fHSelected = finalHeuristicService.findSelectedFH(hQList);
+        List<FinalHeuristic> fHAutomatic = finalHeuristicService.findAutomaticFH(hQList);
+
+        // Por último, ponemos el resto de las FH.
+
+        List<FinalHeuristic> fHRemainder = finalHeuristicService.findRemainderFH(hQList, fHSelected, fHAutomatic);
+
+        model.addAttribute("fHSelected", fHSelected);
+        model.addAttribute("fHAutomatic", fHAutomatic);
+        model.addAttribute("fHRemainder", fHRemainder);
         
         model.addAttribute("ansForm", ansForm);
         model.addAttribute("questionnaire", questionnaire);
@@ -378,6 +373,11 @@ public class QuestionnaireController {
         model.addAttribute("user", user);
 
         if(user.getRole().equals("Administrator")){
+
+            if(choosenFH == null){
+                return "redirect:/updateQuestionnaire?questionnaireId=" + questionnaire.getId() + "&question";
+            }
+
             if(action.equals("Complete")){   
                 questionnaire.setClosed(true);
             }
@@ -490,14 +490,20 @@ public class QuestionnaireController {
 
                 // Sacamos todas las respuestas de cada usuario
 
-                List<Answer> answerList = answerService.findAnswersByUserId(user.getId());
+                List<Answer> answerList = answerService.findAnswersByUserID(user.getId());
+
+				// Filtramos las respuestas a las del cuestionario en cuestión
+
+				List<Answer> filteredAnswerList = answerList.stream().
+					filter(a -> heuristicQuestionnaireService.findHeuristicQuestionnaireById(
+					a.getHeuristicQuestionnaireID()).getQuestionnaireID().equals(questionnaireId)).
+					collect(Collectors.toList());
 
                 // Y vamos a sacar el porcentaje de las respuestas que es "Yes"
 
                 Integer yes = 0;
-                for (Answer a : answerList) {
+                for (Answer a : filteredAnswerList) {
 
-                    System.out.println(a.getAnsString());
                     if(a.getAnsString().equals("Yes")){
                         yes++;
                     }
@@ -505,7 +511,7 @@ public class QuestionnaireController {
 
                 // Calculamos el ratio de cobertura.
 
-                hU.setCoverageRatio((yes*100/answerList.size())); 
+                hU.setCoverageRatio((yes*100/filteredAnswerList.size())); 
             }
 
             // Y añadimos la pareja usuario/ratio al mapa. 
@@ -522,62 +528,75 @@ public class QuestionnaireController {
     // Delivery Management (POST)
 
     @PostMapping("/deliveryManagement")
-    public String processDeliveryManagementForm(@RequestParam(value = "recipient" , required = true) String recipient, 
-    @RequestParam(value="action", required=true) String action, 
-    @RequestParam(value = "recipientList" , required = false) List<User> recipientList,
+    public String processDeliveryManagementForm(@RequestParam(value = "evaluator" , required = true) String evaluator, 
     @RequestParam(value="questionnaireId", required=true) Integer questionnaireId, Model model){
-
-    /*         // Actualizamos los usuarios activos para el ratio de cobertura
-
-        if(action.equals("Save")){  // Esto se implementará en el futuro
-            
-        } */
 
         // Añadimos un nuevo usuario a la lista
 
-        if(action.equals("Add")){
+		// Primero vamos a ver si el username introducido es válido
 
-            // Primero vamos a ver si el username introducido es válido
+		List<User> users = userService.findAllUser();
+		User user = userService.findUserByUsername(evaluator);
 
-            List<User> users = userService.findAllUser();
-            User user = userService.findUserByUsername(recipient);
+		// Vemos si existe, y si tiene el rol de evaluador.
 
-            // Vemos si existe, y si tiene el rol de evaluador.
+		if(!(users.contains(user)) || !(user.getRole().equals("Evaluator"))){
 
-            if(!(users.contains(user)) || !(user.getRole().equals("Evaluator"))){
+			return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId + "&valid";
+		}
 
-                return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
-            }
+		// También vemos si ya está en la lista. 
 
-            // También vemos si ya está en la lista. 
+        	/*  Sacamos la lista de usuarios a los que se les ha enviado el cuestionario.
+				Para sacar a los usuarios evaluadores, cogemos la lista de usuarios
+				que tienen un heuristicUser con el cuestionario, sin el owner */
+        
+			List<HeuristicUser> hUList = heuristicUserService.findHeuristicUserByquestionnaireID(questionnaireId);
 
-            if(recipientList != null && recipientList.contains(user)){
+			// Filtramos la lista para quitar el administrador.
+	
+			List<HeuristicUser> filteredList = hUList.stream()
+				.filter(hU -> hU.getOwner().equals(Boolean.FALSE))
+				.collect(Collectors.toList());
+	
+			// Cada hU lo tenemos que mapear con su ratio de cobertura. Creamos una lista de usuarios
+	
+			List<User> evaluatorList = new ArrayList<User>();
 
-                    return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
-            }
+			for (HeuristicUser hU : filteredList) {
 
-            // Una vez checkeadas estas dos cosas, lo añadimos.
+				// Sacamos el usuario
+	
+				User auxUser = userService.findUserById(hU.getUserID());
+	
+				// Lo metemos en la lista de usuarios
+	
+				evaluatorList.add(auxUser);
+			}
 
-            /*  Lo primero que hacemos es generar un objeto heuristicUser que vincule
-                el usuario con el cuestionario. */
+			if(evaluatorList.contains(user)){
+				return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId + "&exists";
+			}
 
-            heuristicUserService.generate(user.getId(), questionnaireId);
+		// Una vez checkeadas estas dos cosas, lo añadimos.
 
-            /*  Creamos todos los objetos de Answer, uno por hQ para ese cuestionario.
-                Sacamos todos los objetos hQ a partir del cuestionario  */
+		/*  Lo primero que hacemos es generar un objeto heuristicUser que vincule
+			el usuario con el cuestionario. */
 
-            List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
-            List<HeuristicQuestionnaire> selectedHQ = heuristicQuestionnaireService.filterSelectedHQ(hQList);
+		heuristicUserService.generate(user.getId(), questionnaireId);
 
-            // Ahora, para cada objeto hQ creamos un objeto Answer
+		/*  Creamos todos los objetos de Answer, uno por hQ para ese cuestionario.
+			Sacamos todos los objetos hQ a partir del cuestionario  */
 
-            answerService.generate(selectedHQ, user);
+		List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
+		List<HeuristicQuestionnaire> selectedHQ = heuristicQuestionnaireService.filterSelectedHQ(hQList);
 
-            model.addAttribute("questionnaireId", questionnaireId);
+		// Ahora, para cada objeto hQ creamos un objeto Answer
 
-            return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
-        }
+		answerService.generate(selectedHQ, user);
 
-        return "redirect:/deliveryManagement?add";
+		model.addAttribute("questionnaireId", questionnaireId);
+
+		return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId + "&add";
     }
 }

@@ -25,8 +25,8 @@ public class AnswerService {
     }
 
     @Transactional(readOnly = true)
-    public List<Answer> findAnswersByUserId(Integer id){
-        return answerRepository.findAnswersByUserID(id);
+    public List<Answer> findAnswersByUserID(Integer userId){
+        return answerRepository.findAnswersByUserID(userId);
     }
 
     @Transactional(readOnly = true)

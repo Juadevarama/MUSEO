@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+  	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
-	<head>
-	
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
-	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  	<head>
 
-	<meta charset="ISO-8859-1">
-	<title>MUSEO: Questionnaire List</title>
+		<link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
+		<link th:rel="stylesheet" th:href="@{/assets/jquery-steps/jquery.steps.css} "/>
+
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+		<meta charset="ISO-8859-1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>MUSEO: Questionnaire List</title>
 
 	</head> 
 
@@ -23,25 +27,29 @@
 
 		<!-- Update success message -->
 		<div th:if="${param.update}">
-			<div class="alert alert-info">You've successfully changed your questionnaire!</div>
+			<div class="alert alert-info">The changes have been saved successfully!</div>
 		</div>
 
 		<form th:action="@{/questionnaireList}" method="GET">  
 			<div th:switch="${user.role}"> 
 				<div th:case="'Administrator'">
 
-					<p>
-						Hi, <span sec:authentication="name">Username</span>!
-						<br>
-						You can see here a list of your own questionnaires. We will give you some notes about it.    
-						<br>
-						When you create a questionnaire, you can only edit it. Once you have completed editing it, 
-						you will be able to see it, export it, and you will gain access to the Delivery Management page, 
-						where you can send it to evaluators. 
-					</p>
+					<a href="#info" class="btn btn-info" style="margin: 5px;" data-bs-toggle="collapse">Info</a>
+					<div id="info" class="collapse">
+						<p>
+							Hi, <span sec:authentication="name">Username</span>!
+							<br>
+							You can see here a list of your own questionnaires. We will give you some notes about it.    
+							<br>
+							When you create a questionnaire, you can only edit it. Once you have completed editing it, 
+							you will be able to see it, export it, and you will gain access to the Delivery Management page, 
+							where you can send it to evaluators. 
+						</p>
+					</div>
 
 					<div class="table-responsive">
-						<table class="table table-striped table-bordered table-hover table-dark">
+						<table class="table table-striped table-bordered table-hover table-dark">	
+
 							<thead>
 								<tr>
 									<th>Product name</th>
@@ -76,7 +84,7 @@
 											</div>
 											<div th:case="${false}">
 												<td>
-													<a class="btn btn-link disabled" th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}">Edit</a>                      
+													<a th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}">Edit</a>                      
 												</td>
 												<td>
 													<a class="btn btn-link disabled" th:href="@{/showQuestionnaire(questionnaireId=${questionnaire.id})}">Show</a>
@@ -94,21 +102,33 @@
 							</tbody>
 						</table>    
 
-						<a type="button" class="btn btn-primary" th:href="@{/createQuestionnaire}">Create new questionnaire</a> 
-						<a type="button" class="btn btn-primary" th:href="@{/main}">Back</a>
-
-						
-
+						<a type="button" class="btn btn-primary float-start" th:href="@{/main}">Back</a>
+						<a type="button" class="btn btn-primary float-end" th:href="@{/createQuestionnaire}">Create new questionnaire</a> 	
 					</div>
+				</div>
+				
 				<div th:case="'Evaluator'">
+
+					<a href="#info" class="btn btn-info" style="margin: 5px;" data-bs-toggle="collapse">Info</a>
+					<div id="info" class="collapse">
+						<p>
+							Hi, <span sec:authentication="name">Username</span>!
+							<br>
+							Here you can see the list of questionnaires that have been sent to you. You can export them,
+							or fill them in and send them back to their owners. If you can see nothing, no one has sent a
+							questionnaire to you :(.  
+						</p>
+					</div>	
+
 					<div class="table-responsive">
-						<table class="table table-striped table-bordered table-hover">
+						<table class="table table-striped table-bordered table-hover table-dark">
+
 							<thead>
 								<tr>
-								<th>Product name</th>
-								<th>Description</th>
-								<th>Fill out</th>
-								<th>Export</th>
+									<th>Product name</th>
+									<th>Description</th>
+									<th>Fill out</th>
+									<th>Export</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -134,11 +154,16 @@
 									</th:block>                     
 							</tbody>
 						</table> 
+
+						<a type="button" class="btn btn-primary float-start" th:href="@{/main}">Back</a>
 					</div>
 				</div>
 			</div>
 		</form>
 		</div>
-	</body>
 
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+	</body>
 </html>

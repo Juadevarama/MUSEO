@@ -9,7 +9,7 @@ import heuristics.model.Answer;
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Integer>{
 
-    List<Answer> findAnswersByUserID(Integer id);
+    List<Answer> findAnswersByUserID(Integer userId);
 
     List<Answer> findAnswersByheuristicQuestionnaireID(Integer id);
 

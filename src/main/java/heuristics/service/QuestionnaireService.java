@@ -140,8 +140,8 @@ public class QuestionnaireService {
 
         // Sacamos todas las respuestas del evaluator
 
-        List<Answer> answers = answerService.findAnswersByUserId(evaluator.getId());
-
+        List<Answer> answers = answerService.findAnswersByUserID(evaluator.getId());
+                                
         for (Answer ans : answers) {
 
             /* Las vamos recorriendo, vamos sacando todos los objetos HQ, y miramos si el cuestionario de estos

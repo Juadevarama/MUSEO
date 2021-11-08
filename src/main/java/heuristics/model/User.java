@@ -9,13 +9,15 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.validator.constraints.UniqueElements;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 @Entity
-@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
+@Table(name = "users")
 @Data
 @EqualsAndHashCode(callSuper=false)
 @NoArgsConstructor
@@ -27,7 +29,7 @@ public class User {
 	@Column(name = "id")
 	private Integer id;
 
-    @Column(name = "username")
+    @Column(unique=true, name = "username")
 	@NotEmpty
 	private String username;
 
