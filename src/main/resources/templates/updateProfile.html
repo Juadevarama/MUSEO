@@ -1,74 +1,59 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
-<head>
+	<head>
 
-  <div th:replace="header :: myHeader"></div>
-  
-  <title>MUSE: Profile</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-</head> 
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<title>MUSEO: Edit Profile</title>
 
-<body>
+    </head>
 
-  <br>
-  <br>
+    <body class="bg-secondary">
 
-  <div class= "container">
-    <div class= "row">
-      <div class="col-md-12" col-md-offset-3>
+		<div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 700px;">
 
-        <!-- Success message -->
-        <div th:if="${param.success}">
-          <div class="alert alert-info">You've successfully changed your profile!</div>
-        </div>
+			<h1> User Profile</h1>
 
-        <h1> User Profile</h1>
-        <form th:action="@{/updateProfile}" method="POST" th:object= "${user}">
+			<form th:action="@{/updateProfile}" method="POST" th:object= "${user}">
 
-          <input type="hidden" th:field="*{id}" name="id" th:value="${id}">
-          <input type="hidden" th:field="*{role}" name="role" th:value="${role}"> 
-          <input type="hidden" th:field="*{username}" name="username" th:value="${username}"> 
+				<input type="hidden" th:field="*{id}" name="id" th:value="${id}">
+				<input type="hidden" th:field="*{role}" name="role" th:value="${role}"> 
+				<input type="hidden" th:field="*{username}" name="username" th:value="${username}"> 
+				<input type="hidden" th:field="*{password}" name="password" th:value="${password}">
 
-          <div class = "form-group">
-              <label class="control-label" for= "name">Name: </label>
-              <input id="name" class = "form-control"  
-              th:field="*{name}" placeholder="Name" required autofocus="autofocus">
-          </div>
+				<div class = "form-group">
+					<label class="control-label" for= "name">Name: </label>
+					<input id="name" class = "form-control"  
+					th:field="*{name}" placeholder="Name" required autofocus="autofocus">
+				</div>
 
-          <div class = "form-group">
-            <label class="control-label" for= "name">Surnames: </label>
-            <input id="surnames" class = "form-control"  
-            th:field="*{surnames}" placeholder="Surnames">
-          </div>
+				<div class = "form-group">
+					<label class="control-label" for= "name">Surnames: </label>
+					<input id="surnames" class = "form-control"  
+					th:field="*{surnames}" placeholder="Surnames">
+				</div>
 
-          <div class = "form-group">
-            <label class="control-label" for= "name">Company: </label>
-            <input id="company" class = "form-control"  
-            th:field="*{company}" placeholder="Company">
-          </div>
+				<div class = "form-group">
+					<label class="control-label" for= "name">Company: </label>
+					<input id="company" class = "form-control"  
+					th:field="*{company}" placeholder="Company">
+				</div>
 
-          <div class = "form-group">
-            <label class="control-label" for= "name">Email: </label>
-            <input id="email" class = "form-control"  
-            th:field="*{email}" placeholder="Email">
-          </div>
-          <div class = "form-group">
-            <label class="control-label" for= "name">Password: </label>
-            <input id="password" class = "form-control" type="password"
-            th:field="*{password}" placeholder="Password">
-          </div>
+				<div class = "form-group">
+					<label class="control-label" for= "name">Email: </label>
+					<input id="email" class = "form-control"  
+					th:field="*{email}" placeholder="Email">
+				</div>
 
-          <div class="form-group">
-            <a type="button" class="btn btn-default" th:href="@{/showProfile}">Cancel</a> 
-
-            <button type="submit" class="btn btn-success">Save changes</button> 
-          </div>
-        </form> 
-      </div>
-    </div>
-  </div>
-</body>
+				<a type="button" class="btn btn-primary float-start" style="margin-right: 5px;" th:href="@{/showProfile}">Back</a>
+				<button type="submit" class="btn btn-success float-end" style="margin-left: 5px;">Save changes</button> 	
+			</form> 
+		</div>
+	</body>
 
 </html>

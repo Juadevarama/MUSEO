@@ -42,10 +42,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional
-    public void saveUser(User user) throws DataAccessException{
-        mapRoleToAuthorities(user.getRole());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+    public void saveUser(User user, String action) throws DataAccessException{
+
+        if(action.equals("create")){
+            mapRoleToAuthorities(user.getRole());
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+        }
+        else if(action.equals("update")){
+            userRepository.save(user);
+        }
     }
 
     @Override

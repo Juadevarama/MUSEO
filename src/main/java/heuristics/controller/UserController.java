@@ -71,7 +71,8 @@ public class UserController {
     @PostMapping("/register")
     public String processCreateUserForm(@Valid User user, Model model) throws DataAccessException{
        
-        userService.saveUser(user);
+        String action = "create";
+        userService.saveUser(user, action);
         return "redirect:/register?success";      
     }
 
@@ -101,7 +102,8 @@ public class UserController {
     @PostMapping("/updateProfile")
     public String processUpdateUserForm(@Valid User user, Model model) throws DataAccessException{
 
-        userService.saveUser(user);
+        String action = "update";
+        userService.saveUser(user, action);
         return "redirect:/showProfile?success";   
     }
 
