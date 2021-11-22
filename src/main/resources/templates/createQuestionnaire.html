@@ -4,118 +4,167 @@
 
   	<head>
 
-		<link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
-		<link th:rel="stylesheet" th:href="@{/assets/jquery-steps/jquery.steps.css} "/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <link th:rel="stylesheet" th:href="@{/wizard/jquery.steps.css} "/>
 
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
-		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-		<meta charset="ISO-8859-1">
+		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>MUSEO: New Questionnaire</title>
+        <title>MUSEO: Login Page</title>
 
-	</head>
-
+    </head>
     <body class="bg-secondary">
 
-        <div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 700px;"> 
-            <div class="row">
-                <div class="col">
-                    <h2 class="mt-5">New Questionnaire</h2>
-                    
-                        <form id="createQuestionnaire" th:action="@{/createQuestionnaire}" method="POST" th:object="${questionnaire}">
+        <div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 800px;">
+			
+			<div class = "form-group text-center" style="margin: 20px; display: inline-flexbox;">
+				<h2>Generate new questionnaire</h2>
+				<h2><a class="btn btn-link" href="#" th:href="@{/questionnaireList}">Cancel</a></h2>
+			</div>
 
-                            <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Things:</label>
-                                <div class="mb-3">
-                                    <label class="form-label">Product name</label>
-                                    <input type="text" th:field="*{product}" placeholder="Insert the product name">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Description</label>
-                                    <input type="text" th:field="*{description}" placeholder="Insert a description for the product">
-                                </div>
-                            </div>
-                            <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Platforms:</label>
-                                <div>
-                                    <th:block th:each="platform : ${allPlatforms}">
-                                        <div class="col-md-12">
-                                            <input type="checkbox" name="choosenPlatforms" th:value="${platform}">
-                                            <label th:text="${platform.platformString}"></label>
-                                        </div>
-                                    </th:block>
-                                </div>
-                            </div>
-                            <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Purposes:</label>
-                                <div>
-                                    <th:block th:each="purpose : ${allPurposes}">
-                                        <div class="col-md-12">
-                                            <input type="checkbox" name="choosenPurposes" th:value="${purpose}">
-                                            <label th:text="${purpose.purposeString}"></label>
-                                        </div>
-                                    </th:block>
-                                </div>
-                            </div>
-                            <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Usability Aspects:</label>
-                                <div>
-                                    <th:block th:each="usabilityAspect : ${allUsabilityAspects}">
-                                        <div class="col-md-12">
-                                            <input type="checkbox" name="choosenUsabilityAspects" th:value="${usabilityAspect}">
-                                            <label th:text="${usabilityAspect.usabilityAspectString}"></label>
-                                        </div>
-                                    </th:block>
-                                </div>
-                            </div>
-                            <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Game Aspects:</label>
-                                <div>
-                                    <th:block th:each="gameAspect : ${allGameAspects}">
-                                        <div class="col-md-12">
-                                            <input type="checkbox" name="choosenGameAspects" th:value="${gameAspect}">
-                                            <label th:text="${gameAspect.gameAspectString}"></label>
-                                        </div>
-                                    </th:block>
-                                </div>
-                            </div>
-                            <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Keywords:</label>
-                                <div>
-                                    <th:block th:each="keyword : ${allKeywords}">
-                                        <div class="col-md-12">
-                                            <input type="checkbox" name="choosenKeywords" th:value="${keyword}">
-                                            <label th:text="${keyword.keywordString}"></label>
-                                        </div>
-                                    </th:block>
-                                </div>
-                            </div>
-                            <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Development Phases:</label>
-                                <div>
-                                    <th:block th:each="developmentPhase : ${allDevelopmentPhases}">
-                                        <div class="col-md-12">
-                                            <input type="checkbox" name="choosenDevelopmentPhases" th:value="${developmentPhase}">
-                                            <label th:text="${developmentPhase.developmentPhaseString}"></label>
-                                        </div>
-                                    </th:block>
-                                </div>
-                            </div>
-                            <div class="col-md-3"><label for="colFormLabelLg" class="col-sm-4 col-form-label col-form-label-lg">Nielsen Heuristics:</label>
-                                <div>
-                                    <th:block th:each="nielsenHeuristic : ${allNielsenHeuristics}">
-                                        <div class="col-md-12">
-                                            <input type="checkbox" name="choosenNielsenHeuristics" th:value="${nielsenHeuristic}">
-                                            <label th:text="${nielsenHeuristic.nielsenHeuristicString}"></label>
-                                        </div>
-                                    </th:block>
-                                </div>
-                            </div>
+			<form id="createQuestionnaire" th:action="@{/createQuestionnaire}" method="POST" th:object="${questionnaire}">
+				<h3>Product</h3>
+				<fieldset>
+					<legend>Product Information</legend>
+					<div class="mb-3">
+						<label class="form-label">Product name</label>
+						<input type="text" th:field="*{product}" placeholder="Insert the product name">
+					</div>
+					<div class="mb-3">
+						<label class="form-label">Description</label>
+						<input type="text" th:field="*{description}" placeholder="Insert a description for the product">
+					</div>
+				</fieldset>
 
-                            <a type="button" class="btn btn-primary" th:href="@{/questionnaireList}">Back</a>
-                            <button type="submit"class="btn btn-success">Generate</button>
+				<h3>Platforms</h3>
+				<fieldset>
+					<legend>Platforms</legend>
+					<div>
+						<th:block th:each="platform : ${allPlatforms}">
+							<div class="col-md-12">
+								<input type="checkbox" name="choosenPlatforms" th:value="${platform}">
+								<label th:text="${platform.platformString}"></label>
+							</div>
+						</th:block>
+					</div>
+				</fieldset>
 
-                        </form>
-                </div>  
-            </div>
+				<h3>Purposes</h3>
+				<fieldset>
+					<legend>Purposes</legend>
+					<div>
+						<th:block th:each="purpose : ${allPurposes}">
+							<div class="col-md-12">
+								<input type="checkbox" name="choosenPurposes" th:value="${purpose}">
+								<label th:text="${purpose.purposeString}"></label>
+							</div>
+						</th:block>
+					</div>
+				</fieldset>
+
+				<h3>Usability Aspects</h3>
+				<fieldset>
+					<legend>Usability Aspects</legend>
+					<div>
+						<th:block th:each="usabilityAspect : ${allUsabilityAspects}">
+							<div class="col-md-12">
+								<input type="checkbox" name="choosenUsabilityAspects" th:value="${usabilityAspect}">
+								<label th:text="${usabilityAspect.usabilityAspectString}"></label>
+							</div>
+						</th:block>
+					</div>
+				</fieldset>
+
+				<h3>Game Aspects</h3>
+				<fieldset>
+					<legend>Game Aspects</legend>
+					<div>
+						<th:block th:each="gameAspect : ${allGameAspects}">
+							<div class="col-md-12">
+								<input type="checkbox" name="choosenGameAspects" th:value="${gameAspect}">
+								<label th:text="${gameAspect.gameAspectString}"></label>
+							</div>
+						</th:block>
+					</div>
+				</fieldset>
+
+				<h3>Keywords</h3>
+				<fieldset>
+					<legend>Keywords</legend>
+					<div>
+						<th:block th:each="keyword : ${allKeywords}">
+							<div class="col-md-12">
+								<input type="checkbox" name="choosenKeywords" th:value="${keyword}">
+								<label th:text="${keyword.keywordString}"></label>
+							</div>
+						</th:block>
+					</div>
+				</fieldset>
+				
+				<h3>Development Phases</h3>
+				<fieldset>
+					<legend>Development Phases</legend>
+					<div>
+						<th:block th:each="developmentPhase : ${allDevelopmentPhases}">
+							<div class="col-md-12">
+								<input type="checkbox" name="choosenDevelopmentPhases" th:value="${developmentPhase}">
+								<label th:text="${developmentPhase.developmentPhaseString}"></label>
+							</div>
+						</th:block>
+					</div>
+				</fieldset>
+
+				<h3>Nielsen Heuristics</h3>
+				<fieldset>
+					<legend>Nielsen Heuristics</legend>
+					<div>
+						<th:block th:each="nielsenHeuristic : ${allNielsenHeuristics}">
+							<div class="col-md-12">
+								<input type="checkbox" name="choosenNielsenHeuristics" th:value="${nielsenHeuristic}">
+								<label th:text="${nielsenHeuristic.nielsenHeuristicString}"></label>
+							</div>
+						</th:block>
+					</div>
+				</fieldset>
+
+			</form>
         </div>
-        
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-        
+
+		<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+		<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+		<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+		<script th:src="@{wizard/jquery.steps.min.js}"></script>
+		<script th:src="@{wizard/jquery.validate.min.js}"></script>
+
+        <script>
+            var form = $("#createQuestionnaire").show();
+
+            form.steps({
+                headerTag: "h3",
+                bodyTag: "fieldset",
+                transitionEffect: "slideLeft",
+                onStepChanging: function (event, currentIndex, newIndex) {
+                    // Allways allow previous action even if the current form is not valid!
+                    if (currentIndex > newIndex) {
+                        return true;
+                    }
+                    // Needed in some cases if the user went back (clean up)
+                    if (currentIndex < newIndex) {
+                        // To remove error styles
+                        form.find(".body:eq(" + newIndex + ") label.error").remove();
+                        form.find(".body:eq(" + newIndex + ") .error").removeClass("error");
+                    }
+                    form.validate().settings.ignore = ":disabled,:hidden";
+                    return form.valid();       
+                },
+                onFinishing: function (event, currentIndex) {
+                    form.validate().settings.ignore = ":disabled";
+                    return form.valid();
+                },
+                onFinished: function (event, currentIndex) {
+                    form.submit();
+                }
+            });
+        </script>
     </body>
 </html>
