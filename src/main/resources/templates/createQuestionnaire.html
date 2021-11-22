@@ -10,17 +10,33 @@
 
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>MUSEO: Login Page</title>
+        <title>MUSEO: Generate Questionnaire</title>
 
     </head>
+
     <body class="bg-secondary">
 
-        <div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 800px;">
+        <div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 1000px;">
 			
-			<div class = "form-group text-center" style="margin: 20px; display: inline-flexbox;">
-				<h2>Generate new questionnaire</h2>
-				<h2><a class="btn btn-link" href="#" th:href="@{/questionnaireList}">Cancel</a></h2>
+			<div>
+				<p class="float-end">You are in Main Page -> Questionnaire List -> Generate Questionnaire</p>
+				<h2 class="text-left">Generate Questionnaire</h2>
 			</div>
+			<div style="margin-bottom: 5px;">
+				<a class="btn btn-primary" href="#" th:href="@{/questionnaireList}">Cancel</a>
+				<a href="#info" class="btn btn-info" style="margin: 5px;" data-bs-toggle="collapse">+Info</a>
+				<div id="info" class="collapse">
+					<p>
+						Hi, <span sec:authentication="name">Username</span>!
+						<br>
+						Here you can generate a questionnaire. We will give you some notes about it.    
+						<br>
+						You will then see different lists of features. We recommend you to choose the 
+						characteristics that you think fit best with your product. From what you choose, 
+						the system will recommend heuristics for you to add to your questionnaire later on.
+					</p>
+				</div>
+			</div>	
 
 			<form id="createQuestionnaire" th:action="@{/createQuestionnaire}" method="POST" th:object="${questionnaire}">
 				<h3>Product</h3>
@@ -41,10 +57,8 @@
 					<legend>Platforms</legend>
 					<div>
 						<th:block th:each="platform : ${allPlatforms}">
-							<div class="col-md-12">
-								<input type="checkbox" name="choosenPlatforms" th:value="${platform}">
-								<label th:text="${platform.platformString}"></label>
-							</div>
+							<input type="checkbox" name="choosenPlatforms" th:value="${platform}">
+							<label th:text="${platform.platformString}"></label>
 						</th:block>
 					</div>
 				</fieldset>
@@ -54,10 +68,8 @@
 					<legend>Purposes</legend>
 					<div>
 						<th:block th:each="purpose : ${allPurposes}">
-							<div class="col-md-12">
-								<input type="checkbox" name="choosenPurposes" th:value="${purpose}">
-								<label th:text="${purpose.purposeString}"></label>
-							</div>
+							<input type="checkbox" name="choosenPurposes" th:value="${purpose}">
+							<label th:text="${purpose.purposeString}"></label>
 						</th:block>
 					</div>
 				</fieldset>
@@ -67,10 +79,8 @@
 					<legend>Usability Aspects</legend>
 					<div>
 						<th:block th:each="usabilityAspect : ${allUsabilityAspects}">
-							<div class="col-md-12">
-								<input type="checkbox" name="choosenUsabilityAspects" th:value="${usabilityAspect}">
-								<label th:text="${usabilityAspect.usabilityAspectString}"></label>
-							</div>
+							<input type="checkbox" name="choosenUsabilityAspects" th:value="${usabilityAspect}">
+							<label th:text="${usabilityAspect.usabilityAspectString}"></label>
 						</th:block>
 					</div>
 				</fieldset>
@@ -80,10 +90,8 @@
 					<legend>Game Aspects</legend>
 					<div>
 						<th:block th:each="gameAspect : ${allGameAspects}">
-							<div class="col-md-12">
-								<input type="checkbox" name="choosenGameAspects" th:value="${gameAspect}">
-								<label th:text="${gameAspect.gameAspectString}"></label>
-							</div>
+							<input type="checkbox" name="choosenGameAspects" th:value="${gameAspect}">
+							<label th:text="${gameAspect.gameAspectString}"></label>
 						</th:block>
 					</div>
 				</fieldset>
@@ -93,10 +101,8 @@
 					<legend>Keywords</legend>
 					<div>
 						<th:block th:each="keyword : ${allKeywords}">
-							<div class="col-md-12">
-								<input type="checkbox" name="choosenKeywords" th:value="${keyword}">
-								<label th:text="${keyword.keywordString}"></label>
-							</div>
+							<input type="checkbox" name="choosenKeywords" th:value="${keyword}">
+							<label th:text="${keyword.keywordString}"></label>
 						</th:block>
 					</div>
 				</fieldset>
@@ -106,10 +112,8 @@
 					<legend>Development Phases</legend>
 					<div>
 						<th:block th:each="developmentPhase : ${allDevelopmentPhases}">
-							<div class="col-md-12">
-								<input type="checkbox" name="choosenDevelopmentPhases" th:value="${developmentPhase}">
-								<label th:text="${developmentPhase.developmentPhaseString}"></label>
-							</div>
+							<input type="checkbox" name="choosenDevelopmentPhases" th:value="${developmentPhase}">
+							<label th:text="${developmentPhase.developmentPhaseString}"></label>
 						</th:block>
 					</div>
 				</fieldset>
@@ -119,16 +123,17 @@
 					<legend>Nielsen Heuristics</legend>
 					<div>
 						<th:block th:each="nielsenHeuristic : ${allNielsenHeuristics}">
-							<div class="col-md-12">
-								<input type="checkbox" name="choosenNielsenHeuristics" th:value="${nielsenHeuristic}">
-								<label th:text="${nielsenHeuristic.nielsenHeuristicString}"></label>
-							</div>
+							<input type="checkbox" name="choosenNielsenHeuristics" th:value="${nielsenHeuristic}">
+							<label th:text="${nielsenHeuristic.nielsenHeuristicString}"></label>
 						</th:block>
 					</div>
 				</fieldset>
 
 			</form>
         </div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
 		<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 		<script th:src="@{/webjars/jquery/jquery.min.js}"></script>

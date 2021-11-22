@@ -4,13 +4,10 @@
 
   	<head>
 
-		<link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
-		<link th:rel="stylesheet" th:href="@{/assets/jquery-steps/jquery.steps.css} "/>
-
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
 		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-		<meta charset="ISO-8859-1">
+		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>MUSEO: Update Questionnaire</title>
 
@@ -35,16 +32,42 @@
 						<input type="hidden" th:field="*{id}" name="id" th:value="${id}">
 						<input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
 
+						<table class="table table-striped table-bordered table-hover table-dark">
 
-						<div>
-							<label class="form-label">Product name</label>
+							<p class="d-inline float-end">You are in Main Page -> Questionnaire List -> Update Questionnaire</p>
+							<h2 class="text-left">Update Questionnaire</h2>
+
+							<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
+							<div id="info" class="collapse">
+								<p>
+									<br>
+									<br>
+									Hi, <span sec:authentication="name">Username</span>!
+									<br>
+									This is where you can update your questionnaire. We will give you some notes about it.    
+									<br>
+									As you can see, you can change the product name and the description. We have divided the
+									heuristics in three lists that you can see below: First, you have the heuristic that you
+									have choosen for your questionnaire. If you just finished generating the questionnaire, there
+									should be no heuristics in this list. Next, you can see a list of heuristics that MUSE thinks
+									that would be a good idea for you to add to your questionnaire. At last, you have a list with
+									other heuristics, so you can look and choose if you want those also in your questionnaire!
+									<br>
+									You can change your changes in the save changes button below. When you are finished, press the
+									save and finish button, and you will be able to export it and send it. But be carefull! Once you
+									click on the finish button, you will be no longer able to update this questionnaire. 
+								</p>
+							</div>
+
+							<br>
+							<br>
+
+							<label class="form-label">Product name: </label>
 							<input type="text" th:field="*{product}" placeholder="Insert the product name">
 
-							<label class="form-label">Description</label>
-							<input type="text" class="flex-fill" th:field="*{description}" placeholder="Insert a description for the product">
-						</div>
+							<label class="form-label">Description: </label>
+							<input type="text" class="flex-fill;" th:field="*{description}" placeholder="Insert a description for the product">
 
-						<table class="table table-striped table-bordered table-hover table-dark">
 							<thead>
 								<th>These are the Heuristic you have choosen so far:</th>
 							</thead>
