@@ -176,7 +176,10 @@ public class QuestionnaireController {
     @RequestParam(value = "userId" , required = true) Integer userId,
     @RequestParam(value = "ansForm" , required = true) Boolean ansForm){
 
-        User user = userService.findUserById(userId);
+        User evaluator = userService.findUserById(userId);
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findUserByUsername(userDetails.getUsername());
         model.addAttribute("user", user);
 
         // Sacamos el cuestionario con el que estamos trabajando.
@@ -194,7 +197,7 @@ public class QuestionnaireController {
         for (HeuristicQuestionnaire hQ : hQList){
             List<Answer> answers = answerService.findAnswerByheuristicQuestionnaireID(hQ.getId());
             for (Answer answer : answers) {
-                if(answer.getUserID().equals(user.getId())){
+                if(answer.getUserID().equals(evaluator.getId())){
                     answerList.add(answer);
                 }
             }

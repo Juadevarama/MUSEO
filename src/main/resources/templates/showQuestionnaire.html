@@ -21,58 +21,100 @@
 				<div th:case="${true}">
 					<form th:action="@{/showFilledQuestionnaire}" method="GET" th:object="${questionnaire}">  
 
-						<!-- Hidden Atributes -->
-					
-						<input type="hidden" th:field="*{id}" name="id" th:value="${id}">
-						<input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
-	
-						<div class="col-md-12">
-							<div class="mb-6">
-								<label class="form-label">Product name</label>
-								<p type="text" th:text="*{product}">
+						<div class="table-responsive">
+
+							<p class="d-inline float-end"><small>You are in Main Page -> Questionnaire List -> Show Questionnaire</small></p>
+							<h2 class="text-left">Show Questionnaire</h2>
+
+							<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
+
+							<div th:switch="${user.role}">
+								<div th:case="'Administrator'">
+									<div id="info" class="collapse">
+										<p>
+											<br>
+											<br>
+											Hi, <span sec:authentication="name">Username</span>!
+											<br>
+											This is your questionnaire filled by the evaluator. 
+											<br>
+											You can see the answers the evaluator have chosen!
+										</p>
+									</div>
+								</div>
+								<div th:case="'Evaluator'">
+									<div id="info" class="collapse">
+										<p>
+											<br>
+											<br>
+											Hi, <span sec:authentication="name">Username</span>!
+											<br>
+											This is the questionnaire you have filled. 
+											<br>
+											You can no longer edit it, but you may look at the answers you chose!
+										</p>
+									</div>
+								</div>
 							</div>
-							<div class="mb-6">
-								<label class="form-label">Description</label>
-								<p type="text" th:text="*{description}"></p>                            
-							</div>
-						</div>
-	
-						<table class="table table-striped table-bordered table-hover table-dark">
-							<caption>The questionnaire has been filled.</caption>
-							<thead>
-								<th>These are the results of each heuristic:</th>
-							</thead>
-							<tbody>
-								<th>
-									<tr th:each="element : ${auxMap}">
+
+							<!-- Hidden Atributes -->
+						
+							<input type="hidden" th:field="*{id}" name="id" th:value="${id}">
+							<input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
+		
+							<table class="table table-striped table-bordered table-hover table-dark">
+
+								<tbody>
+									<tr>
 										<td>
-											<div th:switch="${element.value.ansString}">
-												<div th:case="'Yes'">
-													<input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes' disabled checked> 
-													<input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled> 
-													<input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled>
-													<label th:text="'   ' + ${element.key.heuristicString}"></label>
-												</div>
-												<div th:case="'No'">
-													<input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes' disabled> 
-													<input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled checked> 
-													<input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled>
-													<label th:text="'   ' + ${element.key.heuristicString}"></label>
-												</div>
-												<div th:case="'N.A'">
-													<input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text='Yes' disabled> 
-													<input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text='No' disabled> 
-													<input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text="N.A" disabled checked>
-													<label th:text="'   ' + #{element.key.heuristicString}"></label> <!-- Así sale feo -->
-												</div>
-											</div>
+											<label class="form-label d-inline">Product name: </label>
+											<p class="d-inline" style="margin-left: 10px; margin-bottom: 10px;" type="text" th:text="*{product}"></p>
+										</td>
+										<td>
+											<label class="form-label d-inline" style="margin-left: 50px;">Description: </label>
+											<p class="d-inline" style="margin-left: 10px;" type="text" th:text="*{description}"></p>
 										</td>
 									</tr>
-								</th>
-							<tbody>
-						</table>
+								</tbody>
+							</table>
+		
+							<table class="table table-striped table-bordered table-hover table-dark">
+								<caption>The questionnaire has been filled.</caption>
+								<thead>
+									<th>These are the results of each heuristic:</th>
+								</thead>
+								<tbody>
+									<th>
+										<tr th:each="element : ${auxMap}">
+											<td>
+												<div th:switch="${element.value.ansString}">
+													<div th:case="'Yes'">
+														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='Yes' disabled checked> 
+														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled> 
+														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled>
+														<label style="margin-left: 25px;" th:text="${element.key.heuristicString}"></label>
+													</div>
+													<div th:case="'No'">
+														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='Yes' disabled> 
+														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled checked> 
+														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled>
+														<label style="margin-left: 25px;" th:text="${element.key.heuristicString}"></label>
+													</div>
+													<div th:case="'N.A'">
+														<input type="radio" name="listaRadio" th:name="#{element.value.id}" th:value="${element.value.ansString}" th:text='Yes' disabled> 
+														<input type="radio" name="listaRadio" th:name="#{element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled> 
+														<input type="radio" name="listaRadio" th:name="#{element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled checked>
+														<label style="margin-left: 25px;" th:text="${element.key.heuristicString}"></label>
+													</div>
+												</div>
+											</td>
+										</tr>
+									</th>
+								<tbody>
+							</table>
 
-						<a type="button" class="btn btn-primary float-start" th:href="@{/questionnaireList}">Back</a>
+							<a type="button" class="btn btn-primary float-start" th:href="@{/questionnaireList}">Back</a>
+						</div>
 					</form>
 				</div>
 
@@ -104,7 +146,7 @@
 							<input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
 
 							<table class="table table-striped table-bordered table-hover table-dark">
-
+									
 								<tbody>
 									<tr>
 										<td>
