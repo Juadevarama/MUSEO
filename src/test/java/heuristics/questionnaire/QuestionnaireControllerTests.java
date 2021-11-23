@@ -494,11 +494,15 @@ public class QuestionnaireControllerTests {
     @WithMockUser(value = "spring")
     @Test 
     void TestInitShowFilledQuestionnaireForm() throws Exception {
-
+      
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(jane);
         given(userService.findUserById(TEST_EVALUATOR_ID)).willReturn(jane);
         
         String response = mockMvc.perform(get("/showFilledQuestionnaire")
             .param("questionnaireId", questionnaireTest.getId().toString())
+            .flashAttr("user.role", jane.getRole())
             .param("userId", jane.getId().toString())
             .param("ansForm", Boolean.TRUE.toString()))
             .andExpect(status().isOk())
