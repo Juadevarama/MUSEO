@@ -23,39 +23,45 @@
 			</div>
 
 			<form th:action="@{/showProfile}" method="GET">
-				<table class="table table-stripped table-bordered table-hover table-dark" th:object="${user}">
-					<thead>
-					</thead>
-					<tbody>
-						<tr>
-							<th>Username:</th>
-							<td th:text="*{username}"></th>
-						</tr>
-						<tr>
-							<th>Name:</th>
-							<td th:text="*{name}"></th>
-						</tr>
-						<tr>
-							<th>Surnames:</th>
-							<td th:text="*{surnames}"></th>
-						</tr>
-						<tr>
-							<th>Company:</th>
-							<td th:text="*{company}"></th>
-						</tr>
-						<tr>
-							<th>Email:</th>
-							<td th:text="*{email}"></th>
-						</tr>
-						<tr>
-							<th>Role:</th>
-							<td th:text="*{role}"></th>
-						</tr>
-					</tbody>
-				</table>
+				<div class="table-responsive">
+					<table class="table table-stripped table-bordered table-hover table-dark" th:object="${user}">
 
-				<a type="button" class="btn btn-primary float-start" th:href="@{/main}">Back</a> 
-				<a type="button" class="btn btn-primary float-end" th:href="@{/updateProfile}">Edit profile</a> 
+						<p class="d-inline float-end"><small>You are in Main Page -> Show Profile</small></p>
+						<h2 class="text-left">Show Profile</h2>
+
+						<thead>
+						</thead>
+						<tbody>
+							<tr>
+								<th>Username:</th>
+								<td th:text="*{username}"></th>
+							</tr>
+							<tr>
+								<th>Name:</th>
+								<td th:text="*{name}"></th>
+							</tr>
+							<tr>
+								<th>Surnames:</th>
+								<td th:text="*{surnames}"></th>
+							</tr>
+							<tr>
+								<th>Company:</th>
+								<td th:text="*{company}"></th>
+							</tr>
+							<tr>
+								<th>Email:</th>
+								<td th:text="*{email}"></th>
+							</tr>
+							<tr>
+								<th>Role:</th>
+								<td th:text="*{role}"></th>
+							</tr>
+						</tbody>
+					</table>
+
+					<a type="button" class="btn btn-primary float-start" th:href="@{/main}">Back</a> 
+					<a type="button" class="btn btn-primary float-end" th:href="@{/updateProfile}">Edit profile</a> 
+				</div>
 			</form> 
 		</div>
 

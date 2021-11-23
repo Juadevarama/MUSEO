@@ -40,19 +40,19 @@
 			</div>
 
 			<div class = "form-group">
-			<label class="control-label" for= "company">Company: </label>
+			<label class="control-label" for= "company">Company *: </label>
 			<input id="company" class = "form-control" style="margin: 5px; display: inline-block;"  
 			th:field="*{company}" required placeholder="Company">
 			</div>
 
 			<div class = "form-group">
-			<label class="control-label" for= "email">Email: </label>
+			<label class="control-label" for= "email">Email *: </label>
 			<input id="email" class = "form-control" style="margin: 5px; display: inline-block;"
 			th:field="*{email}" required placeholder="Email">
 			</div>
 
 			<div class = "form-group">
-				<label class="control-label" for= "username">Username: </label>
+				<label class="control-label" for= "username">Username *: </label>
 				<input id="username" class = "form-control" style="margin: 5px; display: inline-block;"  
 				th:field="*{username}" required placeholder="Username">
 			</div>
@@ -60,13 +60,13 @@
 
 
 			<div class = "form-group">
-			<label class="control-label" for= "password">Password: </label>
+			<label class="control-label" for= "password">Password *: </label>
 			<input id="password" class = "form-control" style="margin: 5px; display: inline-block;"
 				type="password" th:field="*{password}" required placeholder="Password">
 			</div>
 
 			<div class = "form-group text-center" style="margin: 5px;">
-				<label class="control-label" style="margin-right: 5px;" for= "role">Select your role on the platform:</label>
+				<label class="control-label" style="margin-right: 5px;" for= "role">Select your role on the platform *:</label>
 				<input type="radio" id="Administrator" name="role" required value="Administrator">
 				<label for="Administrator">Administrator</label>
 				<input type="radio" id="Evaluator" name="role" value="Evaluator">
@@ -76,9 +76,12 @@
 			<div class="form-group text-center">
 			<button type="submit" class="btn btn-success btn-lg" style="margin: 10px;">Register!</button> 
 			</div>
-			
-			<div class="form-group text-center">
-			<span>Already registered? <a href="/" th:href="@{/login}">Login here</a></span>
+
+			<div class="form-group d-inline">
+				<p class="d-inline">(*) Mandatory</p>
+				<div class="d-inline" style="margin-left: 90px;">
+					<span>Already registered? <a href="/" th:href="@{/login}">Login here</a></span>
+				</div>
 			</div>
 		</form>
 		</div>

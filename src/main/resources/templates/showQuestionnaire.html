@@ -4,15 +4,12 @@
 
 	<head>
 
-		<link th:rel="stylesheet" th:href="@{/webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
-		<link th:rel="stylesheet" th:href="@{/assets/jquery-steps/jquery.steps.css} "/>
-
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
 		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-		<meta charset="ISO-8859-1">
+		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-    	<title>MUSEO: Show Questionnaire</title>
+		<title>MUSEO: Show Questionnaire</title>
 
     </head>
 
@@ -74,6 +71,8 @@
 								</th>
 							<tbody>
 						</table>
+
+						<a type="button" class="btn btn-primary float-start" th:href="@{/questionnaireList}">Back</a>
 					</form>
 				</div>
 
@@ -81,41 +80,67 @@
 
 					<form th:action="@{/showQuestionnaire}" method="GET" th:object="${questionnaire}">  
 
-						<!-- Hidden Atributes -->
-					
-						<input type="hidden" th:field="*{id}" name="id" th:value="${id}">
-						<input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
-	
-						<div class="col-md-12">
-							<div class="mb-6">
-								<label class="form-label">Product name</label>
-								<p type="text" th:text="*{product}">
+						<div class="table-responsive">
+
+							<p class="d-inline float-end"><small>You are in Main Page -> Questionnaire List -> Show Questionanire</small></p>
+							<h2 class="text-left">Show Questionnaire</h2>
+
+							<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
+							<div id="info" class="collapse">
+								<p>
+									<br>
+									<br>
+									Hi, <span sec:authentication="name">Username</span>!
+									<br>
+									This is your questionnaire.    
+									<br>
+									You can no longer edit it, but you may look over the heuristics you have chosen!
+								</p>
 							</div>
-							<div class="mb-6">
-								<label class="form-label">Description</label>
-								<p type="text" th:text="*{description}"></p>                            
-							</div>
-						</div>
-	
-						<table class="table table-striped table-bordered table-hover table-dark">
-							<thead>
-								<th>These are the Heuristic you have choosen:</th>
-							</thead>
-							<tbody>
-								<!-- FH que ya estaban seleccionadas -->
-								<th:block th:each="heuristic : ${fHSelected}">
+
+							<!-- Hidden Atributes -->
+						
+							<input type="hidden" th:field="*{id}" name="id" th:value="${id}">
+							<input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
+
+							<table class="table table-striped table-bordered table-hover table-dark">
+
+								<tbody>
 									<tr>
-										<td type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="' ' + ${heuristic.heuristicString}" checked></td>
+										<td>
+											<label class="form-label d-inline">Product name: </label>
+											<p class="d-inline" style="margin-left: 10px; margin-bottom: 10px;" type="text" th:text="*{product}"></p>
+										</td>
+										<td>
+											<label class="form-label d-inline" style="margin-left: 50px;">Description: </label>
+											<p class="d-inline" style="margin-left: 10px;" type="text" th:text="*{description}"></p>
+										</td>
 									</tr>
-								</th:block>
-							<tbody>
-						</table>
+								</tbody>
+							</table>
+                           		
+							<table class="table table-striped table-bordered table-hover table-dark">
+
+								<thead>
+									<th>These are the Heuristic you have choosen:</th>
+								</thead>
+								<tbody>
+									<!-- FH que ya estaban seleccionadas -->
+									<th:block th:each="heuristic : ${fHSelected}">
+										<tr>
+											<td type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="' ' + ${heuristic.heuristicString}" checked></td>
+										</tr>
+									</th:block>
+								<tbody>
+							</table>
+
+							<a type="button" class="btn btn-primary float-start" th:href="@{/questionnaireList}">Back</a>
+						</div>
 					</form>
 				</div>
 			</div>   
-			
-			<a type="button" class="btn btn-primary float-start" th:href="@{/questionnaireList}">Back</a>
         </div>
+
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
 		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 

@@ -33,7 +33,7 @@
 
 						<div class="table-responsive">
 
-							<p class="d-inline float-end">You are in Main Page -> Questionnaire List</p>
+							<p class="d-inline float-end"><small>You are in Main Page -> Questionnaire List</small></p>
 							<h2 class="text-left">Questionnaire List</h2>
 
 							<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
@@ -120,6 +120,8 @@
 							<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
 							<div id="info" class="collapse">
 								<p>
+									<br>
+									<br>
 									Hi, <span sec:authentication="name">Username</span>!
 									<br>
 									Here you can see the list of questionnaires that have been sent to you. You can export them,
@@ -128,6 +130,7 @@
 								</p>
 							</div>
 
+
 							<table class="table table-striped table-bordered table-hover table-dark">
 
 								<thead>
@@ -135,6 +138,7 @@
 										<th>Product name</th>
 										<th>Description</th>
 										<th>Fill out</th>
+										<th>Show</th>
 										<th>Export</th>
 									</tr>
 								</thead>
@@ -148,8 +152,14 @@
 													<td>
 														<a th:href="@{/updateQuestionnaire(questionnaireId=${element.key.questionnaireID})}">Fill Out</a>
 													</td>
+													<td>
+														<a class="btn btn-link disabled" th:href="@{/showFilledQuestionnaire(userId=${user.id},questionnaireId=${element.key.questionnaireID},ansForm=${true})}">Show</a>
+													</td>
 													</div>
 													<div th:case="${true}">
+													<td>
+														<a class="btn btn-link disabled" th:href="@{/updateQuestionnaire(questionnaireId=${element.key.questionnaireID})}">Fill Out</a>
+													</td>
 													<td>
 														<a th:href="@{/showFilledQuestionnaire(userId=${user.id},questionnaireId=${element.key.questionnaireID},ansForm=${true})}">Show</a>
 													</td>
