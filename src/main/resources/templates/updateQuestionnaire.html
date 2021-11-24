@@ -30,7 +30,7 @@
 				<div th:switch="${user.role}">
 					<div th:case="'Administrator'">
 
-						<!-- Not all answered message -->
+						<!-- No heuristics message -->
 						<div th:if="${param.question}">
 							<div class="alert alert-danger">Please choose at least one heuristic!</div>
 						</div>

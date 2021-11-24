@@ -64,7 +64,7 @@ public class UserControllerTests {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         given(userService.findUserByUsername(userDetails.getUsername())).willReturn(john);
     }
-
+    
     // Test registro de usuario (GET)
 
     @WithMockUser(value = "spring")
@@ -92,6 +92,7 @@ public class UserControllerTests {
             .param("password", "Joe123")
             .param("name", "Joe")
             .param("surnames", "Harrison")
+            .param("company", "Delta S.L")
             .param("role", "Administrator")
             .param("email", "harrisonJoe@gmail.com"))
             .andExpect(status().is3xxRedirection())

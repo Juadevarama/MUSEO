@@ -21,7 +21,8 @@ public class DevelopmentPhaseService {
         return developmentphaseRepository.findAll();
     }
 
-    public Object findDevelopmentPhaseById(Integer developmentPhaseID) {
+    @Transactional(readOnly = true)
+    public DevelopmentPhase findDevelopmentPhaseById(Integer developmentPhaseID) {
         return developmentphaseRepository.findById(developmentPhaseID).orElseThrow();
     }
     

@@ -1,6 +1,7 @@
 package heuristics.questionnaire;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -13,12 +14,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
+import org.aspectj.lang.annotation.Before;
+import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -35,6 +41,7 @@ import heuristics.model.DevelopmentPhase;
 import heuristics.model.FinalHeuristic;
 import heuristics.model.GameAspect;
 import heuristics.model.HeuristicQuestionnaire;
+import heuristics.model.HeuristicRaw;
 import heuristics.model.HeuristicUser;
 import heuristics.model.Keyword;
 import heuristics.model.NielsenHeuristic;
@@ -43,11 +50,13 @@ import heuristics.model.Purpose;
 import heuristics.model.Questionnaire;
 import heuristics.model.UsabilityAspect;
 import heuristics.model.User;
+import heuristics.repository.HeuristicRawRepository;
 import heuristics.service.AnswerService;
 import heuristics.service.DevelopmentPhaseService;
 import heuristics.service.FinalHeuristicService;
 import heuristics.service.GameAspectService;
 import heuristics.service.HeuristicQuestionnaireService;
+import heuristics.service.HeuristicRawService;
 import heuristics.service.HeuristicUserService;
 import heuristics.service.KeywordService;
 import heuristics.service.NielsenHeuristicService;
@@ -57,20 +66,20 @@ import heuristics.service.QuestionnaireService;
 import heuristics.service.UsabilityAspectService;
 import heuristics.service.UserServiceImpl;
 
+
 @WebMvcTest(controllers = QuestionnaireController.class, 
 excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, 
 classes = WebSecurityConfigurer.class), 
-excludeAutoConfiguration = WebSecurityConfig.class)
+excludeAutoConfiguration = WebSecurityConfig.class) 
 public class QuestionnaireControllerTests {
 
     private static final Logger logger = LoggerFactory.getLogger(QuestionnaireControllerTests.class);
     
-    private static final int TEST_QUESTIONNAIRE_ID = 10;
+    private static final int TEST_QUESTIONNAIRE_ID = 100;
     private static final int TEST_ADMIN_ID = 10;
     private static final int TEST_EVALUATOR_ID = 11;
     private static final int TEST_HEURISTIC__USER_ID = 1000;
     private static final int TEST_HEURISTIC__USER_2_ID = 1001;
-    private static final int TEST_FINAL_HEURISTIC_ID = 5000;
 
     @MockBean
     private QuestionnaireService questionnaireService;
@@ -117,10 +126,11 @@ public class QuestionnaireControllerTests {
     private User john;
     private User jane;
     private Questionnaire questionnaireTest;
-    private FinalHeuristic finalHeuristicTest;
     
     @BeforeEach
     void setup(){
+
+        // Administrador
 
         john = new User();
         john.setId(TEST_ADMIN_ID);
@@ -130,22 +140,33 @@ public class QuestionnaireControllerTests {
         john.setName("John");
         john.setSurnames("Doe");
         john.setEmail("doeJohn@gmail.com");
-        given(this.userService.findUserById(TEST_ADMIN_ID)).willReturn(john);
+
+        // Evaluadora
 
         jane = new User();
         jane.setId(TEST_EVALUATOR_ID);
+        jane.setRole("Evaluator");
         jane.setUsername("IamJane");
         jane.setPassword("DoeJane20");
-        jane.setRole("Evaluator");
         jane.setName("Jane");
         jane.setSurnames("Doe");
         jane.setEmail("doeJane@gmail.com");
 
+        // Questionnaire
+
         questionnaireTest = new Questionnaire();
         questionnaireTest.setId(TEST_QUESTIONNAIRE_ID);
-        questionnaireTest.setProduct("Hades");
+        questionnaireTest.setProduct("Hades Questionnaire");
+        questionnaireTest.setDescription("First evaluation questionnaire");
         questionnaireTest.setClosed(false);
+
+        given(this.questionnaireService.findAllQuestionnaire()).willReturn(Lists.newArrayList(questionnaireTest));
         given(this.questionnaireService.findQuestionnaireByID(TEST_QUESTIONNAIRE_ID)).willReturn(questionnaireTest);
+        given(this.questionnaireService.findQuestionnairesByEvaluator(jane)).willReturn(Lists.newArrayList(questionnaireTest));
+        given(this.questionnaireService.findQuestionnairesByUserID(TEST_ADMIN_ID)).willReturn(Lists.newArrayList(questionnaireTest));
+        given(this.questionnaireService.findQuestionnairesByUserID(TEST_EVALUATOR_ID)).willReturn(Lists.newArrayList(questionnaireTest));
+
+        // HeuristicUser objects for both users
 
         HeuristicUser hU = new HeuristicUser();
         hU.setId(TEST_HEURISTIC__USER_ID);
@@ -153,34 +174,20 @@ public class QuestionnaireControllerTests {
         hU.setQuestionnaireID(TEST_QUESTIONNAIRE_ID);
         hU.setOwner(Boolean.TRUE);
 
-        given(this.heuristicUserService.findHeuristicUserByIDs(TEST_ADMIN_ID, TEST_QUESTIONNAIRE_ID)).willReturn(hU);
-
-        List<HeuristicUser> hUList = new ArrayList<HeuristicUser>();
-        hUList.add(hU);
-        given(this.heuristicUserService.findHeuristicUsersByUserId(TEST_ADMIN_ID)).willReturn(hUList);
-
         HeuristicUser hU2 = new HeuristicUser();
         hU2.setId(TEST_HEURISTIC__USER_2_ID);
         hU2.setUserID(TEST_EVALUATOR_ID);
         hU2.setQuestionnaireID(TEST_QUESTIONNAIRE_ID);
         hU2.setOwner(Boolean.FALSE);
 
+        given(this.heuristicUserService.findAllHeuristicUser()).willReturn(Lists.newArrayList(hU,hU2));
+        given(this.heuristicUserService.findHeuristicUserByIDs(TEST_ADMIN_ID, TEST_QUESTIONNAIRE_ID)).willReturn(hU);
+        given(this.heuristicUserService.findHeuristicUsersByUserId(TEST_ADMIN_ID)).willReturn(Lists.newArrayList(hU));
         given(this.heuristicUserService.findHeuristicUserByIDs(TEST_EVALUATOR_ID, TEST_QUESTIONNAIRE_ID)).willReturn(hU2);
-
-        List<HeuristicUser> hU2List = new ArrayList<HeuristicUser>();
-        hU2List.add(hU2);
-        given(this.heuristicUserService.findHeuristicUsersByUserId(TEST_EVALUATOR_ID)).willReturn(hU2List);
-        
-        List<HeuristicUser> hUQList = new ArrayList<HeuristicUser>();
-        hUQList.add(hU);
-        hUQList.add(hU2);
-        given(this.heuristicUserService.findHeuristicUserByquestionnaireID(TEST_QUESTIONNAIRE_ID)).willReturn(hUQList);
-
-        finalHeuristicTest = new FinalHeuristic();
-        finalHeuristicTest.setId(TEST_FINAL_HEURISTIC_ID);
-        finalHeuristicTest.setHeuristicString("Esta es una heurística de prueba");
-        
-        given(finalHeuristicService.findFinalHeuristicById(TEST_FINAL_HEURISTIC_ID)).willReturn(finalHeuristicTest);
+        given(this.heuristicUserService.findHeuristicUsersByUserId(TEST_ADMIN_ID)).willReturn(Lists.newArrayList(hU2));
+        given(this.heuristicUserService.findHeuristicUserByquestionnaireID(TEST_QUESTIONNAIRE_ID)).willReturn(Lists.newArrayList(hU,hU2));
+        given(this.heuristicUserService.findHeuristicUserByIDs(TEST_ADMIN_ID, TEST_QUESTIONNAIRE_ID)).willReturn(hU);
+        given(this.heuristicUserService.findHeuristicUserByIDs(TEST_EVALUATOR_ID, TEST_QUESTIONNAIRE_ID)).willReturn(hU2);
 
     }
 
@@ -227,51 +234,24 @@ public class QuestionnaireControllerTests {
 
     // Test de creación de formulario (POST)
 
-    /* @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
 	@Test	
 	void TestProcessCreateQuestionnaireForm() throws Exception {
 
-/*         HeuristicQuestionnaire hQ = new HeuristicQuestionnaire();
-        hQ.setId(3000);
-        hQ.setQuestionnaireID(questionnaireTest.getId());
-        hQ.setFinalHeuristicID(TEST_FINAL_HEURISTIC_ID);
-        hQ.setAutomatic(Boolean.TRUE);
-        hQ.setSelected(Boolean.FALSE);
-
-        List<HeuristicQuestionnaire> HQList = new ArrayList<HeuristicQuestionnaire>();
-        HQList.add(hQ);
-
-        List<FinalHeuristic> FHList = new ArrayList<FinalHeuristic>();
-        FHList.add(finalHeuristicService.findFinalHeuristicById(TEST_FINAL_HEURISTIC_ID));
-
-        List<Platform> choosenPlatforms = new ArrayList<Platform>();
-        List<Purpose> choosenPurposes = new ArrayList<Purpose>();
-        List<DevelopmentPhase> choosenDevelopmentPhases = new ArrayList<DevelopmentPhase>();
-        List<GameAspect> choosenGameAspects = new ArrayList<GameAspect>();
-        List<Keyword> choosenKeywords = new ArrayList<Keyword>();
-        List<NielsenHeuristic> choosenNielsenHeuristics = new ArrayList<NielsenHeuristic>();
-        List<UsabilityAspect> choosenUsabilityAspects = new ArrayList<UsabilityAspect>(); 
-
-
-
-        given(finalHeuristicService.findFHByQuestionnaire(
-            heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireTest.getId())))
-            .willReturn(FHList);
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(john);
 
         String response = mockMvc.perform(post("/createQuestionnaire")
+            .param("finalHeuristicList", "")
             .with(csrf())
-            .param("product", "Hades")
-            .param("description", "Good game")
-            .param("closed", "FALSE")
-            .param("finalHeuristic", finalHeuristicTest.toString())
-            .flashAttr("allFinalHeuristic", new ArrayList<FinalHeuristic>())
-            .flashAttr("questionnaire", new Questionnaire()))
+            .param("product", "Doom Questionnaire")
+            .param("description", "Early Dev Questionnaire"))
             .andExpect(status().is3xxRedirection())
             .andExpect(view().name("redirect:/questionnaireList?create"))
             .andReturn().getResponse().getContentAsString();
 
         logger.info("response: " + response);
-	}   */
+	}    
 
     // Test de actualización de cuestionario para administradores (GET)
 
@@ -298,24 +278,38 @@ public class QuestionnaireControllerTests {
 
     // Test de actualización de cuestionario para administradores (POST)
 
-/*     @WithMockUser(value = "spring")
+    @WithMockUser(value = "spring")
     @Test	
     void TestProcessUpdateQuestionnaireFormAdministrator() throws Exception {
 
-        // Parámetros requeridos
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(john);
 
-        String action = "Save"; // Con esta acción no cerramos el formulario
+        HeuristicRaw hR = new HeuristicRaw();
+        hR.setId(1000);
+        hR.setAuthor("author");
+        hR.setClassificationByAuthor("classificationByAuthor");
+        hR.setCompiledFrom("compiledFrom");
+        hR.setHeuristicRawString("heuristicRawString");
+        hR.setYear("year");
 
-        String response = mockMvc.perform(post("/updateQuestionnaire", action)
-                .param("questionnaire", questionnaireTest.toString()))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("user"))
+        FinalHeuristic fH = new FinalHeuristic();
+        fH.setId(5);
+        fH.setHeuristicRaw(hR);
+        fH.setHeuristicString("Es una heurística de prueba");
+        
+
+        String response = mockMvc.perform(post("/updateQuestionnaire")
+                .with(csrf())
+                .param("action", "save"))
+                //.param("choosenFH", "Es una heurística de prueba"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/questionnaireList?update"))
+                //.andExpect(view().name("redirect:/questionnaireList?update"))
+                .andExpect(view().name("redirect:/updateQuestionnaire?questionnaireId=null&question"))
                 .andReturn().getResponse().getContentAsString();
 
         logger.info("response: " + response);
-    }  */
+    } 
 
     // Test de Mostrar Cuestionario sin rellenar para administradores
 
@@ -437,27 +431,27 @@ public class QuestionnaireControllerTests {
         logger.info("response: " + response);
     }
 
-        // Test de actualización de cuestionario para evaluadores (GET)
+    // Test de actualización de cuestionario para evaluadores (GET)
 
-        @WithMockUser(value = "spring")
-        @Test	
-        void TestInitUpdateQuestionnaireFormEvaluator() throws Exception {
-    
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            given(userService.findUserByUsername(userDetails.getUsername())).willReturn(jane);
-            
-            String response = mockMvc.perform(get("/updateQuestionnaire")
-                .param("questionnaireId", questionnaireTest.getId().toString()))    
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("user"))
-                .andExpect(model().attributeExists("answerList"))
-                .andExpect(model().attributeExists("questionnaire"))
-                .andExpect(model().attributeExists("auxMap"))
-                .andExpect(view().name("updateQuestionnaire"))
-                .andReturn().getResponse().getContentAsString();
-    
-            logger.info("response: " + response);
-        } 
+    @WithMockUser(value = "spring")
+    @Test	
+    void TestInitUpdateQuestionnaireFormEvaluator() throws Exception {
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        given(userService.findUserByUsername(userDetails.getUsername())).willReturn(jane);
+        
+        String response = mockMvc.perform(get("/updateQuestionnaire")
+            .param("questionnaireId", questionnaireTest.getId().toString()))    
+            .andExpect(status().isOk())
+            .andExpect(model().attributeExists("user"))
+            .andExpect(model().attributeExists("answerList"))
+            .andExpect(model().attributeExists("questionnaire"))
+            .andExpect(model().attributeExists("auxMap"))
+            .andExpect(view().name("updateQuestionnaire"))
+            .andReturn().getResponse().getContentAsString();
+
+        logger.info("response: " + response);
+    } 
 
 /*     // Test de actualización de cuestionario para evaluadores (POST)
 

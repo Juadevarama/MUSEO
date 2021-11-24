@@ -268,14 +268,7 @@ public class QuestionnaireController {
         choosenPurposes, choosenDevelopmentPhases, choosenGameAspects, choosenKeywords, 
         choosenNielsenHeuristics, choosenUsabilityAspects); 
 
-        /* Primero cogemos todos los objetos HeuristicQuestionnaire generados, y luego vamos filtrando 
-        las FinalHeuristic de estos, para que no haya repetidas, y las metemos en la lista que usaremos */
-
-        List<FinalHeuristic> finalHeuristicList = finalHeuristicService.findFHByQuestionnaire(
-            heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaire.getId()));
-
         model.addAttribute("questionnaire", questionnaire);
-        model.addAttribute("allFinalHeuristic", finalHeuristicList);
         return "redirect:/questionnaireList?create";
     }
     
@@ -373,13 +366,13 @@ public class QuestionnaireController {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.findUserByUsername(userDetails.getUsername());
-        model.addAttribute("user", user);
+        model.addAttribute("user", user); 
 
         if(user.getRole().equals("Administrator")){
 
             if(choosenFH == null){
                 return "redirect:/updateQuestionnaire?questionnaireId=" + questionnaire.getId() + "&question";
-            }
+            } 
 
             if(action.equals("Complete")){   
                 questionnaire.setClosed(true);
@@ -387,7 +380,7 @@ public class QuestionnaireController {
 
             // Actualizamos los objetos HeuristicQuestionnaire
 
-            heuristicQuestionnaireService.updateHQ(choosenFH, questionnaire);
+            heuristicQuestionnaireService.updateHQ(choosenFH, questionnaire); 
         }
 
         if(user.getRole().equals("Evaluator")){
@@ -407,7 +400,7 @@ public class QuestionnaireController {
 
                 /*  Primero hay que revisar que todas las respuestas estén respondidas.
                     Sacamos la lista de respuestas. Recorremos la lista y 
-                    vemos que están todas respondidas.  */
+                    vemos que están todas respondidas. */ 
 
                 if(answerList.stream().anyMatch(a -> a.getAnsString() == null || a.getAnsString().equals(""))){
 
@@ -417,14 +410,14 @@ public class QuestionnaireController {
                 }
 
                 /*  Si esto no se cumple, cogemos el objeto HeuristicUser que vincula
-                    al cuestionario y al evaluador y ponemos el campo filled a true.    */
+                    al cuestionario y al evaluador y ponemos el campo filled a true. */   
 
                 HeuristicUser hU = heuristicUserService.findHeuristicUserByIDs(user.getId(), questionnaire.getId());
                 hU.setFilled(Boolean.TRUE);
             } 
-        }
+        } 
 
-        questionnaireService.saveQuestionnaire(questionnaire);
+        //questionnaireService.saveQuestionnaire(questionnaire);
             
         return "redirect:/questionnaireList?update";
     }
@@ -564,7 +557,7 @@ public class QuestionnaireController {
 	
 			// Cada hU lo tenemos que mapear con su ratio de cobertura. Creamos una lista de usuarios
 	
-			List<User> evaluatorList = new ArrayList<User>();
+			List<User> evaluatorList = new ArrayList<>();
 
 			for (HeuristicUser hU : filteredList) {
 
