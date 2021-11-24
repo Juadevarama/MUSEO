@@ -52,14 +52,14 @@
 									<br>
 									Hi, <span sec:authentication="name">Username</span>!
 									<br>
-									This is where you can update your questionnaire. We will give you some notes about it.    
+									This is where you can update your questionnaire.    
 									<br>
-									As you can see, you can change the product name and the description. We have divided the
+									As you can see, you can change the questionnaire name and the description. We have divided the
 									heuristics in three lists that you can see below: First, you have the heuristic that you
-									have choosen for your questionnaire. If you just finished generating the questionnaire, there
-									should be no heuristics in this list. Next, you can see a list of heuristics that MUSE thinks
-									that would be a good idea for you to add to your questionnaire. At last, you have a list with
-									other heuristics, so you can look and choose if you want those also in your questionnaire!
+									have choosen for your questionnaire. If you just have finished generating the questionnaire, there
+									will not be heuristics in this list. Next, you can see a list of heuristics that MUSE thinks
+									that would be a good idea for you to add to your questionnaire. At the end, you have a list with
+									other heuristics you may want to add to your questionnaire. 
 									<br>
 									You can change your changes in the save changes button below. When you are finished, press the
 									save and finish button, and you will be able to export it and send it. But be carefull! Once you
@@ -70,11 +70,22 @@
 							<br>
 							<br>
 
-							<label class="form-label">Product name: </label>
-							<input type="text" th:field="*{product}" placeholder="Insert the product name">
+							<tbody>
+								<tr>
+									<td>
 
-							<label class="form-label">Description: </label>
-							<input type="text" class="flex-fill;" th:field="*{description}" placeholder="Insert a description for the product">
+										<label class="form-label">Questionnaire name: </label>
+										<input type="text" th:field="*{product}" placeholder="Insert a name for the questionnaire">
+									</td>
+									<td>
+										<label class="form-label">Description: </label>
+										<input type="text" class="flex-fill;" th:field="*{description}" placeholder="Insert a description for your product">
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						
+						<table class="table table-striped table-bordered table-hover table-dark">
 
 							<thead>
 								<th>These are the Heuristic you have choosen so far:</th>
@@ -109,7 +120,7 @@
 
 						<table class="table table-striped table-bordered table-hover table-dark">
 							<thead>
-								<th>Others Heuristics you may choose:</th>
+								<th>Othe Heuristics you may choose:</th>
 							</thead>
 							<tbody>
 							<!-- Resto de FH -->
@@ -139,7 +150,7 @@
 									Hi, <span sec:authentication="name">Username</span>!
 									<br>
 									This is the questionnaire that has been sent to you. To fill it in, choose 
-									between yes, no and not applicable for each question regarding the product. 
+									between yes, no and not applicable for each question regarding to the product. 
 									<br>
 									At the bottom left, you can save your changes to continue later. Once you 
 									have answered all the questions and you are done, you can finish editing by 
@@ -163,7 +174,7 @@
 								<tbody>
 									<tr>
 										<td>
-											<label class="form-label d-inline">Product name: </label>
+											<label class="form-label d-inline">Questionnaire name: </label>
 											<p class="d-inline" style="margin-left: 10px; margin-bottom: 10px;" type="text" th:text="*{product}"></p>
 										</td>
 										<td>

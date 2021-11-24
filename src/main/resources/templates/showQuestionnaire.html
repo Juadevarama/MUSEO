@@ -67,7 +67,7 @@
 								<tbody>
 									<tr>
 										<td>
-											<label class="form-label d-inline">Product name: </label>
+											<label class="form-label d-inline">Questionanire name: </label>
 											<p class="d-inline" style="margin-left: 10px; margin-bottom: 10px;" type="text" th:text="*{product}"></p>
 										</td>
 										<td>
@@ -90,19 +90,13 @@
 												<div th:switch="${element.value.ansString}">
 													<div th:case="'Yes'">
 														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='Yes' disabled checked> 
-														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled> 
-														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled>
 														<label style="margin-left: 25px;" th:text="${element.key.heuristicString}"></label>
 													</div>
 													<div th:case="'No'">
-														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='Yes' disabled> 
 														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled checked> 
-														<input type="radio" name="listaRadio" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled>
 														<label style="margin-left: 25px;" th:text="${element.key.heuristicString}"></label>
 													</div>
 													<div th:case="'N.A'">
-														<input type="radio" name="listaRadio" th:name="#{element.value.id}" th:value="${element.value.ansString}" th:text='Yes' disabled> 
-														<input type="radio" name="listaRadio" th:name="#{element.value.id}" th:value="${element.value.ansString}" th:text='No' disabled> 
 														<input type="radio" name="listaRadio" th:name="#{element.value.id}" th:value="${element.value.ansString}" th:text="N.A" disabled checked>
 														<label style="margin-left: 25px;" th:text="${element.key.heuristicString}"></label>
 													</div>
@@ -150,7 +144,7 @@
 								<tbody>
 									<tr>
 										<td>
-											<label class="form-label d-inline">Product name: </label>
+											<label class="form-label d-inline">Questionanire name: </label>
 											<p class="d-inline" style="margin-left: 10px; margin-bottom: 10px;" type="text" th:text="*{product}"></p>
 										</td>
 										<td>

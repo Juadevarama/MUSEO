@@ -60,6 +60,7 @@
 					<tr>
 						<th>Username</th>
 						<th>Pass Rate</th>
+						<th>Status</th>
 						<th>Show</th>
 					</tr>
 					</thead>
@@ -72,12 +73,14 @@
 								<div th:switch="${element.key.filled}">
 									<div th:case="${true}">
 										<td th:text="*{element.key.coverageRatio}"></td>
+										<td>Evaluation Finished.</td>
 										<td>
 											<a th:href="@{/showFilledQuestionnaire(questionnaireId=${questionnaire.id},ansForm=${true},userId=${element.value.id})}">Show</a>
 										</td>
 									</div>
 									<div th:case="${false}">
 										<td>The questionnaire has not been filled yet. </td>
+										<td>Being evaluated.</td>
 										<td>
 											<a class="btn btn-link disabled" th:href="@{/showFilledQuestionnaire(questionnaireId=${questionnaire.id},ansForm=${true},userId=${element.value.id})}">Show</a>
 										</td>
