@@ -1,9 +1,6 @@
 package heuristics.questionnaire;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -14,17 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 
-import org.aspectj.lang.annotation.Before;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -36,27 +29,16 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import heuristics.configuration.WebSecurityConfig;
 import heuristics.controller.QuestionnaireController;
-import heuristics.model.Answer;
-import heuristics.model.DevelopmentPhase;
 import heuristics.model.FinalHeuristic;
-import heuristics.model.GameAspect;
-import heuristics.model.HeuristicQuestionnaire;
 import heuristics.model.HeuristicRaw;
 import heuristics.model.HeuristicUser;
-import heuristics.model.Keyword;
-import heuristics.model.NielsenHeuristic;
-import heuristics.model.Platform;
-import heuristics.model.Purpose;
 import heuristics.model.Questionnaire;
-import heuristics.model.UsabilityAspect;
 import heuristics.model.User;
-import heuristics.repository.HeuristicRawRepository;
 import heuristics.service.AnswerService;
 import heuristics.service.DevelopmentPhaseService;
 import heuristics.service.FinalHeuristicService;
 import heuristics.service.GameAspectService;
 import heuristics.service.HeuristicQuestionnaireService;
-import heuristics.service.HeuristicRawService;
 import heuristics.service.HeuristicUserService;
 import heuristics.service.KeywordService;
 import heuristics.service.NielsenHeuristicService;

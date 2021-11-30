@@ -417,7 +417,7 @@ public class QuestionnaireController {
             } 
         } 
 
-        //questionnaireService.saveQuestionnaire(questionnaire);
+        questionnaireService.saveQuestionnaire(questionnaire);
             
         return "redirect:/questionnaireList?update";
     }
