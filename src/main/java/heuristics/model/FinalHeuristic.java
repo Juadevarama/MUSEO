@@ -30,14 +30,14 @@ public class FinalHeuristic {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "num")
-	private HeuristicRaw heuristicRaw; // En la bbdd, esto no está puesto como una FK de la otra tabla 
+	private HeuristicRaw heuristicRaw; 
 
     @Column(name = "heuristic")
 	@NotEmpty
 	private String heuristicString;
 
-	@Override
+ 	@Override
 	public String toString(){
 		return "FinalHeuristic(heuristicString=" + getHeuristicString() + ")";
-	}
+	} 
 }

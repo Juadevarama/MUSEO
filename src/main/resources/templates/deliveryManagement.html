@@ -1,102 +1,117 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+  	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
-<head>
+  	<head>
 
-  <div th:replace="header :: myHeader"></div>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-  <title>MUSE: Recipient List</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>MUSEO: Delivery Management</title>
 
-</head> 
+	</head> 
 
-<body>
+	<body class="bg-secondary">
 
-  <br>
-  <br>
+		<div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 1600px;">
 
-  <div class= "container">
-    <div class= "row">
-      <div class="col-md-12" col-md-offset-3>
+			<!-- Add success message -->
+			<div th:if="${param.add}">
+				<div class="alert alert-success">You've successfully added an User!</div>
+			</div>
 
-        <h1>Recipient List</h1>
+			<!-- Not valid user message -->
+			<div th:if="${param.valid}">
+				<div class="alert alert-danger">That is not a valid user!</div>
+			</div>
 
-          <!-- Add success message -->
-          <div th:if="${param.add}">
-            <div class="alert alert-success">You've successfully added an User!</div>
-          </div>
+			<!-- User in list message -->
+			<div th:if="${param.exists}">
+				<div class="alert alert-warning">That user is already on the list!</div>
+			</div>
 
-          <!-- Add success message -->
-          <div th:if="${param.userError}">
-            <div class="alert alert-success">That is not a valid username!</div>
-          </div>
+			<div class="table-responsive">
 
-          <div class="mb-3">
-            <label class="form-label">Product name</label>
-            <td th:text="*{questionnaire.product}"></td>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Description</label>
-            <td th:text="*{questionnaire.description}"></td>
-          </div>
+				<p class="d-inline float-end"><small>You are in Main Page -> Questionnaire List -> Delivery Management</small></p>
+				<h2 class="text-left">Delivery Management</h2>
 
-          <table class="table table-striped table-bordered table-hover">
-            <caption>List of recipients</caption>
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Coverage Ratio Percentage</th>
-                <th>Show</th>
-                <th>Active</th>
-              </tr>
-            </thead>
-            <tbody>
-              <th:block th:each="element : ${auxMap}">
-                <tr>
-                  <div>
-                    <td th:text="*{element.value.username}"></td>
-                  </div>
-                  <div th:switch="${element.key.filled}">
-                    <div th:case="${true}">
-                      <td th:text="*{element.key.coverageRatio}"></td>
-                      <td>
-                        <a th:href="@{/showFilledQuestionnaire(questionnaireId=${questionnaire.id},ansForm=${true},userId=${element.value.id})}">Show</a>
-                      </td>
-                    </div>
-                    <div th:case="${false}">
-                      <td>The questionnaire have not been completed yet. </td>
-                      <td>The questionnaire have not been completed yet. </td>
-                    </div>
-                  </div> 
-                  <td>Aquí ponemos un ratio para el formulario, por lo que hace falta un botón de guardar cambios (Aparte del de enviar)</td>              
-                </tr>
-              </th:block> 
-            </tbody>
-          </table> 
-        
-          <form th:action="@{/deliveryManagement}" method="POST">
+				<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
+				<div id="info" class="collapse">
+					<p>
+						<br>
+						<br>
+						Hi, <span sec:authentication="name">Username</span>!
+						<br>
+						This is the delivery management page of your questionnaire. What can you do here?    
+						<br>
+						In the table below, you will see the list of Evaluators you have sent the questionnaire. 
+						You can send it to a new user at the bottom right. The Pass Rate shows the 
+						percentage of heuristics your questionnaire meets according to the evaluator.
+						<br>
+						When the evaluator completes the questionnaire, you will be able to see his or her answers.
+					</p>
+				</div>
 
-            <div align="center" class="col-12">
+				<table class="table table-striped table-bordered table-hover table-dark">
+					
+					<thead>
+					<tr>
+						<th>Username</th>
+						<th>Pass Rate</th>
+						<th>Status</th>
+						<th>Show</th>
+					</tr>
+					</thead>
+					<tbody>
+						<th:block th:each="element : ${auxMap}">
+							<tr>
+								<div>
+									<td th:text="*{element.value.username}"></td>
+								</div>
+								<div th:switch="${element.key.filled}">
+									<div th:case="${true}">
+										<td th:text="*{element.key.coverageRatio}"></td>
+										<td>Evaluation Finished.</td>
+										<td>
+											<a th:href="@{/showFilledQuestionnaire(questionnaireId=${questionnaire.id},ansForm=${true},userId=${element.value.id})}">Show</a>
+										</td>
+									</div>
+									<div th:case="${false}">
+										<td>The questionnaire has not been filled yet. </td>
+										<td>Being evaluated.</td>
+										<td>
+											<a class="btn btn-link disabled" th:href="@{/showFilledQuestionnaire(questionnaireId=${questionnaire.id},ansForm=${true},userId=${element.value.id})}">Show</a>
+										</td>
+									</div>
+								</div>               
+							</tr>
+						</th:block> 
+					</tbody>
+				</table> 
+				
+				<form th:action="@{/deliveryManagement}" method="POST">
+					<div class="d-inline">
 
-              <a type="button" class="btn btn-default" th:href="@{/questionnaireList}">Back</a>
-              <button type="submit" class="btn btn-success" name="action" value="Save">Save changes</button>
-              
-              <label class="form-label">Add new recipient: </label> <!-- Más tarde se podría poner el email si es único -->
-              <input type="text" name="recipient" placeholder="Insert an username to add it to the recipient list">
+						<a type="button" class="btn btn-primary float-start" th:href="@{/questionnaireList}">Back</a>
+						<div class="float-end">
+						
+							<label class="form-label">Add new evaluator: </label> <!-- Más tarde se podría poner el email si es único -->
+							<input type="text" name="evaluator" placeholder="Insert an username to add it to the evaluator list">
+		
+							<!-- Hidden Attributes -->
+							<input type="hidden" name="questionnaireId" th:value="${questionnaire.id}">
 
-              <!-- Hidden Attributes -->
-              <input type="hidden" name="questionnaireId" th:value="${questionnaire.id}">
+							<button class="btn btn-success" style="margin-left: 5px;" type="submit" name="action" value="Add">Add new Evaluator</button>
+						</div>
+					</div> 
+				</form>
+			</div>
+		</div>
 
-              <th:block th:each="user : ${recipientList}">
-                <input type="hidden" name="recipientList" th:value="${user}">
-              </th:block>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
-              <button type="submit" class="btn btn-success" name="action" value="Add">Add new Recipient</button>
-            </div> 
-
-          </form>
-      </div>
-    </div>
-  </div>
-</body>
-
+	</body>	
 </html>

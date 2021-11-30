@@ -5,15 +5,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import heuristics.model.HeuristicUser;
-import heuristics.model.HeuristicQuestionnaire;
-import heuristics.model.Questionnaire;
-import heuristics.model.User;
 import heuristics.repository.HeuristicUserRepository;
 
 @Service

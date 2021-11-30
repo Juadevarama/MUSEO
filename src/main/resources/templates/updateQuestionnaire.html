@@ -1,186 +1,257 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+  	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
-<head>
-    
-    <div th:replace="header :: myHeader"></div>
+  	<head>
 
-    <title>MUSE: Update Questionnaire</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-</head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<tbody>
+		<div th:switch="${user.role}">
+			<div th:case="'Administrator'">
+				<title>MUSEO: Update Questionnaire</title>
+			</div>
+			<div th:case="'Evaluator'">
+				<title>MUSEO: Fill Questionnaire</title>
+			</div>
+		</div>
 
-    <br>
-    <br>
-    
-    <div class= "container">
-        <div class= "row">
-            <div class="col-md-12" col-md-offset-3>
-    
-                <h1> Update Questionnaire</h1>
-                <div th:switch="${user.role}">
+    </head>
 
-                    <form th:action="@{/updateQuestionnaire}" method="POST" th:object="${questionnaire}">  
-                        <div th:case="'Administrator'">
+    <body class="bg-secondary">
 
-                            <!-- Hidden Atributes -->
-                        
-                            <input type="hidden" th:field="*{id}" name="id" th:value="${id}">
-                            <input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
+        <div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 1600px;">
 
-                            <div class="col-md-12">
-                                <div class="mb-6">
-                                    <label class="form-label">Product name</label>
-                                    <input type="text" th:field="*{product}" placeholder="Insert the product name">
-                                </div>
-                                <div class="mb-6">
-                                    <label class="form-label">Description</label>
-                                    <input type="text" th:field="*{description}" placeholder="Insert a description for the product">
-                                </div>
-                            </div>
+			<form th:action="@{/updateQuestionnaire}" method="POST" th:object="${questionnaire}">  
 
-                            <table class="table table-striped table-bordered table-hover">
-                                <thead>
-                                    <th>These are the Heuristic you have choosen so far:</th>
-                                </thead>
-                                <tbody>
-                                    <!-- FH que ya estaban seleccionadas -->
-                                    <th:block th:each="heuristic : ${fHSelected}">
-                                        <tr>
-                                            <td>
-                                                <input type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="' ' + ${heuristic.heuristicString}" checked>
-                                            </td>
-                                        </tr>
-                                    </th:block>
-                                <tbody>
-                            </table>
+				<div th:switch="${user.role}">
+					<div th:case="'Administrator'">
 
-                            <table class="table table-striped table-bordered table-hover">
-                                <thead>
-                                    <th>The system recommends you these Heuristics:</th>
-                                </thead>
-                                <tbody>
-                                <!-- FH no seleccionadas pero automáticas -->
-                                    <th:block th:each="heuristic : ${fHAutomatic}">
-                                        <tr>
-                                            <td>
-                                                <input type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="' ' + ${heuristic.heuristicString}">
-                                            </td>
-                                        </tr>
-                                    </th:block>
-                                <tbody>
-                            </table>
+						<!-- No heuristics message -->
+						<div th:if="${param.question}">
+							<div class="alert alert-danger">Please choose at least one heuristic!</div>
+						</div>
 
-                            <table class="table table-striped table-bordered table-hover">
-                                <thead>
-                                    <th>Others Heuristics you may choose:</th>
-                                </thead>
-                                <tbody>
-                                <!-- Resto de FH -->
-                                    <th:block th:each="heuristic : ${fHRemainder}">
-                                        <tr>
-                                            <td>
-                                                <input type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="' ' + ${heuristic.heuristicString}">
-                                            </td>
-                                        </tr>
-                                    </th:block>
-                                <tbody>
-                            </table>
-                        </div>
-                        
-                        <div th:case="'Evaluator'">
+						<!-- Hidden Atributes -->
+					
+						<input type="hidden" th:field="*{id}" name="id" th:value="${id}">
+						<input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
 
-                            <!-- Not all answered message -->
-                            <div th:if="${param.answer}">
-                                <div class="alert alert-danger">You need to answer all the questions!</div>
-                            </div>
+						<table class="table table-striped table-bordered table-hover table-dark">
 
-                             <!-- Hidden Atributes -->
-                        
-                             <input type="hidden" th:field="*{id}" name="id" th:value="${id}">
-                             <input type="hidden" th:field="*{product}" name="product" th:value="${product}"> 
-                             <input type="hidden" th:field="*{description}" name="description" th:value="${description}"> 
-                             <input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
- 
-                             <div class="col-md-12">
-                                <div class="mb-6">
-                                    <label class="form-label">Product name</label>
-                                    <p type="text" th:text="*{product}">
-                                </div>
-                                <div class="mb-6">
-                                    <label class="form-label">Description</label>
-                                    <p type="text" th:text="*{description}"></p>                            
-                                </div>
-                            </div>                            
-                             <table class="table table-striped table-bordered table-hover">
-                                <thead>
-                                    <th>These are the Heuristic you have to answer:</th>
-                                </thead>
+							<p class="d-inline float-end"><small>You are in Main Page -> Questionnaire List -> Update Questionnaire</small></p>
+							<h2 class="text-left">Update Questionnaire</h2>
 
-                                <!-- Pasamos el mapa como hidden primero -->
-                                <th:block th:each="element : ${auxMap}">
-                                    <input type="hidden" name="listaFea" th:value="${element.value}">
-                                    <input type="hidden" name="listaFea" th:value="${element.key}">
-                                </th:block>
+							<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
+							<div id="info" class="collapse">
+								<p>
+									<br>
+									<br>
+									Hi, <span sec:authentication="name">Username</span>!
+									<br>
+									This is where you can update your questionnaire.    
+									<br>
+									As you can see, you can change the questionnaire name and the description. We have divided the
+									heuristics in three lists that you can see below: First, you have the heuristic that you
+									have choosen for your questionnaire. If you just have finished generating the questionnaire, there
+									will not be heuristics in this list. Next, you can see a list of heuristics that MUSE thinks
+									that would be a good idea for you to add to your questionnaire. At the end, you have a list with
+									other heuristics you may want to add to your questionnaire. 
+									<br>
+									You can change your changes in the save changes button below. When you are finished, press the
+									save and finish button, and you will be able to export it and send it. But be carefull! Once you
+									click on the finish button, you will be no longer able to update this questionnaire. 
+								</p>
+							</div>
 
-                                <tbody>
-                                    <th>
-                                        <tr th:each="element : ${auxMap}">
-                                            <td>
-                                                <div th:switch="${element.value.ansString}">
-                                                    <div th:case="'Yes'">
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes' checked> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No'> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A">
-                                                        <label th:text="'   ' + ${element.key.heuristicString}"></label>
-                                                    </div>
-                                                    <div th:case="'No'">
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes'> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No' checked> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A">
-                                                        <label th:text="'   ' + ${element.key.heuristicString}"></label>
-                                                    </div>
-                                                    <div th:case="'N.A'">
-                                                        <input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text='Yes'> 
-                                                        <input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text='No'> 
-                                                        <input type="radio" th:name="#{element.value.id}" th:value="#{element}" th:text="N.A" checked>
-                                                        <label th:text="'   ' + #{element.key.heuristicString}"></label> <!-- Así sale feo -->
-                                                    </div>
-                                                    <div th:case="*">
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" value="${element.value.ansString}" th:text='Yes'> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text='No'> 
-                                                        <input type="radio" name="listaFea" th:name="${element.value.id}" th:value="${element.value.ansString}" th:text="N.A">
-                                                        <label th:text="'   ' + ${element.key.heuristicString}"></label>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </th>
-                                <tbody>
-                            </table>
-                        </div>
+							<br>
+							<br>
 
-                        <div align="center" class="col-12">
-                    
-                            <a type="button" class="btn btn-default" th:href="@{/questionnaireList}">Back</a>
-                            <button type="submit" class="btn btn-success" name="action" value="Save">Save changes</button>
-                            <button type="submit" class="btn btn-success" name="action" value="Complete">Save changes and finish</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+							<tbody>
+								<tr>
+									<td>
+
+										<label class="form-label">Questionnaire name: </label>
+										<input type="text" th:field="*{product}" placeholder="Insert a name for the questionnaire">
+									</td>
+									<td>
+										<label class="form-label">Description: </label>
+										<input type="text" class="flex-fill;" th:field="*{description}" placeholder="Insert a description for your product">
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						
+						<table class="table table-striped table-bordered table-hover table-dark">
+
+							<thead>
+								<th>These are the Heuristic you have choosen so far:</th>
+							</thead>
+							<tbody>
+								<!-- FH que ya estaban seleccionadas -->
+								<th:block th:each="heuristic : ${fHSelected}">
+									<tr>
+										<td>
+											<input type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="' ' + ${heuristic.heuristicString}" checked>
+										</td>
+									</tr>
+								</th:block>
+							<tbody>
+						</table>
+
+						<table class="table table-striped table-bordered table-hover table-dark">
+							<thead>
+								<th>The system recommends you these Heuristics:</th>
+							</thead>
+							<tbody>
+							<!-- FH no seleccionadas pero automáticas -->
+								<th:block th:each="heuristic : ${fHAutomatic}">
+									<tr>
+										<td>
+											<input type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="' ' + ${heuristic.heuristicString}">
+										</td>
+									</tr>
+								</th:block>
+							<tbody>
+						</table>
+
+						<table class="table table-striped table-bordered table-hover table-dark">
+							<thead>
+								<th>Othe Heuristics you may choose:</th>
+							</thead>
+							<tbody>
+							<!-- Resto de FH -->
+								<th:block th:each="heuristic : ${fHRemainder}">
+									<tr>
+										<td>
+											<input type="checkbox" name="choosenFH" th:value="${heuristic}" th:text="' ' + ${heuristic.heuristicString}">
+										</td>
+									</tr>
+								</th:block>
+							<tbody>
+						</table>
+					</div>
+					
+					<div th:case="'Evaluator'">
+
+						<div class="table-responsive">
+
+							<p class="d-inline float-end"><small>You are in Main Page -> Questionnaire List -> Fill Questionnaire</small></p>
+							<h2 class="text-left">Fill Questionnaire</h2>
+
+							<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
+							<div id="info" class="collapse">
+								<p>
+									<br>
+									<br>
+									Hi, <span sec:authentication="name">Username</span>!
+									<br>
+									This is the questionnaire that has been sent to you. To fill it in, choose 
+									between yes, no and not applicable for each question regarding to the product. 
+									<br>
+									At the bottom left, you can save your changes to continue later. Once you 
+									have answered all the questions and you are done, you can finish editing by 
+									clicking on the button at the bottom right. 
+								</p>
+							</div>
+
+							<!-- Not all answered message -->
+							<div th:if="${param.answer}">
+								<div class="alert alert-danger">You need to answer all the questions!</div>
+							</div>
+							<!-- Hidden Atributes -->
+						
+							<input type="hidden" th:field="*{id}" name="id" th:value="${id}">
+							<input type="hidden" th:field="*{product}" name="product" th:value="${product}"> 
+							<input type="hidden" th:field="*{description}" name="description" th:value="${description}"> 
+							<input type="hidden" th:field="*{closed}" name="closed" th:value="${closed}"> 
+
+							<table class="table table-striped table-bordered table-hover table-dark">
+
+								<tbody>
+									<tr>
+										<td>
+											<label class="form-label d-inline">Questionnaire name: </label>
+											<p class="d-inline" style="margin-left: 10px; margin-bottom: 10px;" type="text" th:text="*{product}"></p>
+										</td>
+										<td>
+											<label class="form-label d-inline" style="margin-left: 50px;">Description: </label>
+											<p class="d-inline" style="margin-left: 10px;" type="text" th:text="*{description}"></p>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+
+							<table class="table table-striped table-bordered table-hover table-dark">
+								<thead>
+									<th>These are the Heuristic you have to answer:</th>
+								</thead>
+
+								<tbody>
+									<th>
+										<tr th:each="element : ${auxMap}">                               
+											<td>
+
+												<input type="hidden" name="answerList" th:value="${element.value}">
+
+												<div th:switch="${element.value.ansString}">
+													<div th:case="'Yes'">
+														<select name="answerAux" id="answerAux">
+															<option value="">Choose an answer</option>
+															<option value="Yes" selected>Yes</option>
+															<option value="No">No</option>
+															<option value="N.A">N/A</option>
+														</select>
+														<label th:text="'   ' + ${element.key.heuristicString}"></label>
+													</div>
+													<div th:case="'No'">
+														<select name="answerAux" id="answerAux">
+															<option value="">Choose an answer</option>
+															<option value="Yes">Yes</option>
+															<option value="No" selected>No</option>
+															<option value="N.A">N/A</option>
+														</select>
+														<label th:text="'   ' + ${element.key.heuristicString}"></label>
+													</div>
+													<div th:case="'N.A'">
+														<select name="answerAux" id="answerAux">
+															<option value="">Choose an answer</option>
+															<option value="Yes">Yes</option>
+															<option value="No">No</option>
+															<option value="N.A" selected>N/A</option>
+														</select>
+														<label th:text="'   ' + ${element.key.heuristicString}"></label>
+													</div>
+													<div th:case="*">
+														<select name="answerAux" id="answerAux">
+															<option value="" selected>Choose an answer</option>
+															<option value="Yes">Yes</option>
+															<option value="No">No</option>
+															<option value="N.A">N/A</option>
+														</select>
+														<label th:text="'   ' + ${element.key.heuristicString}"></label>
+													</div> 
+												</div>
+											</td>
+										</tr>
+									</th>
+								<tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<a type="button" class="btn btn-primary float-start" style="margin-right: 5px;" th:href="@{/questionnaireList}">Back</a>
+				<button type="submit" class="btn btn-success" name="action" style="margin-right: 5px;" value="Save">Save changes</button>
+				<button type="submit" class="btn btn-success float-end" name="action" style="margin-left: 5px;" value="Complete">Save changes and finish</button>					
+			</form>
         </div>
-    </div>
-</body>
 
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
-   
-        
-
-
-
-        
-
-
+    </body>
 </html>

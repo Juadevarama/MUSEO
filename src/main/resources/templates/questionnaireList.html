@@ -1,123 +1,186 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+  	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
-<head>
+  	<head>
 
-  <div th:replace="header :: myHeader"></div>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-  <title>MUSE: Questionnaire List</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>MUSEO: Questionnaire List</title>
 
-</head> 
+	</head> 
 
-<body>
+	<body class="bg-secondary">
 
-  <br>
-  <br>
+		<div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white"  style="width: 1600px;">
 
-  <div class= "container">
-    <div class= "row">
-      <div class="col-md-12" col-md-offset-3>
+			<!-- Create success message -->
+			<div th:if="${param.create}">
+				<div class="alert alert-success">You've successfully created your questionnaire!</div>
+			</div>
 
-        <h1> Questionnaire List</h1>
+			<!-- Update success message -->
+			<div th:if="${param.update}">
+				<div class="alert alert-info">The changes have been saved successfully!</div>
+			</div>
 
-        <!-- Create success message -->
-        <div th:if="${param.create}">
-          <div class="alert alert-success">You've successfully created your questionnaire!</div>
-        </div>
+			<form th:action="@{/questionnaireList}" method="GET">  
+				<div th:switch="${user.role}"> 
+					<div th:case="'Administrator'">
 
-        <!-- Update success message -->
-        <div th:if="${param.update}">
-          <div class="alert alert-info">You've successfully changed your questionnaire!</div>
-        </div>
+						<div class="table-responsive">
 
-        <form th:action="@{/questionnaireList}" method="GET">  
-          <div th:switch="${user.role}"> 
-            <div th:case="'Administrator'">
-              <table class="table table-striped table-bordered table-hover">
-                <caption>List of questionnaires</caption>
-                <thead>
-                  <tr>
-                    <th>Product name</th>
-                    <th>Description</th>
-                    <th>Completed</th>
-                    <th>Edit/Show</th>
-                    <th>Export</th>
-                    <th>Delivery Management</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <th:block th:each="questionnaire : ${questionnaireList}">
-                    <tr>
-                      <td th:text="*{questionnaire.product}"></td>
-                      <td th:text="*{questionnaire.description}"></td>
-                      <td th:text="*{questionnaire.closed}"></td>
-                      <div th:switch="${questionnaire.closed}">
-                        <div th:case="${true}">
-                          <td>
-                            <a th:href="@{/showQuestionnaire(questionnaireId=${questionnaire.id})}">Show</a>
-                          </td>
-                          <td>
-                            <a th:href="@{/exportToPDF(questionnaireId=${questionnaire.id})}">Export to PDF</a>
-                          </td> 
-                          <td>
-                            <a th:href="@{/deliveryManagement(questionnaireId=${questionnaire.id})}">Delivery Management</a>
-                          </td>
-                        </div>
-                        <div th:case="${false}">
-                          <td>
-                            <a th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}">Edit</a>
-                          </td>
-                          <td>Complete the quesstionaire first</td> 
-                          <td>Complete the quesstionaire first</td> 
-                        </div>
-                      </div>                         
-                      </td>
-                    </tr>
-                    </th:block> 
-                </tbody>
-              </table>     
-              <a type="button" class="btn btn-default" th:href="@{/createQuestionnaire}">Create new questionnaire</a> 
-            </div>
-            <div th:case="'Evaluator'">
-              <table class="table table-striped table-bordered table-hover">
-                <caption>List of questionnaires</caption>
-                <thead>
-                  <tr>
-                    <th>Product name</th>
-                    <th>Description</th>
-                    <th>Fill out</th>
-                    <th>Export</th>
-                  </tr>
-                </thead>
-                <tbody>
-                      <th:block th:each="element : ${auxMap}">
-                        <tr>
-                        <td th:text="*{element.value.product}"></td>
-                        <td th:text="*{element.value.description}"></td>
-                        <div th:switch="${element.key.filled}">
-                          <div th:case="${false}">
-                            <td>
-                              <a th:href="@{/updateQuestionnaire(questionnaireId=${element.key.questionnaireID})}">Fill Out</a>
-                            </td>
-                          </div>
-                          <div th:case="${true}">
-                            <td>
-                              <a th:href="@{/showFilledQuestionnaire(userId=${user.id},questionnaireId=${element.key.questionnaireID},ansForm=${true})}">Show</a>
-                            </td>
-                          </div> 
-                        <td>
-                          <a th:href="@{/exportToPDF(questionnaireId=${element.key.questionnaireID})}">Export to PDF</a>
-                        </td>
-                        </tr>
-                      </th:block>                     
-                </tbody>
-              </table> 
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-</body>
+							<p class="d-inline float-end"><small>You are in Main Page -> Questionnaire List</small></p>
+							<h2 class="text-left">Questionnaire List</h2>
 
+							<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
+							<div id="info" class="collapse">
+								<p>
+									<br>
+									<br>
+									Hi, <span sec:authentication="name">Username</span>!
+									<br>
+									You can see here a list of your own questionnaires.    
+									<br>
+									When you create a questionnaire, you can only edit it. Once you have completed the edition, 
+									you will be able to see it, export it, and you will gain access to the Delivery Management page, 
+									where you can send it to evaluators. 
+								</p>
+							</div>
+							
+							<table class="table table-striped table-bordered table-hover table-dark">	
+
+								<thead>
+									<tr>
+										<th>Product name</th>
+										<th>Description</th>
+										<th>Completed</th>
+										<th>Edit</th>
+										<th>Show</th>
+										<th>Export</th>
+										<th>Delivery Management</th>
+									</tr>
+								</thead>
+								<tbody>
+									<th:block th:each="questionnaire : ${questionnaireList}">
+										<tr>
+											<td th:text="*{questionnaire.product}"></td>
+											<td th:text="*{questionnaire.description}"></td>
+											<td th:text="*{questionnaire.closed}"></td>
+											<div th:switch="${questionnaire.closed}">
+												<div th:case="${true}">
+													<td>
+														<a class="btn btn-link disabled" th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}">Edit</a>                      
+													</td>
+													<td>
+														<a th:href="@{/showQuestionnaire(questionnaireId=${questionnaire.id})}">Show</a>
+													</td>
+													<td>
+														<a th:href="@{/exportToPDF(questionnaireId=${questionnaire.id})}">Export to PDF</a>
+													</td> 
+													<td>
+														<a th:href="@{/deliveryManagement(questionnaireId=${questionnaire.id})}">Delivery Management</a>
+													</td>
+												</div>
+												<div th:case="${false}">
+													<td>
+														<a th:href="@{/updateQuestionnaire(questionnaireId=${questionnaire.id})}">Edit</a>                      
+													</td>
+													<td>
+														<a class="btn btn-link disabled" th:href="@{/showQuestionnaire(questionnaireId=${questionnaire.id})}">Show</a>
+													</td>
+													<td>
+														<a class="btn btn-link disabled" th:href="@{/exportToPDF(questionnaireId=${questionnaire.id})}">Export to PDF</a>
+													</td> 
+													<td>
+														<a class="btn btn-link disabled" th:href="@{/deliveryManagement(questionnaireId=${questionnaire.id})}">Delivery Management</a>
+													</td>
+												</div>
+											</div>
+										</tr>
+									</th:block> 
+								</tbody>
+							</table>    
+
+							<a type="button" class="btn btn-primary float-start" th:href="@{/main}">Back</a>
+							<a type="button" class="btn btn-primary float-end" th:href="@{/createQuestionnaire}">Create new questionnaire</a> 	
+						</div>
+					</div>
+					
+					<div th:case="'Evaluator'">
+
+						<div class="table-responsive">
+
+							<p class="d-inline float-end">You are in Main Page -> Questionnaire List</p>
+							<h2 class="text-left">Questionnaire List</h2>
+							
+							<a href="#info" class="d-inline float-start btn btn-info" style="margin-bottom: 10px;" data-bs-toggle="collapse">+Info</a>
+							<div id="info" class="collapse">
+								<p>
+									<br>
+									<br>
+									Hi, <span sec:authentication="name">Username</span>!
+									<br>
+									Here you can see the list of questionnaires that have been sent to you. You can export them,
+									or fill them in and send them back to their owners. If you can see nothing, no one has sent a
+									questionnaire to you :(.  
+								</p>
+							</div>
+
+
+							<table class="table table-striped table-bordered table-hover table-dark">
+
+								<thead>
+									<tr>
+										<th>Product name</th>
+										<th>Description</th>
+										<th>Fill out</th>
+										<th>Show</th>
+										<th>Export</th>
+									</tr>
+								</thead>
+								<tbody>
+										<th:block th:each="element : ${auxMap}">
+											<tr>
+												<td th:text="*{element.value.product}"></td>
+												<td th:text="*{element.value.description}"></td>
+												<div th:switch="${element.key.filled}">
+													<div th:case="${false}">
+													<td>
+														<a th:href="@{/updateQuestionnaire(questionnaireId=${element.key.questionnaireID})}">Fill Out</a>
+													</td>
+													<td>
+														<a class="btn btn-link disabled" th:href="@{/showFilledQuestionnaire(userId=${user.id},questionnaireId=${element.key.questionnaireID},ansForm=${true})}">Show</a>
+													</td>
+													</div>
+													<div th:case="${true}">
+													<td>
+														<a class="btn btn-link disabled" th:href="@{/updateQuestionnaire(questionnaireId=${element.key.questionnaireID})}">Fill Out</a>
+													</td>
+													<td>
+														<a th:href="@{/showFilledQuestionnaire(userId=${user.id},questionnaireId=${element.key.questionnaireID},ansForm=${true})}">Show</a>
+													</td>
+													</div> 
+												<td>
+													<a th:href="@{/exportToPDF(questionnaireId=${element.key.questionnaireID})}">Export to PDF</a>
+												</td>
+											</tr>
+										</th:block>                     
+								</tbody>
+							</table> 
+
+							<a type="button" class="btn btn-primary float-start" th:href="@{/main}">Back</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+	</body>
 </html>

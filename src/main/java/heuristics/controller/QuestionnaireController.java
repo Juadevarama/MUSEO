@@ -2,11 +2,9 @@ package heuristics.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -22,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -148,27 +145,22 @@ public class QuestionnaireController {
 
         Questionnaire questionnaire = questionnaireService.findQuestionnaireByID(questionnaireId);
 
-        // Diferenciamos las vistas para los usuarios Administradores y los Evaluadores
+        // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
 
-        if(user.getRole().equals("Administrator")){
+        List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
 
-            // Sacamos todos los objetos HeuristicQuestionnaire relacionados al cuestionario.  
-    
-            List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
-    
-            // Ahora sacamos las FH que el usuario ha dejado guardadas y las automáticas no guardadas
-    
-            List<FinalHeuristic> fHSelected = finalHeuristicService.findSelectedFH(hQList);
-            List<FinalHeuristic> fHAutomatic = finalHeuristicService.findAutomaticFH(hQList);
-    
-            // Por último, ponemos el resto de las FH.
-    
-            List<FinalHeuristic> fHRemainder = finalHeuristicService.findRemainderFH(hQList, fHSelected, fHAutomatic);
+        // Ahora sacamos las FH que el usuario ha dejado guardadas y las automáticas no guardadas
 
-            model.addAttribute("fHSelected", fHSelected);
-            model.addAttribute("fHAutomatic", fHAutomatic);
-            model.addAttribute("fHRemainder", fHRemainder);
-        }
+        List<FinalHeuristic> fHSelected = finalHeuristicService.findSelectedFH(hQList);
+        List<FinalHeuristic> fHAutomatic = finalHeuristicService.findAutomaticFH(hQList);
+
+        // Por último, ponemos el resto de las FH.
+
+        List<FinalHeuristic> fHRemainder = finalHeuristicService.findRemainderFH(hQList, fHSelected, fHAutomatic);
+
+        model.addAttribute("fHSelected", fHSelected);
+        model.addAttribute("fHAutomatic", fHAutomatic);
+        model.addAttribute("fHRemainder", fHRemainder);
         
         model.addAttribute("ansForm", ansForm);
         model.addAttribute("questionnaire", questionnaire);
@@ -184,7 +176,10 @@ public class QuestionnaireController {
     @RequestParam(value = "userId" , required = true) Integer userId,
     @RequestParam(value = "ansForm" , required = true) Boolean ansForm){
 
-        User user = userService.findUserById(userId);
+        User evaluator = userService.findUserById(userId);
+
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findUserByUsername(userDetails.getUsername());
         model.addAttribute("user", user);
 
         // Sacamos el cuestionario con el que estamos trabajando.
@@ -202,7 +197,7 @@ public class QuestionnaireController {
         for (HeuristicQuestionnaire hQ : hQList){
             List<Answer> answers = answerService.findAnswerByheuristicQuestionnaireID(hQ.getId());
             for (Answer answer : answers) {
-                if(answer.getUserID().equals(user.getId())){
+                if(answer.getUserID().equals(evaluator.getId())){
                     answerList.add(answer);
                 }
             }
@@ -218,15 +213,6 @@ public class QuestionnaireController {
 
             auxMap.put(fH, ans);
         }
-
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("Aquí");
-        System.out.println("auxMap= " + auxMap);
 
         model.addAttribute("auxMap", auxMap);
         model.addAttribute("ansForm", ansForm);
@@ -249,14 +235,14 @@ public class QuestionnaireController {
         model.addAttribute("allKeywords", keywordService.findAllKeyword());
         model.addAttribute("allNielsenHeuristics", nielsenHeuristicService.findAllNielsenHeuristic());
         model.addAttribute("allUsabilityAspects", usabilityAspectService.findAllUsabilityAspect());
-
+        
         return "createQuestionnaire";
     } 
 
     // Create Questionnaire (POST)
 
     @PostMapping("/createQuestionnaire")
-    public String processCreateQuestionnaireForm(@ModelAttribute("questionnaire") Questionnaire questionnaire,
+    public String processCreateQuestionnaireForm(@Valid Questionnaire questionnaire,
     @RequestParam(value = "choosenPlatforms" , required = false) List<Platform> choosenPlatforms, 
     @RequestParam(value = "choosenPurposes" , required = false) List<Purpose> choosenPurposes,
     @RequestParam(value = "choosenDevelopmentPhases" , required = false) List<DevelopmentPhase> choosenDevelopmentPhases,
@@ -264,7 +250,7 @@ public class QuestionnaireController {
     @RequestParam(value = "choosenKeywords" , required = false) List<Keyword> choosenKeywords,
     @RequestParam(value = "choosenNielsenHeuristics" , required = false) List<NielsenHeuristic> choosenNielsenHeuristics,
     @RequestParam(value = "choosenUsabilityAspects" , required = false) List<UsabilityAspect> choosenUsabilityAspects, 
-    BindingResult result, Model model){
+    Model model){
 
         // Guardamos el cuestionario
 
@@ -282,14 +268,7 @@ public class QuestionnaireController {
         choosenPurposes, choosenDevelopmentPhases, choosenGameAspects, choosenKeywords, 
         choosenNielsenHeuristics, choosenUsabilityAspects); 
 
-        /* Primero cogemos todos los objetos HeuristicQuestionnaire generados, y luego vamos filtrando 
-        las FinalHeuristic de estos, para que no haya repetidas, y las metemos en la lista que usaremos */
-
-        List<FinalHeuristic> finalHeuristicList = finalHeuristicService.findFHByCuestionnaire(
-            heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaire.getId()));
-
         model.addAttribute("questionnaire", questionnaire);
-        model.addAttribute("allFinalHeuristic", finalHeuristicList);
         return "redirect:/questionnaireList?create";
     }
     
@@ -364,6 +343,7 @@ public class QuestionnaireController {
                 auxMap.put(fH, ans);
             }
 
+            model.addAttribute("answerList", answerList);
             model.addAttribute("questionnaire", questionnaire);
             model.addAttribute("auxMap", auxMap);
 
@@ -377,69 +357,65 @@ public class QuestionnaireController {
 
     @PostMapping("/updateQuestionnaire")
     public String processUpdateQuestionnaireForm(@Valid Questionnaire questionnaire,
-    @RequestParam(value = "choosenFH" , required = false) List<FinalHeuristic> choosenFH, // Esto para los administradores
-    @RequestParam(value = "auxMap" , required = false) Map<FinalHeuristic, Answer> auxMap,
-    @RequestParam(value = "listaFea" , required = false) String[] listaFea,
+    @RequestParam(value = "choosenFH" , required = false) List<FinalHeuristic> choosenFH, // Esto para los administradore
+    @RequestParam(value = "answerList" , required = false) List<Answer> answerList, // Esto para los evaluadores
+    @RequestParam(value = "answerAux" , required = false) List<String> answerAux, // Esto para los evaluadores
     @RequestParam(value="action", required= true) String action, BindingResult result, Model model){
 
         // Cogemos el usuario
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userService.findUserByUsername(userDetails.getUsername());
-        model.addAttribute("user", user);
+        model.addAttribute("user", user); 
 
         if(user.getRole().equals("Administrator")){
+
+            if(choosenFH == null){
+                return "redirect:/updateQuestionnaire?questionnaireId=" + questionnaire.getId() + "&question";
+            } 
+
             if(action.equals("Complete")){   
                 questionnaire.setClosed(true);
             }
 
             // Actualizamos los objetos HeuristicQuestionnaire
 
-            heuristicQuestionnaireService.updateHQ(choosenFH, questionnaire);
+            heuristicQuestionnaireService.updateHQ(choosenFH, questionnaire); 
         }
 
         if(user.getRole().equals("Evaluator")){
+
+            // Actualizamos la lista de respuestas
+
+            Integer i = 0;
+
+            for (Answer answer: answerList) {
+                
+                answer.setAnsString(answerAux.get(i));
+                i++;
+            }
+
+            
             if(action.equals("Complete")){
 
                 /*  Primero hay que revisar que todas las respuestas estén respondidas.
-                    Sacamos la lista de respuestas. */
+                    Sacamos la lista de respuestas. Recorremos la lista y 
+                    vemos que están todas respondidas. */ 
 
-                if(auxMap == null){ // Ahora mismo siempre entra aquí porque el mapa siempre es nulo
-
-                    model.addAttribute("questionnaire", questionnaire);
-                    model.addAttribute("auxMap", auxMap);
-                    
-                    return "redirect:/updateQuestionnaire?answer" + "&questionnaireId=" + questionnaire.getId();
-                }
-
-                List<Answer> answers = auxMap.values().stream().collect(Collectors.toList());
-                
-                //  Ahora recorremos la lista y vemos que están todas respondidas.
-
-                if(answers.stream().anyMatch(a -> a.getAnsString() == null)){
+                if(answerList.stream().anyMatch(a -> a.getAnsString() == null || a.getAnsString().equals(""))){
 
                     model.addAttribute("questionnaire", questionnaire);
-                    model.addAttribute("auxMap", auxMap);
 
-                    return "redirect:/updateQuestionnaire?answer";
+                    return "redirect:/updateQuestionnaire?questionnaireId=" + questionnaire.getId() + "&answer";
                 }
+
+                /*  Si esto no se cumple, cogemos el objeto HeuristicUser que vincula
+                    al cuestionario y al evaluador y ponemos el campo filled a true. */   
 
                 HeuristicUser hU = heuristicUserService.findHeuristicUserByIDs(user.getId(), questionnaire.getId());
                 hU.setFilled(Boolean.TRUE);
-            }
-
-            List<String> listaAunMasFea = Arrays.asList(listaFea);
-            System.out.println("Buenos dias");
-            System.out.println("Aquí está el mapa" + auxMap);
-            System.out.println("Aquí está la lista fea" + listaAunMasFea);
-            System.out.println("Hasta aquí");
-            System.out.println("Hasta aquí");
-            System.out.println("Hasta aquí");
-            System.out.println("Hasta aquí");
-            System.out.println("Hasta aquí");
-
-            // Actualizamos los objetos Answer
-        }
+            } 
+        } 
 
         questionnaireService.saveQuestionnaire(questionnaire);
             
@@ -510,14 +486,20 @@ public class QuestionnaireController {
 
                 // Sacamos todas las respuestas de cada usuario
 
-                List<Answer> answerList = answerService.findAnswersByUserId(user.getId());
+                List<Answer> answerList = answerService.findAnswersByUserID(user.getId());
+
+				// Filtramos las respuestas a las del cuestionario en cuestión
+
+				List<Answer> filteredAnswerList = answerList.stream().
+					filter(a -> heuristicQuestionnaireService.findHeuristicQuestionnaireById(
+					a.getHeuristicQuestionnaireID()).getQuestionnaireID().equals(questionnaireId)).
+					collect(Collectors.toList());
 
                 // Y vamos a sacar el porcentaje de las respuestas que es "Yes"
 
                 Integer yes = 0;
-                for (Answer a : answerList) {
+                for (Answer a : filteredAnswerList) {
 
-                    System.out.println(a.getAnsString());
                     if(a.getAnsString().equals("Yes")){
                         yes++;
                     }
@@ -525,7 +507,7 @@ public class QuestionnaireController {
 
                 // Calculamos el ratio de cobertura.
 
-                hU.setCoverageRatio((yes*100/answerList.size())); 
+                hU.setCoverageRatio((yes*100/filteredAnswerList.size())); 
             }
 
             // Y añadimos la pareja usuario/ratio al mapa. 
@@ -542,62 +524,75 @@ public class QuestionnaireController {
     // Delivery Management (POST)
 
     @PostMapping("/deliveryManagement")
-    public String processDeliveryManagementForm(@RequestParam(value = "recipient" , required = true) String recipient, 
-    @RequestParam(value="action", required=true) String action, 
-    @RequestParam(value = "recipientList" , required = false) List<User> recipientList,
+    public String processDeliveryManagementForm(@RequestParam(value = "evaluator" , required = true) String evaluator, 
     @RequestParam(value="questionnaireId", required=true) Integer questionnaireId, Model model){
-
-        // Actualizamos los usuarios activos para el ratio de cobertura
-
-        if(action.equals("Save")){
-            
-        }
 
         // Añadimos un nuevo usuario a la lista
 
-        if(action.equals("Add")){
+		// Primero vamos a ver si el username introducido es válido
 
-            // Primero vamos a ver si el username introducido es válido
+		List<User> users = userService.findAllUser();
+		User user = userService.findUserByUsername(evaluator);
 
-            List<User> users = userService.findAllUser();
-            User user = userService.findUserByUsername(recipient);
+		// Vemos si existe, y si tiene el rol de evaluador.
 
-            // Vemos si existe, y si tiene el rol de evaluador.
+		if(!(users.contains(user)) || !(user.getRole().equals("Evaluator"))){
 
-            if(!(users.contains(user)) || !(user.getRole().equals("Evaluator"))){
+			return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId + "&valid";
+		}
 
-                return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
-            }
+		// También vemos si ya está en la lista. 
 
-            // También vemos si ya está en la lista. 
+        	/*  Sacamos la lista de usuarios a los que se les ha enviado el cuestionario.
+				Para sacar a los usuarios evaluadores, cogemos la lista de usuarios
+				que tienen un heuristicUser con el cuestionario, sin el owner */
+        
+			List<HeuristicUser> hUList = heuristicUserService.findHeuristicUserByquestionnaireID(questionnaireId);
 
-            if(recipientList != null && recipientList.contains(user)){
+			// Filtramos la lista para quitar el administrador.
+	
+			List<HeuristicUser> filteredList = hUList.stream()
+				.filter(hU -> hU.getOwner().equals(Boolean.FALSE))
+				.collect(Collectors.toList());
+	
+			// Cada hU lo tenemos que mapear con su ratio de cobertura. Creamos una lista de usuarios
+	
+			List<User> evaluatorList = new ArrayList<>();
 
-                    return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
-            }
+			for (HeuristicUser hU : filteredList) {
 
-            // Una vez checkeadas estas dos cosas, lo añadimos.
+				// Sacamos el usuario
+	
+				User auxUser = userService.findUserById(hU.getUserID());
+	
+				// Lo metemos en la lista de usuarios
+	
+				evaluatorList.add(auxUser);
+			}
 
-            /*  Lo primero que hacemos es generar un objeto heuristicUser que vincule
-                el usuario con el cuestionario. */
+			if(evaluatorList.contains(user)){
+				return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId + "&exists";
+			}
 
-            heuristicUserService.generate(user.getId(), questionnaireId);
+		// Una vez checkeadas estas dos cosas, lo añadimos.
 
-            /*  Creamos todos los objetos de Answer, uno por hQ para ese cuestionario.
-                Sacamos todos los objetos hQ a partir del cuestionario  */
+		/*  Lo primero que hacemos es generar un objeto heuristicUser que vincule
+			el usuario con el cuestionario. */
 
-            List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
-            List<HeuristicQuestionnaire> selectedHQ = heuristicQuestionnaireService.filterSelectedHQ(hQList);
+		heuristicUserService.generate(user.getId(), questionnaireId);
 
-            // Ahora, para cada objeto hQ creamos un objeto Answer
+		/*  Creamos todos los objetos de Answer, uno por hQ para ese cuestionario.
+			Sacamos todos los objetos hQ a partir del cuestionario  */
 
-            answerService.generate(selectedHQ, user);
+		List<HeuristicQuestionnaire> hQList = heuristicQuestionnaireService.findHeuristicQuestionnaireByQuestionnaireId(questionnaireId);
+		List<HeuristicQuestionnaire> selectedHQ = heuristicQuestionnaireService.filterSelectedHQ(hQList);
 
-            model.addAttribute("questionnaireId", questionnaireId);
+		// Ahora, para cada objeto hQ creamos un objeto Answer
 
-            return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId;
-        }
+		answerService.generate(selectedHQ, user);
 
-        return "redirect:/deliveryManagement?add";
+		model.addAttribute("questionnaireId", questionnaireId);
+
+		return "redirect:/deliveryManagement?questionnaireId=" + questionnaireId + "&add";
     }
 }

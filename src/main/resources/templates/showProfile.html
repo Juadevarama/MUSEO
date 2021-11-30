@@ -1,67 +1,72 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+	xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
 
-<head>
+	<head>
 
-  <div th:replace="header :: myHeader"></div>
-  
-  <title>MUSE: Profile</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" 
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-</head> 
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<title>MUSEO: Show Profile</title>
 
-<body>
+    </head>
 
-  <br>
-  <br>
+    <body class="bg-secondary">
 
-  <div class= "container">
-    <div class= "row">
-      <div class="col-md-12" col-md-offset-3>
+		<div class= "container-sm p-5 my-5 border rounded bg-dark bg-gradient text-white" style="width: 700px;">
 
-        <!-- Success message -->
-        <div th:if="${param.success}">
-          <div class="alert alert-info">You've successfully changed your profile!</div>
-        </div>
+			<!-- Success message -->
+			<div th:if="${param.success}">
+				<div class="alert alert-info">You've successfully changed your profile!</div>
+			</div>
 
-        <h1> User Profile</h1>
-          <form th:action="@{/showProfile}" method="GET">
-            <table class="table table-stripped" th:object="${user}">
-              <thead>
-              </thead>
-              <tbody>
-                <tr>
-                  <th>Username:</th>
-                  <td th:text="*{username}"></th>
-                </tr>
-                <tr>
-                  <th>Name:</th>
-                  <td th:text="*{name}"></th>
-                </tr>
-                <tr>
-                  <th>Surnames:</th>
-                  <td th:text="*{surnames}"></th>
-                </tr>
-                <tr>
-                  <th>Company:</th>
-                  <td th:text="*{company}"></th>
-                </tr>
-                <tr>
-                  <th>Email:</th>
-                  <td th:text="*{email}"></th>
-                </tr>
-              </tbody>
-            </table>
+			<form th:action="@{/showProfile}" method="GET">
+				<div class="table-responsive">
+					<table class="table table-stripped table-bordered table-hover table-dark" th:object="${user}">
 
-            <div class="form-group">
-              <a type="button" class="btn btn-default" th:href="@{/main}">Back</a> 
-              <a type="button" class="btn btn-default" th:href="@{/updateProfile}">Edit your profile</a> 
-            </div>
-          </form>
-        </div>  
-      </div>
-    </div>
-  </div>
-</body>
+						<p class="d-inline float-end"><small>You are in Main Page -> Show Profile</small></p>
+						<h2 class="text-left">Show Profile</h2>
 
+						<thead>
+						</thead>
+						<tbody>
+							<tr>
+								<th>Username:</th>
+								<td th:text="*{username}"></th>
+							</tr>
+							<tr>
+								<th>Name:</th>
+								<td th:text="*{name}"></th>
+							</tr>
+							<tr>
+								<th>Surnames:</th>
+								<td th:text="*{surnames}"></th>
+							</tr>
+							<tr>
+								<th>Company:</th>
+								<td th:text="*{company}"></th>
+							</tr>
+							<tr>
+								<th>Email:</th>
+								<td th:text="*{email}"></th>
+							</tr>
+							<tr>
+								<th>Role:</th>
+								<td th:text="*{role}"></th>
+							</tr>
+						</tbody>
+					</table>
+
+					<a type="button" class="btn btn-primary float-start" th:href="@{/main}">Back</a> 
+					<a type="button" class="btn btn-primary float-end" th:href="@{/updateProfile}">Edit profile</a> 
+				</div>
+			</form> 
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+	</body>
 </html>

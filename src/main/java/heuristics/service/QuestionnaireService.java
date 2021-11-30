@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +28,6 @@ public class QuestionnaireService {
 
     @Autowired
     private QuestionnaireRepository questionnaireRepository;
-
-    @Autowired
-    private UserServiceImpl userService;
 
     @Autowired
     private HeuristicPlatformService heuristicPlatformService;
@@ -145,8 +140,8 @@ public class QuestionnaireService {
 
         // Sacamos todas las respuestas del evaluator
 
-        List<Answer> answers = answerService.findAnswersByUserId(evaluator.getId());
-
+        List<Answer> answers = answerService.findAnswersByUserID(evaluator.getId());
+                                
         for (Answer ans : answers) {
 
             /* Las vamos recorriendo, vamos sacando todos los objetos HQ, y miramos si el cuestionario de estos

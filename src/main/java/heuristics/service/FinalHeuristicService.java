@@ -29,7 +29,7 @@ public class FinalHeuristicService {
     }
 
     @Transactional(readOnly = true)
-    public List<FinalHeuristic> findFHByCuestionnaire(List<HeuristicQuestionnaire> list){
+    public List<FinalHeuristic> findFHByQuestionnaire(List<HeuristicQuestionnaire> list){
         
         List<FinalHeuristic> res = new ArrayList<>();
 

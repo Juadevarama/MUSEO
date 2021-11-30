@@ -68,27 +68,28 @@ public class UserController {
     
     @PostMapping("/register")
     public String processCreateUserForm(@Valid User user, Model model) throws DataAccessException{
-
-        userService.saveUser(user);
-   
-        return "redirect:/register?success";   
+       
+        String action = "create";
+        userService.saveUser(user, action);
+        return "redirect:/register?success";      
     }
 
     // Show User
 
-    @GetMapping("showProfile")
-    public String iniShowUserForm(Model model) {
+    @GetMapping("/showProfile")
+    public String initShowUserForm(Model model) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.findUserByUsername(userDetails.getUsername());
         
-        model.addAttribute("user", userService.findUserByUsername(userDetails.getUsername()));
+        model.addAttribute("user", user);
         return "showProfile";
     }
 
     // Update User: Get
 
-    @GetMapping("updateProfile")
-    public String iniUpdateUserForm(Model model) {
+    @GetMapping("/updateProfile")
+    public String initUpdateUserForm(Model model) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("user", userService.findUserByUsername(userDetails.getUsername()));
@@ -99,7 +100,8 @@ public class UserController {
     @PostMapping("/updateProfile")
     public String processUpdateUserForm(@Valid User user, Model model) throws DataAccessException{
 
-        userService.saveUser(user);
+        String action = "update";
+        userService.saveUser(user, action);
         return "redirect:/showProfile?success";   
     }
 
